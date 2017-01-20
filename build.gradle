@@ -1,0 +1,20 @@
+description = "Loom data integration projects"
+group = "com.kryptnostic"
+version = 'v0.0.1-dev'
+
+task getVersions(description: "Print the current versions of all local projects") {
+  doLast {
+    logger.warn("\nCurrent project versions: ")
+    subprojects.each { project ->
+      logger.warn("${project.name}:${project.version}")
+    }
+  }
+}
+
+import groovy.json.JsonSlurper
+
+task wrapper(type: Wrapper) {
+  def p = ['curl', "http://services.gradle.org/versions/current"].execute()
+  def json = new JsonSlurper().parseText(p.text)
+  gradleVersion = json.version
+}
