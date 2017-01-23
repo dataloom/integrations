@@ -18,6 +18,7 @@ applicationDefaultJvmArgs = ["-Xmx2G", "-Xms2G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+run.args = ["unused","Stolen_Vehicles_2012_Salt_Lake_City.csv"]
 configurations {
     provided
 }

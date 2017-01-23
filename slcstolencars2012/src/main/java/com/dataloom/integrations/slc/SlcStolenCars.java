@@ -52,9 +52,10 @@ public class SlcStolenCars {
             "loom.auth0.com" );
     private static final AuthenticationAPIClient           client              = auth0.newAuthenticationAPIClient();
     private static String jwtToken;
+   
     static {
-        sparkSession = SparkSession.builder()
-                .master( "local[10]" )
+        sparkSession = SparkSession.builder()   
+                .master( "local[100]" )
                 .appName( "test" )
                 .getOrCreate();
 
@@ -62,16 +63,13 @@ public class SlcStolenCars {
                 .setConnection( "Tests" )
                 .setScope( "openid email nickname roles user_id" );
         jwtToken = request.execute().getIdToken();
-        
-        logger.info( "Using the following idToken: Bearer {}" , jwtToken );
     }
 
-
-
     public static void main( String[] args ) throws InterruptedException {
-        //jwtToken = args[ 0 ];
+        jwtToken = args[ 0 ];
+        logger.info( "Using the following idToken: Bearer {}" , jwtToken );
         String path = new File( args[ 1 ] ).getAbsolutePath();
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.LOCAL, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         UUID caseId = edm.createPropertyType( new PropertyType( CASE_FQN, "Case #", Optional.of(
@@ -123,16 +121,16 @@ public class SlcStolenCars {
                         ImmutableSet.of(),
                         EdmPrimitiveTypeKind.Double ) );
 
-//         UUID caseId = edm.getPropertyTypeId( CASE_FQN.getNamespace(), CASE_FQN.getName() );
-//         UUID ocId = edm.getPropertyTypeId( OC_FQN.getNamespace(), OC_FQN.getName() );
-//         UUID odId = edm.getPropertyTypeId( OD_FQN.getNamespace(), OD_FQN.getName() );
-//         UUID rdId = edm.getPropertyTypeId( RD_FQN.getNamespace(), RD_FQN.getName() );
-//         UUID occId = edm.getPropertyTypeId( OCC_FQN.getNamespace(), OCC_FQN.getName() );
-//         UUID dowId = edm.getPropertyTypeId( DOW_FQN.getNamespace(), DOW_FQN.getName() );
-//         UUID addrId = edm.getPropertyTypeId( ADDR_FQN.getNamespace(), ADDR_FQN.getName() );
-//         UUID latId = edm.getPropertyTypeId( LAT_FQN.getNamespace(), LAT_FQN.getName() );
-//         UUID lonId = edm.getPropertyTypeId( LON_FQN.getNamespace(), LON_FQN.getName() );
-//
+         caseId = edm.getPropertyTypeId( CASE_FQN.getNamespace(), CASE_FQN.getName() );
+         ocId = edm.getPropertyTypeId( OC_FQN.getNamespace(), OC_FQN.getName() );
+         odId = edm.getPropertyTypeId( OD_FQN.getNamespace(), OD_FQN.getName() );
+         rdId = edm.getPropertyTypeId( RD_FQN.getNamespace(), RD_FQN.getName() );
+         occId = edm.getPropertyTypeId( OCC_FQN.getNamespace(), OCC_FQN.getName() );
+         dowId = edm.getPropertyTypeId( DOW_FQN.getNamespace(), DOW_FQN.getName() );
+         addrId = edm.getPropertyTypeId( ADDR_FQN.getNamespace(), ADDR_FQN.getName() );
+         latId = edm.getPropertyTypeId( LAT_FQN.getNamespace(), LAT_FQN.getName() );
+         lonId = edm.getPropertyTypeId( LON_FQN.getNamespace(), LON_FQN.getName() );
+
         UUID esId = edm.createEntityType( new EntityType(
                 ES_TYPE,
                 "Stolen cars in Salt Lake City",
@@ -148,8 +146,10 @@ public class SlcStolenCars {
                         addrId,
                         latId,
                         lonId ) ) );
-//        UUID esId = edm.getEntityTypeId(
-//                ES_TYPE.getNamespace(), ES_TYPE.getName() );
+        
+        esId = edm.getEntityTypeId(
+                ES_TYPE.getNamespace(), ES_TYPE.getName() );
+        
         edm.createEntitySets( ImmutableSet.of( new EntitySet(
                 ES_TYPE,
                 esId,
@@ -169,8 +169,7 @@ public class SlcStolenCars {
                 .load( path );
 
         Flight flight = Flight.newFlight()
-                .addEntity().to( ES_NAME ).as( ES_TYPE )
-                .id( CASE_FQN )
+                .addEntity().to( ES_NAME ).as( ES_TYPE ).key( CASE_FQN )
                 .addProperty().value( row -> row.getAs( "CASE" ) ).as( CASE_FQN ).ok()
                 .addProperty().value( row -> row.getAs( "OFFENSE CODE" ) ).as( OC_FQN ).ok()
                 .addProperty().value( row -> row.getAs( "OFFENSE DESCRIPTION" ) ).as( OD_FQN ).ok()
@@ -192,7 +191,7 @@ public class SlcStolenCars {
                 .ok()
                 .done();
 
-        Shuttle shuttle = new Shuttle( jwtToken );
+        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
         shuttle.launch( flight, payload );
     }
 
