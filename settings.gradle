@@ -1,4 +1,5 @@
-rootProject.name='kryptnostic-dev'
+rootProject.name='dataloom-integrations'
 
 include 'template'
 include 'slcstolencars2012'
+include 'arrestscalifornia'
