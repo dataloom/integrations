@@ -14,7 +14,7 @@ group = "com.kryptnostic"
 version = 'v0.0.1'
 
 mainClassName = "com.dataloom.integrations.slc.SlcStolenCars"
-applicationDefaultJvmArgs = ["-Xmx2G", "-Xms2G", "-server"]
+applicationDefaultJvmArgs = ["-Xmx8G", "-Xms8G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 

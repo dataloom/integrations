@@ -55,7 +55,7 @@ public class SlcStolenCars {
    
     static {
         sparkSession = SparkSession.builder()   
-                .master( "local[100]" )
+                .master( "local[8]" )
                 .appName( "test" )
                 .getOrCreate();
 
@@ -151,12 +151,11 @@ public class SlcStolenCars {
                 ES_TYPE.getNamespace(), ES_TYPE.getName() );
         
         edm.createEntitySets( ImmutableSet.of( new EntitySet(
-                ES_TYPE,
                 esId,
                 ES_NAME,
                 "Salt Lake Lake City Stolen Cars (2012)",
                 Optional.of(
-                        "All cars stolen in Salt Lake City in 2012." ) ) ) );
+                        "Cars stolen in Salt Lake City in 2012." ) ) ) );
 
         /*
          * Get the dataset.
