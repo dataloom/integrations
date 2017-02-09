@@ -1,4 +1,4 @@
-package com.dataloom.integrations.slc;
+package com.dataloom.integrations.iowacity;
 
 /**
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
