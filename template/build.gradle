@@ -17,7 +17,7 @@ distTar {
 }
 
 mainClassName = "com.kryptnostic.shuttle.Main"
-applicationDefaultJvmArgs = ["-Xmx2G", "-Xms2G", "-server"]
+applicationDefaultJvmArgs = ["-Xmx4G", "-Xms4G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -44,7 +44,7 @@ sourceSets {
 }
 
 dependencies {  
-    compile 'com.kryptnostic:shuttle-java:0.1.3-SNAPSHOT'
+    compile 'com.kryptnostic:shuttle-java:0.1.4-SNAPSHOT'
     compile fileTree(dir: "lib/", include: "*.jar")
 
     /*
