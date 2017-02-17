@@ -1,21 +1,13 @@
 package com.dataloom.integrations.slc;
 
-import com.auth0.Auth0;
-import com.auth0.authentication.AuthenticationAPIClient;
-import com.auth0.request.AuthenticationRequest;
-import com.dataloom.authorization.*;
-import com.dataloom.client.RetrofitFactory;
-import com.dataloom.client.RetrofitFactory.Environment;
-import com.dataloom.edm.EdmApi;
-import com.dataloom.edm.internal.EntitySet;
-import com.dataloom.edm.internal.EntityType;
-import com.dataloom.edm.internal.PropertyType;
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.kryptnostic.shuttle.Flight;
-import com.kryptnostic.shuttle.Shuttle;
+import java.io.File;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
@@ -24,15 +16,32 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import retrofit2.Retrofit;
 
-import java.io.File;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.auth0.Auth0;
+import com.auth0.authentication.AuthenticationAPIClient;
+import com.auth0.request.AuthenticationRequest;
+import com.dataloom.authorization.Ace;
+import com.dataloom.authorization.Acl;
+import com.dataloom.authorization.AclData;
+import com.dataloom.authorization.Action;
+import com.dataloom.authorization.Permission;
+import com.dataloom.authorization.PermissionsApi;
+import com.dataloom.authorization.Principal;
+import com.dataloom.authorization.PrincipalType;
+import com.dataloom.client.RetrofitFactory;
+import com.dataloom.client.RetrofitFactory.Environment;
+import com.dataloom.edm.EdmApi;
+import com.dataloom.edm.EntitySet;
+import com.dataloom.edm.type.EntityType;
+import com.dataloom.edm.type.PropertyType;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.kryptnostic.shuttle.Flight;
+import com.kryptnostic.shuttle.Shuttle;
+
+import retrofit2.Retrofit;
 
 /**
  * This is the integration for CA Arrest Records from 1980 - 2015 (35 years of data).
