@@ -111,14 +111,15 @@ public class CaArrests {
         UUID yearId = createOrGet.apply( new PropertyType( YEAR, "Year", Optional.of(
                 "A Gregorian calendar year." ), ImmutableSet.of(), EdmPrimitiveTypeKind.Int16 ) );
 
-        UUID genderId = createOrGet.apply( new PropertyType( COUNTY, "County", Optional.of(
+        UUID countyId = createOrGet.apply( new PropertyType( COUNTY, "County", Optional.of(
                 "A County in the United States" ), ImmutableSet.of(), EdmPrimitiveTypeKind.String ) );
 
-        UUID countyId = createOrGet.apply( new PropertyType( GENDER, "Gender", Optional.of(
-                "A County in the United States" ), ImmutableSet.of(), EdmPrimitiveTypeKind.String ) );
+        UUID genderId = createOrGet.apply( new PropertyType( GENDER, "Gender", Optional.of(
+                "Gender of subject" ), ImmutableSet.of(), EdmPrimitiveTypeKind.String ) );
 
         UUID raceid = createOrGet.apply( new PropertyType( RACE, "Race", Optional.of(
                 "Race of subject" ), ImmutableSet.of(), EdmPrimitiveTypeKind.String ) );
+        
         UUID ageId = createOrGet.apply( new PropertyType( AGE, "Approximate Age", Optional.of(
                 "Number of years since subject was created" ), ImmutableSet.of(), EdmPrimitiveTypeKind.String ) );
 
