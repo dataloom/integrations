@@ -35,7 +35,7 @@ sourceSets {
 }
 
 dependencies {
-    compile 'com.kryptnostic:shuttle:0.1.5-SNAPSHOT'
+    compile 'com.kryptnostic:shuttle:0.1.6-SNAPSHOT'
     compile fileTree(dir: "lib/", include: "*.jar")
 
     /*
