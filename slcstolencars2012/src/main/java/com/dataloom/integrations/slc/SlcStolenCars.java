@@ -67,10 +67,9 @@ public class SlcStolenCars {
 
     public static void main( String[] args ) throws InterruptedException {
         jwtToken = args[ 0 ];
-        jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InN1cHBvcnRAa3J5cHRub3N0aWMuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJhcHBfbWV0YWRhdGEiOnsicm9sZXMiOlsiRGVtbyIsImFkbWluIiwiQXV0aGVudGljYXRlZFVzZXIiLCJ1c2VyIl0sIm9yZ2FuaXphdGlvbnMiOlsiNzIxMWI2YWUtNTM3NS00MmQyLWI5ODAtMThiOTIzZjNjYjJiIiwiMjJjNGU1YzctZmQ5OS00Njc5LTk2YzQtNWJlNGViM2E0MWQ5IiwiYWRtaW4iLCJBdXRoZW50aWNhdGVkVXNlciIsInVzZXIiXX0sIm5pY2tuYW1lIjoic3VwcG9ydCIsInJvbGVzIjpbIkRlbW8iLCJhZG1pbiIsIkF1dGhlbnRpY2F0ZWRVc2VyIiwidXNlciJdLCJ1c2VyX2lkIjoiYXV0aDB8NTdlNGIyZDhkOWQxZDE5NDc3OGZkNWI2IiwiaXNzIjoiaHR0cHM6Ly9sb29tLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw1N2U0YjJkOGQ5ZDFkMTk0Nzc4ZmQ1YjYiLCJhdWQiOiJQVG15RXhkQmNrSEFpeU9qaDR3Mk1xU0lVR1dXRWRmOCIsImV4cCI6MTQ4NzczNzY2OCwiaWF0IjoxNDg3NzAxNjY4fQ.u5lFztLqOiyjVG4_I545_nHyGlPJ3mMsTnikeAKH7ac";
         logger.info( "Using the following idToken: Bearer {}" , jwtToken );
         String path = new File( args[ 1 ] ).getAbsolutePath();
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.LOCAL, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         UUID caseId = edm.createPropertyType( new PropertyType( CASE_FQN, "Case #", Optional.of(
@@ -196,7 +195,7 @@ public class SlcStolenCars {
                 .done();
         // @formatter:on
 
-        Shuttle shuttle = new Shuttle( Environment.LOCAL, jwtToken );
+        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
         shuttle.launch( flight, payload );
     }
 
