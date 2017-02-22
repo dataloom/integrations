@@ -52,9 +52,9 @@ public class SlcStolenCars {
             "loom.auth0.com" );
     private static final AuthenticationAPIClient           client              = auth0.newAuthenticationAPIClient();
     private static String jwtToken;
-   
+
     static {
-        sparkSession = SparkSession.builder()   
+        sparkSession = SparkSession.builder()
                 .master( "local[8]" )
                 .appName( "test" )
                 .getOrCreate();
@@ -67,9 +67,10 @@ public class SlcStolenCars {
 
     public static void main( String[] args ) throws InterruptedException {
         jwtToken = args[ 0 ];
+        jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InN1cHBvcnRAa3J5cHRub3N0aWMuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJhcHBfbWV0YWRhdGEiOnsicm9sZXMiOlsiRGVtbyIsImFkbWluIiwiQXV0aGVudGljYXRlZFVzZXIiLCJ1c2VyIl0sIm9yZ2FuaXphdGlvbnMiOlsiNzIxMWI2YWUtNTM3NS00MmQyLWI5ODAtMThiOTIzZjNjYjJiIiwiMjJjNGU1YzctZmQ5OS00Njc5LTk2YzQtNWJlNGViM2E0MWQ5IiwiYWRtaW4iLCJBdXRoZW50aWNhdGVkVXNlciIsInVzZXIiXX0sIm5pY2tuYW1lIjoic3VwcG9ydCIsInJvbGVzIjpbIkRlbW8iLCJhZG1pbiIsIkF1dGhlbnRpY2F0ZWRVc2VyIiwidXNlciJdLCJ1c2VyX2lkIjoiYXV0aDB8NTdlNGIyZDhkOWQxZDE5NDc3OGZkNWI2IiwiaXNzIjoiaHR0cHM6Ly9sb29tLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw1N2U0YjJkOGQ5ZDFkMTk0Nzc4ZmQ1YjYiLCJhdWQiOiJQVG15RXhkQmNrSEFpeU9qaDR3Mk1xU0lVR1dXRWRmOCIsImV4cCI6MTQ4NzczNzY2OCwiaWF0IjoxNDg3NzAxNjY4fQ.u5lFztLqOiyjVG4_I545_nHyGlPJ3mMsTnikeAKH7ac";
         logger.info( "Using the following idToken: Bearer {}" , jwtToken );
         String path = new File( args[ 1 ] ).getAbsolutePath();
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( Environment.LOCAL, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         UUID caseId = edm.createPropertyType( new PropertyType( CASE_FQN, "Case #", Optional.of(
@@ -146,10 +147,10 @@ public class SlcStolenCars {
                         addrId,
                         latId,
                         lonId ) ) );
-        
+
         esId = edm.getEntityTypeId(
                 ES_TYPE.getNamespace(), ES_TYPE.getName() );
-        
+
         edm.createEntitySets( ImmutableSet.of( new EntitySet(
                 esId,
                 ES_NAME,
@@ -167,30 +168,35 @@ public class SlcStolenCars {
                 .option( "header", "true" )
                 .load( path );
 
+        // @formatter:off
         Flight flight = Flight.newFlight()
-                .addEntity().to( ES_NAME ).as( ES_TYPE ).key( CASE_FQN )
-                .addProperty().value( row -> row.getAs( "CASE" ) ).as( CASE_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "OFFENSE CODE" ) ).as( OC_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "OFFENSE DESCRIPTION" ) ).as( OD_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "REPORT DATE" ) ).as( RD_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "OCC DATE" ) ).as( OCC_FQN ).ok()
-                .addProperty().value( row -> {
-                    try {
-                        System.out.println( "Trying to read INT: " + row.getAs( "DAY OF WEEK" ) );
-                        return Integer.parseInt( row.getAs( "DAY OF WEEK" ) );
-                    } catch ( NumberFormatException e ) {
-                        System.err.println( "Failed to read INT: " + row.getAs( "DAY OF WEEK" ) );
-                        return null;
-                    }
-                } ).as( DOW_FQN ).ok()
-
-                .addProperty().value( row -> row.getAs( "LOCATION" ) ).as( ADDR_FQN ).ok()
-                .addProperty().value( SlcStolenCars::getLat ).as( LAT_FQN ).ok()
-                .addProperty().value( SlcStolenCars::getLon ).as( LON_FQN ).ok()
-                .ok()
+                .addEntity( ES_TYPE )
+                    .to( ES_NAME )
+                    .key( CASE_FQN )
+                    .addProperty( CASE_FQN ).value( row -> row.getAs( "CASE" ) ).ok()
+                    .addProperty( OC_FQN ).value( row -> row.getAs( "OFFENSE CODE" ) ).ok()
+                    .addProperty( OD_FQN ).value( row -> row.getAs( "OFFENSE DESCRIPTION" ) ).ok()
+                    .addProperty( RD_FQN ).value( row -> row.getAs( "REPORT DATE" ) ).ok()
+                    .addProperty( OCC_FQN ).value( row -> row.getAs( "OCC DATE" ) ).ok()
+                    .addProperty( DOW_FQN )
+                        .value( row -> {
+                            try {
+                                System.out.println( "Trying to read INT: " + row.getAs( "DAY OF WEEK" ) );
+                                return Integer.parseInt( row.getAs( "DAY OF WEEK" ) );
+                            } catch ( NumberFormatException e ) {
+                                System.err.println( "Failed to read INT: " + row.getAs( "DAY OF WEEK" ) );
+                                return null;
+                            }
+                        } )
+                        .ok()
+                    .addProperty( ADDR_FQN ).value( row -> row.getAs( "LOCATION" ) ).ok()
+                    .addProperty( LAT_FQN ).value( SlcStolenCars::getLat ).ok()
+                    .addProperty( LON_FQN ).value( SlcStolenCars::getLon ).ok()
+                    .ok()
                 .done();
+        // @formatter:on
 
-        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
+        Shuttle shuttle = new Shuttle( Environment.LOCAL, jwtToken );
         shuttle.launch( flight, payload );
     }
 

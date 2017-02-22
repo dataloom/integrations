@@ -119,7 +119,7 @@ public class CaArrests {
 
         UUID raceid = createOrGet.apply( new PropertyType( RACE, "Race", Optional.of(
                 "Race of subject" ), ImmutableSet.of(), EdmPrimitiveTypeKind.String ) );
-        
+
         UUID ageId = createOrGet.apply( new PropertyType( AGE, "Approximate Age", Optional.of(
                 "Number of years since subject was created" ), ImmutableSet.of(), EdmPrimitiveTypeKind.String ) );
 
@@ -167,19 +167,23 @@ public class CaArrests {
                 .option( "header", "true" )
                 .load( path );
 
+        // @formatter:off
         Flight flight = Flight.newFlight()
-                .addEntity().to( ES_NAME ).as( ES_TYPE ).key( GUID )
-                .addProperty().value( row -> UUID.randomUUID() ).as( GUID ).ok()
-                .addProperty().value( row -> row.getAs( "year" ) ).as( YEAR ).ok()
-                .addProperty().value( row -> row.getAs( "county" ) ).as( COUNTY ).ok()
-                .addProperty().value( row -> row.getAs( "gender" ) ).as( GENDER ).ok()
-                .addProperty().value( row -> row.getAs( "race" ) ).as( RACE ).ok()
-                .addProperty().value( row -> row.getAs( "age" ) ).as( AGE ).ok()
-                .addProperty().value( row -> row.getAs( "offense_level" ) ).as( OL ).ok()
-                .addProperty().value( row -> row.getAs( "offense_code" ) ).as( OC_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "disposition" ) ).as( DISPO_FQN ).ok()
-                .ok()
+                .addEntity( ES_TYPE )
+                    .to( ES_NAME )
+                    .key( GUID )
+                    .addProperty( GUID ).value( row -> UUID.randomUUID() ).ok()
+                    .addProperty( YEAR ).value( row -> row.getAs( "year" ) ).ok()
+                    .addProperty( COUNTY ).value( row -> row.getAs( "county" ) ).ok()
+                    .addProperty( GENDER ).value( row -> row.getAs( "gender" ) ).ok()
+                    .addProperty( RACE ).value( row -> row.getAs( "race" ) ).ok()
+                    .addProperty( AGE ).value( row -> row.getAs( "age" ) ).ok()
+                    .addProperty( OL ).value( row -> row.getAs( "offense_level" ) ).ok()
+                    .addProperty( OC_FQN ).value( row -> row.getAs( "offense_code" ) ).ok()
+                    .addProperty( DISPO_FQN ).value( row -> row.getAs( "disposition" ) ).ok()
+                    .ok()
                 .done();
+        // @formatter:on
 
         Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
         shuttle.launch( flight, payload );
