@@ -33,8 +33,8 @@ sourceSets {
     test.runtimeClasspath += configurations.provided
 }
 
-dependencies {  
-    compile 'com.kryptnostic:shuttle:0.1.4-SNAPSHOT'
+dependencies {
+    compile 'com.kryptnostic:shuttle:0.1.5-SNAPSHOT'
     compile fileTree(dir: "lib/", include: "*.jar")
 
     /*
