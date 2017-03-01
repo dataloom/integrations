@@ -51,9 +51,7 @@ public class IowaCityCallsForService {
     public static        FullQualifiedName       ADDRESS_FQN       = new FullQualifiedName( "general", "address" );
     public static        FullQualifiedName       TYPE_OF_CALL_FQN  = new FullQualifiedName( "iowa", "cfstype" );
     public static        FullQualifiedName       RESOLUTION_FQN    = new FullQualifiedName( "iowa", "cfsresolution" );
-    public static        DateTimeFormatter       jailDataFormatter = DateTimeFormat.forPattern( "dd-MMM-yy" );
     public static        DateTimeFormatter       cfsDataFormatter  = DateTimeFormat.forPattern( "MM/dd/yy" );
-    public static        DateTimeFormatter       esDataFormatter   = DateTimeFormat.forPattern( "yyyy-MM-dd" );
     private static String jwtToken;
     private static Environment environment = Environment.PRODUCTION;
     // For splitting up into first and last name.
@@ -194,7 +192,7 @@ public class IowaCityCallsForService {
                 .addProperty().value( IowaCityCallsForService::getLastName ).as( LAST_NAME_FQN ).ok()
                 .addProperty().value( row -> row.getAs( "DOB" ) == null ?
                         null :
-                        LocalDate.parse( row.getAs( "DOB" ), cfsDataFormatter ).toString( esDataFormatter ) )
+                        LocalDate.parse( row.getAs( "DOB" ), cfsDataFormatter ).toString() )
                 .as( DOB_FQN ).ok()
                 .addProperty().value( row -> row.getAs( "PERSON TYPE" ) ).as( INVOLVEMENT_FQN ).ok()
                 .addProperty().value( row -> row.getAs( "ADDRESS" ) ).as( ADDRESS_FQN ).ok()

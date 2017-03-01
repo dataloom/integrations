@@ -57,8 +57,6 @@ public class IowaCityJail {
             "datereleased" );                                                                                         // Date
     public static        FullQualifiedName       GUID_FQN          = new FullQualifiedName( "general", "guid" );
     public static        DateTimeFormatter       jailDataFormatter = DateTimeFormat.forPattern( "dd-MMM-yy" );
-    public static        DateTimeFormatter       cfsDataFormatter  = DateTimeFormat.forPattern( "MM/dd/yy" );
-    public static        DateTimeFormatter       esDataFormatter   = DateTimeFormat.forPattern( "yyyy-MM-dd" );
     private static       Pattern                 p                 = Pattern.compile( ".*\\n*.*\\n*\\((.+),(.+)\\)" );
     private static String jwtToken;
     private static Environment environment = Environment.PRODUCTION;
@@ -178,7 +176,7 @@ public class IowaCityJail {
                 .addProperty()
                 .value( row -> row.getAs( "Date of Birth" ) == null ?
                         null :
-                        LocalDate.parse( row.getAs( "Date of Birth" ), jailDataFormatter ).toString( esDataFormatter ) )
+                        LocalDate.parse( row.getAs( "Date of Birth" ), jailDataFormatter ).toString() )
                 .as( new FullQualifiedName( "general.dob" ) )
                 .ok()
                 .addProperty()
