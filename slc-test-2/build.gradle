@@ -8,17 +8,18 @@ plugins {
 
 apply from: "https://raw.githubusercontent.com/kryptnostic/gradles/master/mavenRepos.gradle"
 
-description = "Iowa City Jail Data"
+// Set to the title for your Entity Set
+description = "Salt Lake City Shelter Arrest Data"
 group = "com.kryptnostic"
 version = 'v0.0.1'
 
-mainClassName = "com.dataloom.integrations.iowacity.IowaCity"
+mainClassName = "com.dataloom.integrations.dataintegration.DataIntegration"
 applicationDefaultJvmArgs = ["-Xmx8G", "-Xms8G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-//TODO: Use credentials from environment variables.
-run.args = ["jaildata.csv","username","password"]
+// Change to name of your csv file and integration account login credentials
+run.args = ["filename.csv","username","password"]
 
 configurations {
     provided
@@ -34,15 +35,9 @@ sourceSets {
     test.runtimeClasspath += configurations.provided
 }
 
-dependencies {  
-    compile 'com.kryptnostic:shuttle:0.1.4-SNAPSHOT'
+dependencies {
+    compile 'com.kryptnostic:shuttle:0.1.6-SNAPSHOT'
     compile fileTree(dir: "lib/", include: "*.jar")
-    compile group: "org.slf4j", name: "slf4j-api", version:"${slf4j_version}"
-
-    compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j_version}"
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j_version}"
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j_version}"
-    compile group: 'org.apache.logging.log4j', name: 'log4j-web', version: "${log4j_version}"
 
     /*
      * TESTING
