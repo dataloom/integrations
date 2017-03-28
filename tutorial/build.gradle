@@ -8,19 +8,18 @@ plugins {
 
 apply from: "https://raw.githubusercontent.com/kryptnostic/gradles/master/mavenRepos.gradle"
 
-// Change the description for your Entity Set
-description = "Crime Index Data for Nation's Largest Cities"
+// Set to the title for your Entity Set
+description = "Sample OpenFlights Airport Data"
 group = "com.kryptnostic"
 version = 'v0.0.1'
 
-// Modify mainClassName (if you renamed exampleorg)
-mainClassName = "com.dataloom.integrations.exampleorg.ExampleOrg"
+mainClassName = "com.dataloom.integrations.dataintegration.DataIntegration"
 applicationDefaultJvmArgs = ["-Xmx8G", "-Xms8G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-// Change to name of your csv file and organization account's login credentials
-run.args = ["crime_index.csv","test@example.com","examplepassword"]
+// Change to name of your csv file and integration account login credentials
+run.args = ["airports.csv","test@example.com","examplepassword"]
 
 configurations {
     provided
