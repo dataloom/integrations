@@ -19,9 +19,9 @@ public class DataIntegration {
     private static final Logger logger = LoggerFactory.getLogger( DataIntegration.class );
 
     // Set your Entity Set Name, Type, and Primary Key
-    public static String ENTITY_SET_NAME = "slcshelterarrest";
+    public static String            ENTITY_SET_NAME = "slcshelterarrest";
     public static FullQualifiedName ENTITY_SET_TYPE = new FullQualifiedName( "slc.slcshelterarrest" );
-    public static FullQualifiedName ENTITY_SET_KEY = new FullQualifiedName( "general.personid" );
+    public static FullQualifiedName ENTITY_SET_KEY  = new FullQualifiedName( "general.personid" );
 
     public static void main( String[] args ) throws InterruptedException {
         /*
@@ -36,21 +36,20 @@ public class DataIntegration {
         final String jwtToken = MissionControl.getIdToken( username, password );
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
-
         Dataset<Row> payload = sparkSession
-            .read()
-            .format( "com.databricks.spark.csv" )
-            .option( "header", "true" )
-            .load( path );
+                .read()
+                .format( "com.databricks.spark.csv" )
+                .option( "header", "true" )
+                .load( path );
 
         Flight flight = Flight.newFlight()
-            .addEntity( ENTITY_SET_TYPE )
+                .addEntity( ENTITY_SET_TYPE )
                 .to( ENTITY_SET_NAME )
                 .key( ENTITY_SET_KEY )
                 .addProperty( new FullQualifiedName( "publicsafety.case" ) )
                 .value( row -> row.getAs( "case" ) ).ok()
                 .addProperty( new FullQualifiedName( "publicsafety.occdatetime" ) )
-                .value( row -> standardizeDateTime( row.getAs( "occ year" ), row.getAs( "time occ") ) ).ok()
+                .value( row -> standardizeDateTime( row.getAs( "occ year" ), row.getAs( "time occ" ) ) ).ok()
                 .addProperty( new FullQualifiedName( "publicsafety.adult3-juv103" ) )
                 .value( row -> row.getAs( "3-adult,103-juv" ) ).ok()
                 .addProperty( new FullQualifiedName( "general.lastname" ) )
@@ -89,8 +88,8 @@ public class DataIntegration {
                 .value( row -> row.getAs( "ncic des" ) ).ok()
                 .addProperty( new FullQualifiedName( "publicsafety.ncicexpdesc" ) )
                 .value( row -> row.getAs( "ncic exp desc" ) ).ok()
-            .ok()
-        .done();
+                .ok()
+                .done();
 
         Shuttle shuttle = new Shuttle( jwtToken );
         shuttle.launch( flight, payload );
@@ -99,24 +98,27 @@ public class DataIntegration {
     // CUSTOM FUNCTIONS DEFINED BELOW
 
     public static String paddedTime( String time ) {
-      int original = Integer.parseInt(time);
-      String padded = String.format("%04d", original);
-      return padded;
+        int original = Integer.parseInt( time );
+        String padded = String.format( "%04d", original );
+        return padded;
     }
 
     public static String standardizeDateTime( Object myDate, Object myTime ) {
-      if (myDate != null && myTime == null) {
-        FormattedDateTime date = new FormattedDateTime( myDate.toString(), null, "MM/dd/yyyy", null);
-        return date.getDateTime();
-      }
-      if (myDate == null && myTime != null) {
-        FormattedDateTime time = new FormattedDateTime( null, paddedTime(myTime.toString()), null, "HHmm");
-        return time.getDateTime();
-      }
-      if (myDate != null && myTime != null) {
-        FormattedDateTime dateTime = new FormattedDateTime( myDate.toString(), paddedTime(myTime.toString()), "MM/dd/yyyy", "HHmm");
-        return dateTime.getDateTime();
-      }
-      return null;
+        if ( myDate != null && myTime == null ) {
+            FormattedDateTime date = new FormattedDateTime( myDate.toString(), null, "MM/dd/yyyy", null );
+            return date.getDateTime();
+        }
+        if ( myDate == null && myTime != null ) {
+            FormattedDateTime time = new FormattedDateTime( null, paddedTime( myTime.toString() ), null, "HHmm" );
+            return time.getDateTime();
+        }
+        if ( myDate != null && myTime != null ) {
+            FormattedDateTime dateTime = new FormattedDateTime( myDate.toString(),
+                    paddedTime( myTime.toString() ),
+                    "MM/dd/yyyy",
+                    "HHmm" );
+            return dateTime.getDateTime();
+        }
+        return null;
     }
 }
