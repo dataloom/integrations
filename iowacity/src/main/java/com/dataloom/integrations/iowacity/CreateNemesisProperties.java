@@ -22,7 +22,7 @@ import com.dataloom.client.RetrofitFactory.Environment;
 
 import static com.dataloom.integrations.iowacity.Nemesis.*;
 
-public class DataIntegration {
+public class CreateNemesisProperties {
 
     public static void main( String[] args ) throws InterruptedException, ExecutionException {
 
