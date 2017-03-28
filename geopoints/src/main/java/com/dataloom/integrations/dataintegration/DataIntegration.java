@@ -20,9 +20,9 @@ public class DataIntegration {
     private static final Logger logger = LoggerFactory.getLogger( DataIntegration.class );
 
     // Set your Entity Set Name, Type, and Primary Key
-    public static String ENTITY_SET_NAME = "sfsampleaddresses";
+    public static String            ENTITY_SET_NAME = "sfsampleaddresses";
     public static FullQualifiedName ENTITY_SET_TYPE = new FullQualifiedName( "sample.addresses" );
-    public static FullQualifiedName ENTITY_SET_KEY = new FullQualifiedName( "iowastate.escene15" );
+    public static FullQualifiedName ENTITY_SET_KEY  = new FullQualifiedName( "iowastate.escene15" );
 
     public static void main( String[] args ) throws InterruptedException {
 
@@ -34,34 +34,42 @@ public class DataIntegration {
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
         Dataset<Row> payload = sparkSession
-            .read()
-            .format( "com.databricks.spark.csv" )
-            .option( "header", "true" )
-            .load( path );
+                .read()
+                .format( "com.databricks.spark.csv" )
+                .option( "header", "true" )
+                .load( path );
 
         Flight flight = Flight.newFlight()
-            .addEntity( ENTITY_SET_TYPE )
+                .addEntity( ENTITY_SET_TYPE )
                 .to( ENTITY_SET_NAME )
                 .key( ENTITY_SET_KEY )
                 .addProperty( new FullQualifiedName( "iowastate.escene15" ) )
-                .value( row -> get_geo(row.getAs( "NUMBER" ), row.getAs("STREET"), row.getAs("UNIT"), row.getAs("CITY"), row.getAs("POSTCODE") ).getFormattedAddress() ).ok()
+                .value( row -> get_geo( row.getAs( "NUMBER" ),
+                        row.getAs( "STREET" ),
+                        row.getAs( "UNIT" ),
+                        row.getAs( "CITY" ),
+                        row.getAs( "POSTCODE" ) ).getFormattedAddress() ).ok()
                 .addProperty( new FullQualifiedName( "iowastate.escene11" ) )
-                .value( row -> get_geo(row.getAs( "NUMBER" ), row.getAs("STREET"), row.getAs("UNIT"), row.getAs("CITY"), row.getAs("POSTCODE") ) ).ok()
-            .ok()
-        .done();
+                .value( row -> get_geo( row.getAs( "NUMBER" ),
+                        row.getAs( "STREET" ),
+                        row.getAs( "UNIT" ),
+                        row.getAs( "CITY" ),
+                        row.getAs( "POSTCODE" ) ) ).ok()
+                .ok()
+                .done();
 
         Shuttle shuttle = new Shuttle( jwtToken );
         shuttle.launch( flight, payload );
     }
 
-    public static GeocodedAddress get_geo(Object num, Object street, Object unit, Object city, Object postcode) {
+    public static GeocodedAddress get_geo( Object num, Object street, Object unit, Object city, Object postcode ) {
         String n = num != null ? num.toString() : "";
         String s = street != null ? street.toString() : "";
         String u = unit != null ? unit.toString() : "";
         String c = city != null ? city.toString() : "";
         String p = postcode != null ? postcode.toString() : "";
         String address = n + " " + s + " " + u + ", " + c + " " + p;
-        GeocodedAddress add = new GeocodedAddress(address);
-        return (add);
+        GeocodedAddress add = new GeocodedAddress( address );
+        return ( add );
     }
 }
