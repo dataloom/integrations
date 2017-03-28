@@ -1,4 +1,4 @@
-package com.dataloom.integrations.dataintegration;
+package com.dataloom.integrations.iowacity;
 
 /**
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
-public class DataIntegration {
+public class JohnsonCountyIowa {
     // Logger is used to output useful debugging messages to the console
-    private static final Logger logger = LoggerFactory.getLogger( DataIntegration.class );
+    private static final Logger logger = LoggerFactory.getLogger( JohnsonCountyIowa.class );
 
     // Set your Entity Set Name, Type, and Primary Key
     public static String            ENTITY_SET_NAME = "johnsoncountyiowajail";
