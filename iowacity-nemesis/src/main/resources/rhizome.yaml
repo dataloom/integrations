@@ -1,0 +1,29 @@
+##
+# Rhizome Bootstrap Configuration
+##
+
+# Set to false to disable persistence
+enable-persistence:  false
+session-clustering-enabled: false
+
+cassandra:
+    keyspace: "sparks"
+    replication-factor: 2
+    seed-nodes:
+        - "cassandra"
+
+hazelcast:
+    server: true
+    group: "local"
+    password: "kryptodoge4life"
+    seed-nodes:
+        - "conductor"
+
+spark:
+    appname: "shuttle-java"
+    port: 7077
+    jars:
+      - "../kindling/build/libs/kindling-0.0.0-SNAPSHOT-all.jar"
+      - "./kindling/build/libs/kindling-0.0.0-SNAPSHOT-all.jar"
+    master:
+        - "local[2]"
