@@ -13,6 +13,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 
 public class DataIntegration {
@@ -20,7 +21,7 @@ public class DataIntegration {
     private static final Logger logger = LoggerFactory.getLogger( DataIntegration.class );
 
     // Set your Entity Set Name, Type, and Primary Key
-    public static String ENTITY_SET_NAME = "johnsoncountyiowajail";
+    public static String            ENTITY_SET_NAME = "johnsoncountyiowajail";
     public static FullQualifiedName ENTITY_SET_TYPE = new FullQualifiedName( "publicsafety.johnsoncountyiowajail" );
     public static FullQualifiedName ENTITY_SET_KEY1 = new FullQualifiedName( "general.firstname" );
     public static FullQualifiedName ENTITY_SET_KEY2 = new FullQualifiedName( "general.lastname" );
@@ -40,15 +41,15 @@ public class DataIntegration {
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
         Dataset<Row> payload = sparkSession
-            .read()
-            .format( "com.databricks.spark.csv" )
-            .option( "header", "true" )
-            .load( path );
+                .read()
+                .format( "com.databricks.spark.csv" )
+                .option( "header", "true" )
+                .load( path );
 
         Flight flight = Flight.newFlight()
-            .addEntity( ENTITY_SET_TYPE )
+                .addEntity( ENTITY_SET_TYPE )
                 .to( ENTITY_SET_NAME )
-                .key( ENTITY_SET_KEY1, ENTITY_SET_KEY2, ENTITY_SET_KEY3)
+                .key( ENTITY_SET_KEY1, ENTITY_SET_KEY2, ENTITY_SET_KEY3 )
                 .addProperty( new FullQualifiedName( "publicsafety.datereleased" ) )
                 .value( row -> standardizeDate( row.getAs( "Date Released" ) ) ).ok()
                 .addProperty( new FullQualifiedName( "publicsafety.datebooked" ) )
@@ -101,8 +102,8 @@ public class DataIntegration {
                 .value( row -> row.getAs( "Offender Address City" ) ).ok()
                 .addProperty( new FullQualifiedName( "publicsafety.howreleased" ) )
                 .value( row -> row.getAs( "How Released" ) ).ok()
-            .ok()
-        .done();
+                .ok()
+                .done();
 
         Shuttle shuttle = new Shuttle( jwtToken );
         shuttle.launch( flight, payload );
@@ -110,32 +111,32 @@ public class DataIntegration {
 
     // CUSTOM FUNCTIONS DEFINED BELOW
     public static String standardizeDate( Object myDate ) {
-      if (myDate != null) {
-        FormattedDateTime date = new FormattedDateTime( myDate.toString(), null, "dd-MMM-yy", null);
-        return date.getDateTime();
-      }
-      return null;
+        if ( myDate != null ) {
+            FormattedDateTime date = new FormattedDateTime( myDate.toString(), null, "dd-MMM-yy", null );
+            return date.getDateTime();
+        }
+        return null;
     }
 
-    public static String getFirstName(Object name) {
-        String n = name.toString().replace(", ", "," );
-        String[] names = n.split(",");
-        String[] remainingName = names[1].split(" ");
-        return remainingName[0].trim() == null ? null : remainingName[0].trim();
+    public static String getFirstName( Object name ) {
+        String n = name.toString().replace( ", ", "," );
+        String[] names = n.split( "," );
+        String[] remainingName = names[ 1 ].split( " " );
+        return remainingName[ 0 ].trim() == null ? null : remainingName[ 0 ].trim();
     }
 
-    public static String getMiddleName(Object name) {
-        String n = name.toString().replace(", ", "," );
-        String[] names = n.split(",");
-        String[] remainingName = names[1].split(" ");
-        String[] copy = Arrays.copyOfRange(remainingName, 1, remainingName.length);
-        String middle = String.join(" ", copy).trim();
+    public static String getMiddleName( Object name ) {
+        String n = name.toString().replace( ", ", "," );
+        String[] names = n.split( "," );
+        String[] remainingName = names[ 1 ].split( " " );
+        String[] copy = Arrays.copyOfRange( remainingName, 1, remainingName.length );
+        String middle = String.join( " ", copy ).trim();
         return remainingName.length < 2 ? null : middle;
     }
 
-    public static String getLastName(Object name) {
-        String n = name.toString().replace(", ", "," );
-        String[] names = n.split(",");
-        return names[0].trim() == null ? null : names[0].trim();
+    public static String getLastName( Object name ) {
+        String n = name.toString().replace( ", ", "," );
+        String[] names = n.split( "," );
+        return names[ 0 ].trim() == null ? null : names[ 0 ].trim();
     }
 }
