@@ -58,7 +58,7 @@ public class DataIntegration {
                 .ok()
                 .done();
 
-        Shuttle shuttle = new Shuttle( jwtToken );
+        Shuttle shuttle = new Shuttle( RetrofitFactory.Environment.LOCAL, jwtToken );
         shuttle.launch( flight, payload );
     }
 
