@@ -4,6 +4,7 @@ package com.dataloom.integrations.dataintegration;
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
  */
 
+import com.dataloom.client.RetrofitFactory;
 import com.kryptnostic.shuttle.Flight;
 import com.kryptnostic.shuttle.MissionControl;
 import com.kryptnostic.shuttle.Shuttle;
@@ -66,7 +67,7 @@ public class DataIntegration {
                 .ok()
                 .done();
 
-        Shuttle shuttle = new Shuttle( jwtToken );
+        Shuttle shuttle = new Shuttle( RetrofitFactory.Environment.LOCAL, jwtToken );
         shuttle.launch( flight, payload );
     }
 
