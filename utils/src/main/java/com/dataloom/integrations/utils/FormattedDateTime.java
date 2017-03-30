@@ -15,59 +15,54 @@ import org.slf4j.LoggerFactory;
  * Created by julia on 3/4/17.
  */
 public class FormattedDateTime {
-    private static final Logger logger    = LoggerFactory.getLogger( FormattedDateTime.class );
-    // Instance variables
-    private              String smartDate = null;
-
-    private LocalDateTime dt     = new LocalDateTime();
-    private LocalDate     myDate = new LocalDate();
-    private LocalTime     myTime = new LocalTime();
-
-    private String datePattern;
-    private String timePattern;
+    private static final Logger        logger        = LoggerFactory.getLogger( FormattedDateTime.class );
+    private              String        formatted     = null;
+    private              LocalDateTime myDateTime    = new LocalDateTime();
+    private              LocalDate     myDate        = new LocalDate();
+    private              LocalTime     myTime        = new LocalTime();
+    private              boolean       dateSubmitted = false;
+    private              boolean       timeSubmitted = false;
 
     // Constructor
     public FormattedDateTime( String date, String time, String datePattern, String timePattern ) {
-        if ( date != null && !date.equals( "" ) ) {
-            formatDate( date, datePattern ); // start by formatting date
+        dateSubmitted = date != null && !date.equals( "" ) && datePattern != null && !datePattern.equals( "" );
+        timeSubmitted = time != null && !time.equals( "" ) && timePattern != null && !timePattern.equals( "" );
+
+        // Start by formatting the date
+        if ( dateSubmitted ) {
+            formatDate( date, datePattern );
         }
-        if ( time != null && !time.equals( "" ) ) {
-            formatTime( time, timePattern ); // then format time
+        // Then format the time
+        if ( timeSubmitted ) {
+            formatTime( time, timePattern );
         }
 
-        if ( ( date.equals( "" ) || date == null ) && ( time != null && !time.equals( "" ) ) ) {
-            smartDate = myTime.toString(); // only time
-        } else if ( ( !date.equals( "" ) && date != null ) && ( time == null || time.equals( "" ) ) ) {
-            smartDate = myDate.toString(); // only date
-        } else if ( ( !date.equals( "" ) && date != null ) && ( time != null && !time.equals( "" ) ) ) {
-            smartDate = dt.toString(); // date time
+        // Create formatted string for date, time, or datetime
+        if ( !dateSubmitted && timeSubmitted ) {
+            formatted = myTime.toString();
+        } else if ( dateSubmitted && !timeSubmitted ) {
+            formatted = myDate.toString();
+        } else if ( dateSubmitted && timeSubmitted ) {
+            formatted = myDateTime.toString();
         }
     }
 
+    // Returns formatted string
     public String getDateTime() {
-        logger.info( "Smart: {}", smartDate );
-        return smartDate;
+        return formatted;
     }
 
     private void formatDate( String date, String datePattern ) {
         DateTimeFormatter customDateFormatter = DateTimeFormat.forPattern( datePattern );
-        String dateString = date;
-        if ( date != null && !myDate.equals( "" ) ) {
-            dateString = date;
-            // dateString should already be padded with zeros before being parsed
-            myDate = date == null ? null : LocalDate.parse( dateString, customDateFormatter );
-            dt = dt.withDate( myDate.getYear(), myDate.getMonthOfYear(), myDate.getDayOfMonth() );
-        }
+        // Note that date should already match datePattern format before parsing
+        myDate = date == null ? null : LocalDate.parse( date, customDateFormatter );
+        myDateTime = myDateTime.withDate( myDate.getYear(), myDate.getMonthOfYear(), myDate.getDayOfMonth() );
     }
 
     private void formatTime( String time, String timePattern ) {
         DateTimeFormatter customTimeFormatter = DateTimeFormat.forPattern( timePattern );
-        String timeString = time;
-        if ( time != null && !time.equals( "" ) ) {
-            timeString = time;
-            // timeString should already be padded with zeros before being parsed
-            myTime = time == null ? null : LocalTime.parse( timeString, customTimeFormatter );
-            dt = dt.withTime( myTime.getHourOfDay(), myTime.getMinuteOfHour(), 0, 0 );
-        }
+        // Note that time should already match timePattern format before parsing
+        myTime = time == null ? null : LocalTime.parse( time, customTimeFormatter );
+        myDateTime = myDateTime.withTime( myTime.getHourOfDay(), myTime.getMinuteOfHour(), 0, 0 );
     }
 }
