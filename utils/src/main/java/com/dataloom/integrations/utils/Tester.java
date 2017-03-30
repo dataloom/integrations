@@ -10,6 +10,9 @@ public class Tester {
     private static final Logger logger = LoggerFactory.getLogger( Tester.class );
 
     public static void main( String[] args ) throws InterruptedException {
+        testDates();
+    }
+    private static void testDates() {
         // Returns datetime
         FormattedDateTime dateAndTime = new FormattedDateTime( "01/02/2000", "12:34:56", "MM/dd/yy", "HH:mm:ss" );
 
