@@ -27,7 +27,7 @@ public class CreateNemesisProperties {
     public static void main( String[] args ) throws InterruptedException, ExecutionException {
 
         String jwtToken = "replace with jwtToken";
-        LoomClient loomclient = new LoomClient( Environment.PRODUCTION, () -> jwtToken );
+        LoomClient loomclient = new LoomClient( Environment.LOCAL, () -> jwtToken );
         EdmApi edm = loomclient.getEdmApi();
 
         // NON PII
