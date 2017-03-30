@@ -1,5 +1,9 @@
 package com.dataloom.integrations.utils;
 
+/**
+ * Created by julia on 3/22/17.
+ */
+
 import com.dataloom.client.RetrofitFactory;
 import org.apache.olingo.commons.api.edm.geo.Point;
 import retrofit2.Retrofit;
@@ -7,19 +11,16 @@ import retrofit2.Retrofit;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Created by julia on 3/2/17.
- */
 public class GeocodedAddress extends Point {
 
-    private static final String APIKEY = "secret";
+    private static final String APIKEY = "secret-api-key";
     private Double latitude;
     private Double longitude;
     private String formattedAddress;
 
     public GeocodedAddress( String address ) {
 
-        super( null, null );
+        super( Dimension.GEOGRAPHY, null );
 
         // Get JSON with Google Maps information
         MapsApi api = setApi( "https://maps.googleapis.com/" );
