@@ -17,3 +17,4 @@ src/main/webapp/auth/
 # source maps
 *.css.map
 *.js.map
+datastore.log
