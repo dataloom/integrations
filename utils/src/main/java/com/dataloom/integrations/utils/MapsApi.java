@@ -10,6 +10,6 @@ import java.util.Map;
  */
 public interface MapsApi {
 
-    @GET("/maps/api/geocode/json")
-    Map<String, Object> gmap(@Query("address") String address, @Query("key") String key );
+    @GET( "/maps/api/geocode/json" )
+    Map<String, Object> gmap( @Query( "address" ) String address, @Query( "key" ) String key );
 }
