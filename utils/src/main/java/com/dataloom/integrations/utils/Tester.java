@@ -1,5 +1,6 @@
 package com.dataloom.integrations.utils;
 
+import org.apache.olingo.commons.api.edm.geo.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,8 +11,10 @@ public class Tester {
     private static final Logger logger = LoggerFactory.getLogger( Tester.class );
 
     public static void main( String[] args ) throws InterruptedException {
-        testDates();
+        //testDates();
+        testGeo();
     }
+
     private static void testDates() {
         // Returns datetime
         FormattedDateTime dateAndTime = new FormattedDateTime( "01/02/2000", "12:34:56", "MM/dd/yy", "HH:mm:ss" );
@@ -37,5 +40,12 @@ public class Tester {
         assert missingDate.getDateTime().equals( "12:34:56.000" );
         assert missingTime.getDateTime().equals( "1989-01-02" );
         assert missingBoth.getDateTime() == null;
+    }
+
+    private static void testGeo() {
+        GeocodedAddress addr = new GeocodedAddress( "1600 Pennsylvania Avenue NW, DC" );
+        String formatted = addr.getFormattedAddress();
+        assert addr instanceof Point;
+        assert formatted.equals( "1600 Pennsylvania Ave NW, Washington, DC 20500, USA" );
     }
 }
