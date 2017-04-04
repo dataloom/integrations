@@ -1,0 +1,59 @@
+plugins {
+    id "application"
+    id "java"
+    id "eclipse"
+    id "idea"
+    id "jacoco"
+}
+
+apply from: "https://raw.githubusercontent.com/kryptnostic/gradles/master/mavenRepos.gradle"
+
+// Set to the title for your Entity Set
+description = "People Integration Test MySQL"
+group = "com.kryptnostic"
+version = 'v0.0.1'
+
+mainClassName = "com.dataloom.integrations.dataintegration.DataIntegration"
+applicationDefaultJvmArgs = ["-Xmx8G", "-Xms8G", "-server"]
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+// integration account login credentials
+run.args = ["","username","password"]
+
+configurations {
+    provided
+}
+
+configurations.all {
+    exclude module: 'slf4j-log4j12'
+}
+
+sourceSets {
+    main.compileClasspath += configurations.provided
+    test.compileClasspath += configurations.provided
+    test.runtimeClasspath += configurations.provided
+}
+
+dependencies {
+    compile 'com.kryptnostic:shuttle:0.1.6-SNAPSHOT'
+    compile fileTree(dir: "lib/", include: "*.jar")
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+
+
+    /*
+     * TESTING
+     */
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.2.7";
+}
+
+eclipse {
+    ext.downloadSources = true
+    ext.downloadJavadoc = true
+
+    ext.sourceCompatibility = JavaVersion.VERSION_1_8
+    ext.targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+eclipse.classpath.plusConfigurations += [configurations.provided]
