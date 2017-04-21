@@ -37,12 +37,6 @@ sourceSets {
 dependencies {
     compile 'com.kryptnostic:shuttle:0.1.6-SNAPSHOT'
     compile fileTree(dir: "lib/", include: "*.jar")
-    compile group: "org.slf4j", name: "slf4j-api", version:"${slf4j_version}"
-
-    compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "${log4j_version}"
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4j_version}"
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4j_version}"
-    compile group: 'org.apache.logging.log4j', name: 'log4j-web', version: "${log4j_version}"
 
     /*
      * TESTING
