@@ -55,3 +55,31 @@ eclipse {
 }
 
 eclipse.classpath.plusConfigurations += [configurations.provided]
+
+//Work around for: https://issues.gradle.org/browse/GRADLE-2992
+task pathingJar(type: Jar) {
+    appendix = 'pathing'
+    manifest { attributes("Class-Path": configurations.runtime.collect { project.uri(it) }.join(' ') + ' ' + jar.archiveName ) }
+}
+
+applicationDistribution.from(pathingJar) { into "lib" }
+startScripts {
+    doLast {
+        def winScriptFile  = file getWindowsScript()
+        def winFileText = winScriptFile.text
+
+        // Remove too-long-classpath and use pathing jar instead
+        winFileText = winFileText.replaceAll('set CLASSPATH=.*', 'rem CLASSPATH declaration removed.')
+        winFileText = winFileText.replaceAll('("%JAVA_EXE%" .* -classpath ")%CLASSPATH%(" .*)', '$1%APP_HOME%\\\\lib\\\\' + pathingJar.archiveName + '$2')
+
+        winScriptFile.text = winFileText
+    }
+}
+//end workaround
+
+run {
+    dependsOn pathingJar
+    doFirst {
+        classpath = files("$buildDir/classes/main", "$buildDir/resources/main", pathingJar.archivePath)
+    }
+}
