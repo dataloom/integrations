@@ -23,6 +23,9 @@ public class ConvertImages {
         File directory = new File( args[ 0 ] );
         File outputFile = new File( args[ 1 ] );
         FileWriter writer = new FileWriter( outputFile );
+
+        writer.write("XREF,mugshot" );
+
         if ( directory.isDirectory() ) {
             for ( File file : directory.listFiles() ) {
                 if ( file.isFile() && isImage( file.getCanonicalPath() ) ) {
