@@ -122,7 +122,7 @@ public class JailCustody {
         //        final String password = "replace me with password";
         final SparkSession sparkSession = MissionControl.getSparkSession();
         //        final String jwtToken = MissionControl.getIdToken( username, password );
-        final String jwtToken = "replace me with jwtToken";
+        final String jwtToken = args[0];
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
         
         /*

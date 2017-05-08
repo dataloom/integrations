@@ -17,9 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spark_project.guava.collect.Maps;
 
-import com.auth0.Auth0;
-import com.auth0.authentication.AuthenticationAPIClient;
-import com.auth0.request.AuthenticationRequest;
 import com.dataloom.authorization.securable.SecurableObjectType;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
@@ -138,7 +135,7 @@ public class GangData {
         //        final String password = "replace me with password";
         final SparkSession sparkSession = MissionControl.getSparkSession();
         //        final String jwtToken = MissionControl.getIdToken( username, password );
-        final String jwtToken = "replace me with jwtToken";
+        final String jwtToken = args[0];
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
         
         /*
