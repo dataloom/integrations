@@ -5,6 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.UUID;
 
+import com.kryptnostic.shuttle.Flight;
+import com.kryptnostic.shuttle.MissionControl;
+import com.kryptnostic.shuttle.Shuttle;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -147,7 +150,7 @@ public class GangData {
         /*
          * PROPERTY TYPES
          */
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.LOCAL, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         UUID MugShot = edm
@@ -1035,7 +1038,7 @@ public class GangData {
 
         flights.put( flight, payload );
 
-        Shuttle shuttle = new Shuttle( Environment.LOCAL, jwtToken );
+        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
         shuttle.launch( flights );
     }
 

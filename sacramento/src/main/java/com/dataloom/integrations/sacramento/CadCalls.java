@@ -7,6 +7,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.UUID;
 
+import com.kryptnostic.shuttle.Flight;
+import com.kryptnostic.shuttle.MissionControl;
+import com.kryptnostic.shuttle.Shuttle;
 import com.sun.org.apache.regexp.internal.RE;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
@@ -137,7 +140,7 @@ public class CadCalls {
         /*
          * PROPERTY TYPES
          */
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.LOCAL, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
 
@@ -844,7 +847,7 @@ public class CadCalls {
 
         flights.put( flight, payload );
 
-        Shuttle shuttle = new Shuttle( Environment.LOCAL, jwtToken );
+        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
         shuttle.launch( flights );
     }
 
