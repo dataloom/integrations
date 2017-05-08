@@ -135,7 +135,7 @@ public class GangData {
         //        final String password = "replace me with password";
         final SparkSession sparkSession = MissionControl.getSparkSession();
         //        final String jwtToken = MissionControl.getIdToken( username, password );
-        final String jwtToken = args[0];
+        final String jwtToken = args[1];
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
         
         /*
