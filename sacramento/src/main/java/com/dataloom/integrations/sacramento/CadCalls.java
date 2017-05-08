@@ -41,7 +41,7 @@ public class CadCalls {
     // ENTITIES
     public static String            PEOPLE_ENTITY_SET_NAME  = "sacramentopeople";
     public static FullQualifiedName PEOPLE_ENTITY_SET_TYPE  = new FullQualifiedName( "nc.PersonType" );
-    public static FullQualifiedName PEOPLE_ENTITY_SET_KEY_1 = new FullQualifiedName( "general.personid" );
+    public static FullQualifiedName PEOPLE_ENTITY_SET_KEY_1 = new FullQualifiedName( "publicsafety.xref" );
     public static String            PEOPLE_ALIAS            = "people";
 
     public static String            CAD_CALLS_ENTITY_SET_NAME   = "sacramentocad";
@@ -55,7 +55,7 @@ public class CadCalls {
     public static FullQualifiedName LOCATIONS_ENTITY_TYPE_KEY_2 = new FullQualifiedName( "nc.StreetName" );
     public static FullQualifiedName LOCATIONS_ENTITY_TYPE_KEY_3 = new FullQualifiedName( "nc.StreetCategoryText" );
     public static FullQualifiedName LOCATIONS_ENTITY_TYPE_KEY_4 = new FullQualifiedName( "nc.AddressSecondaryUnitText" );
-    public static FullQualifiedName LOCATIONS_ENTITY_TYPE_KEY_5 = new FullQualifiedName( "general.city" );
+    public static FullQualifiedName LOCATIONS_ENTITY_TYPE_KEY_5 = new FullQualifiedName( "nc.LocationCityName" );
     public static FullQualifiedName LOCATIONS_ENTITY_TYPE_KEY_6 = new FullQualifiedName( "nc.LocationStateName" );
     public static FullQualifiedName LOCATIONS_ENTITY_TYPE_KEY_7 = new FullQualifiedName( "nc.LocationPostalCode" );
     public static String            LOCATIONS_ALIAS             = "locations";
@@ -65,7 +65,7 @@ public class CadCalls {
     // ASSOCIATIONS
     public static String            WAS_RELATED_ENTITY_SET_NAME      = "sacramentowasrelated";
     public static FullQualifiedName WAS_RELATED_ENTITY_SET_TYPE      = new FullQualifiedName( "publicsafety.RelatedPersonServiceCallAssociation" );
-    public static FullQualifiedName WAS_RELATED_ENTITY_SET_KEY_1     = new FullQualifiedName( "general.personid" );
+    public static FullQualifiedName WAS_RELATED_ENTITY_SET_KEY_1     = new FullQualifiedName( "publicsafety.xref" );
     public static String            WAS_RELATED_ENTITY_SET_ALIAS     = "wasrelatedsubject";
 
 
@@ -78,7 +78,7 @@ public class CadCalls {
 
     public static String            WAS_SUBJECT_IN_ENTITY_SET_NAME    = "sacramentowasmainsubject";
     public static FullQualifiedName WAS_SUBJECT_IN_ENTITY_SET_TYPE    = new FullQualifiedName( "publicsafety.PersonServiceCallAssociation" );
-    public static FullQualifiedName WAS_SUBJECT_IN_ENTITY_SET_KEY_1   = new FullQualifiedName( "general.personid" );
+    public static FullQualifiedName WAS_SUBJECT_IN_ENTITY_SET_KEY_1   = new FullQualifiedName( "publicsafety.xref" );
     public static String            WAS_SUBJECT_IN_ALIAS              = "wasmainsubject";
 
 
@@ -90,25 +90,25 @@ public class CadCalls {
 
     public static FullQualifiedName GANG_CODE_FQN              = new FullQualifiedName( "publicsafety.GangCode" );
     public static FullQualifiedName GANG_NAME_FQN              = new FullQualifiedName( "publicsafety.GangName" );
-    public static FullQualifiedName XREF_ID_FQN                = new FullQualifiedName( "general.personid" );
-    public static FullQualifiedName NAME_GIVEN_FQN             = new FullQualifiedName( "general.firstname" );
-    public static FullQualifiedName NAME_MIDDLE_FQN            = new FullQualifiedName( "general.middlename" );
-    public static FullQualifiedName NAME_SUR_FQN               = new FullQualifiedName( "general.lastname" );
-    public static FullQualifiedName SEX_FQN                    = new FullQualifiedName( "general.gender" );
-    public static FullQualifiedName RACE_FQN                   = new FullQualifiedName( "general.race" );
+    public static FullQualifiedName XREF_ID_FQN                = new FullQualifiedName( "publicsafety.xref" );
+    public static FullQualifiedName NAME_GIVEN_FQN             = new FullQualifiedName( "nc.PersonGivenName" );
+    public static FullQualifiedName NAME_MIDDLE_FQN            = new FullQualifiedName( "nc.PersonMiddleName" );
+    public static FullQualifiedName NAME_SUR_FQN               = new FullQualifiedName( "nc.PersonSurName" );
+    public static FullQualifiedName SEX_FQN                    = new FullQualifiedName( "nc.PersonSex" );
+    public static FullQualifiedName RACE_FQN                   = new FullQualifiedName( "nc.PersonRace" );
     public static FullQualifiedName HEIGHT_FQN                 = new FullQualifiedName( "nc.PersonHeightMeasure" );
     public static FullQualifiedName WEIGHT_FQN                 = new FullQualifiedName( "nc.PersonWeightMeasure" );
     public static FullQualifiedName HAIRCOLOR_FQN              = new FullQualifiedName( "nc.PersonHairColorText" );
     public static FullQualifiedName EYECOLOR_FQN               = new FullQualifiedName( "nc.PersonEyeColorText" );
-    public static FullQualifiedName BIRTH_CITY_FQN             = new FullQualifiedName( "general.city" );
+    public static FullQualifiedName BIRTH_CITY_FQN             = new FullQualifiedName( "nc.LocationCityName" );
     public static FullQualifiedName BIRTH_STATE_FQN            = new FullQualifiedName( "nc.LocationStateName" );
     public static FullQualifiedName BIRTH_COUNTRY_FQN          = new FullQualifiedName( "nc.LocationCountryName" );
-    public static FullQualifiedName BIRTH_DATE_FQN             = new FullQualifiedName( "general.dob" );
+    public static FullQualifiedName BIRTH_DATE_FQN             = new FullQualifiedName( "nc.PersonBirthDate" );
     public static FullQualifiedName ADDRESS_STREETNUMBER_FQN   = new FullQualifiedName( "nc.StreetNumberText" );
     public static FullQualifiedName ADDRESS_STREETNAME_FQN     = new FullQualifiedName( "nc.StreetName" );
     public static FullQualifiedName ADDRESS_STREETSUFFIX_FQN   = new FullQualifiedName( "nc.StreetCategoryText" );
     public static FullQualifiedName ADDRESS_STREETUNIT_FQN     = new FullQualifiedName( "nc.AddressSecondaryUnitText" );
-    public static FullQualifiedName ADDRESS_CITY_FQN           = new FullQualifiedName( "general.city" );
+    public static FullQualifiedName ADDRESS_CITY_FQN           = new FullQualifiedName( "nc.LocationCityName" );
     public static FullQualifiedName ADDRESS_STATE_FQN          = new FullQualifiedName( "nc.LocationStateName" );
     public static FullQualifiedName ADDRESS_ZIP_FQN            = new FullQualifiedName( "nc.LocationPostalCode" );
     public static FullQualifiedName HASACTIVEFELONYWARRANT_FQN = new FullQualifiedName( "j.WarrantLevelText" );
