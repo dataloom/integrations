@@ -40,7 +40,7 @@ public class IowaCity {
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
-
+        payload = payload.sample( false, .10 );
         // @formatter:off
         Flight flight = Flight.newFlight()
                 .addEntity( new FullQualifiedName( "publicsafety.jaildata" ) )

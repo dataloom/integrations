@@ -12,8 +12,8 @@ description = "Sacramento Sheriff Gang"
 group = "com.kryptnostic"
 version = 'v0.0.1'
 
-mainClassName = "com.dataloom.integrations.iowacity.IowaCity"
-applicationDefaultJvmArgs = ["-Xmx8G", "-Xms8G", "-server"]
+mainClassName = "com.dataloom.integrations.sacramento.SacSheriff"
+applicationDefaultJvmArgs = ["-Xmx12G", "-Xms12G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
