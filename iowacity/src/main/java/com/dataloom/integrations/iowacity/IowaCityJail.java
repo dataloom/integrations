@@ -15,6 +15,7 @@ import com.dataloom.edm.type.EntityType;
 import com.dataloom.edm.type.PropertyType;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.kryptnostic.shuttle.Flight;
 import com.kryptnostic.shuttle.MissionControl;
 import com.kryptnostic.shuttle.Shuttle;
@@ -30,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -124,18 +127,22 @@ public class IowaCityJail {
                 "Jail Booking",
                 "Jail Booking",
                 ImmutableSet.of(),
-                ImmutableSet.of(
+                Sets.newLinkedHashSet(
+                        ImmutableSet.of(
+                                firstName,
+                                lastName,
+                                dob,
+                                dateBooked,
+                                dateReleased ) ),
+                Sets.newLinkedHashSet( ImmutableSet.of(
                         firstName,
                         lastName,
                         dob,
                         dateBooked,
-                        dateReleased ) ,
-                ImmutableSet.of(
-                        firstName,
-                        lastName,
-                        dob,
-                        dateBooked,
-                        dateReleased ) ) );
+                        dateReleased ) ),
+                Optional.absent(),
+                Optional.absent()
+        ) );
         if ( etId == null ) {
             etId = edm.getEntityTypeId(
                     ES_TYPE_JAILDATA.getNamespace(), ES_TYPE_JAILDATA.getName() );
@@ -146,7 +153,8 @@ public class IowaCityJail {
                 ES_NAME,
                 "Iowa City Jail Bookings",
                 Optional.of(
-                        "Jail Bookings from Iowa City" ) ) ) );
+                        "Jail Bookings from Iowa City" ),
+                Sets.newHashSet( "matthew@thedataloom.com", "david-schwindt@iowacity.org" ) ) ) );
 
         /*
          * Get the dataset.
@@ -159,38 +167,38 @@ public class IowaCityJail {
                 .load( path );
 
         Flight flight = Flight.newFlight()
-                .addEntity().to( ES_NAME ).as( ES_TYPE_JAILDATA )
+                .createEntities()
+                .addEntity( "person" ).to( ES_NAME ).ofType( ES_TYPE_JAILDATA )
                 .key( new FullQualifiedName( "general.firstname" ),
                         new FullQualifiedName( "general.lastname" ),
                         new FullQualifiedName( "general.dob" ),
                         new FullQualifiedName( "publicsafety.datebooked" ),
                         new FullQualifiedName( "publicsafety.datereleased" )
                 )
-                .addProperty()
+                .addProperty( new FullQualifiedName( "general.firstname" ) )
                 .value( row -> getFirstName( row.getAs( "Name" ) ) )
-                .as( new FullQualifiedName( "general.firstname" ) )
                 .ok()
-                .addProperty().value( row -> getLastName( row.getAs( "Name" ) ) )
-                .as( new FullQualifiedName( "general.lastname" ) )
+                .addProperty( new FullQualifiedName( "general.lastname" ) )
+                .value( row -> getLastName( row.getAs( "Name" ) ) )
                 .ok()
-                .addProperty()
+                .addProperty( new FullQualifiedName( "general.dob" ) )
                 .value( row -> row.getAs( "Date of Birth" ) == null ?
                         null :
                         LocalDate.parse( row.getAs( "Date of Birth" ), jailDataFormatter ).toString() )
-                .as( new FullQualifiedName( "general.dob" ) )
                 .ok()
-                .addProperty()
+                .addProperty( new FullQualifiedName( "publicsafety.datebooked" ) )
                 .value( row -> row.getAs( "Date Booked" ) )
-                .as( new FullQualifiedName( "publicsafety.datebooked" ) )
                 .ok()
-                .addProperty().value( row -> row.getAs( "Date Released" ) )
-                .as( new FullQualifiedName( "publicsafety.datereleased" ) )
+                .addProperty( new FullQualifiedName( "publicsafety.datereleased" ) )
+                .value( row -> row.getAs( "Date Released" ) )
+                .ok()
                 .ok()
                 .ok()
                 .done();
-
+        Map<Flight, Dataset<Row>> flights = new HashMap<>(  );
+        flights.put( flight, payload );
         Shuttle shuttle = new Shuttle( environment, jwtToken );
-        shuttle.launch( flight, payload );
+        shuttle.launch( flights );
     }
 
     public static String getFirstName( Object obj ) {
