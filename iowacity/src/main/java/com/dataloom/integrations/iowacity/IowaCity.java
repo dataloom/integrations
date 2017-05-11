@@ -26,7 +26,7 @@ public class IowaCity {
          * existence of the file, and making sure authentication was successful. A failure in one of these cases
          * will cause the program to exit with an exception.
          */
-        final String path = args[ 0 ];
+       /* final String path = args[ 0 ];
         final String username = args[ 1 ];
         final String password = args[ 2 ];
         final SparkSession sparkSession = MissionControl.getSparkSession();
@@ -40,7 +40,7 @@ public class IowaCity {
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
-
+        payload = payload.sample( false, .10 );
         // @formatter:off
         Flight flight = Flight.newFlight()
                 .addEntity( new FullQualifiedName( "publicsafety.jaildata" ) )
@@ -82,5 +82,6 @@ public class IowaCity {
         String name = obj.toString();
         String[] names = name.split( "," );
         return names[ 0 ].trim();
-    }
+    }*/
+       }
 }
