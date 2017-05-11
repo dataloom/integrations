@@ -12,6 +12,7 @@ import com.dataloom.edm.type.EntityType;
 import com.dataloom.edm.type.PropertyType;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.kryptnostic.shuttle.Flight;
 import com.kryptnostic.shuttle.Shuttle;
 import org.apache.commons.lang3.StringUtils;
@@ -27,31 +28,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
 
-import java.util.Set;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class IowaCityCallsForService {
     private static final SparkSession sparkSession;
-    private static final Logger                  logger            = LoggerFactory
+    private static final Logger                  logger           = LoggerFactory
             .getLogger( IowaCityCallsForService.class );
-    private static final Auth0                   auth0             = new Auth0(
+    private static final Auth0                   auth0            = new Auth0(
             "PTmyExdBckHAiyOjh4w2MqSIUGWWEdf8",
             "loom.auth0.com" );
-    private static final AuthenticationAPIClient client            = auth0.newAuthenticationAPIClient();
-    public static        String                  ES_NAME           = "iowacitycfs";
-    public static        FullQualifiedName       ES_TYPE_CFS       = new FullQualifiedName( "publicsafety",
+    private static final AuthenticationAPIClient client           = auth0.newAuthenticationAPIClient();
+    public static        String                  ES_NAME          = "iowacitycfs";
+    public static        FullQualifiedName       ES_TYPE_CFS      = new FullQualifiedName( "publicsafety",
             "callforservice" );
-    public static        FullQualifiedName       CFS_NUMBER_FQN    = new FullQualifiedName( "iowa", "cfsnumber" );
-    public static        FullQualifiedName       FIRST_NAME_FQN    = new FullQualifiedName( "general", "firstname" );
-    public static        FullQualifiedName       LAST_NAME_FQN     = new FullQualifiedName( "general", "lastname" );
-    public static        FullQualifiedName       DOB_FQN           = new FullQualifiedName( "general", "dob" );
-    public static        FullQualifiedName       INVOLVEMENT_FQN   = new FullQualifiedName( "iowa", "persontype" );
-    public static        FullQualifiedName       ADDRESS_FQN       = new FullQualifiedName( "general", "address" );
-    public static        FullQualifiedName       TYPE_OF_CALL_FQN  = new FullQualifiedName( "iowa", "cfstype" );
-    public static        FullQualifiedName       RESOLUTION_FQN    = new FullQualifiedName( "iowa", "cfsresolution" );
-    public static        DateTimeFormatter       cfsDataFormatter  = DateTimeFormat.forPattern( "MM/dd/yy" );
+    public static        FullQualifiedName       CFS_NUMBER_FQN   = new FullQualifiedName( "iowa", "cfsnumber" );
+    public static        FullQualifiedName       FIRST_NAME_FQN   = new FullQualifiedName( "general", "firstname" );
+    public static        FullQualifiedName       LAST_NAME_FQN    = new FullQualifiedName( "general", "lastname" );
+    public static        FullQualifiedName       DOB_FQN          = new FullQualifiedName( "general", "dob" );
+    public static        FullQualifiedName       INVOLVEMENT_FQN  = new FullQualifiedName( "iowa", "persontype" );
+    public static        FullQualifiedName       ADDRESS_FQN      = new FullQualifiedName( "general", "address" );
+    public static        FullQualifiedName       TYPE_OF_CALL_FQN = new FullQualifiedName( "iowa", "cfstype" );
+    public static        FullQualifiedName       RESOLUTION_FQN   = new FullQualifiedName( "iowa", "cfsresolution" );
+    public static        DateTimeFormatter       cfsDataFormatter = DateTimeFormat.forPattern( "MM/dd/yy" );
     private static String jwtToken;
     private static Environment environment = Environment.PRODUCTION;
     // For splitting up into first and last name.
@@ -140,7 +143,7 @@ public class IowaCityCallsForService {
         if ( address == null ) {
             address = edm.getPropertyTypeId( ADDRESS_FQN.getNamespace(), ADDRESS_FQN.getName() );
         }
-        Set<UUID> properties = ImmutableSet.of(
+        LinkedHashSet<UUID> properties = Sets.newLinkedHashSet( ImmutableSet.of(
                 cfsNumber,
                 firstName,
                 lastName,
@@ -148,14 +151,16 @@ public class IowaCityCallsForService {
                 involvement,
                 resolution,
                 typeOfCall,
-                address );
+                address ) );
         UUID cfsId = edm.createEntityType( new EntityType(
                 ES_TYPE_CFS,
                 "Call For Service",
                 "Call For Service",
                 ImmutableSet.of(),
                 properties,
-                properties ) );
+                properties,
+                Optional.absent(),
+                Optional.absent() ) );
         if ( cfsId == null ) {
             cfsId = edm.getEntityTypeId( ES_TYPE_CFS.getNamespace(), ES_TYPE_CFS.getName() );
         }
@@ -165,7 +170,7 @@ public class IowaCityCallsForService {
                 ES_NAME,
                 "Iowa City Police Department Calls For Service",
                 Optional.of(
-                        "" ) ) ) );
+                        "" ), Sets.newHashSet( "matthew@thedataloom.com", "david-schwindt@iowa-city.org" ) ) ) );
 
         /*
          * Get the dataset.
@@ -178,7 +183,10 @@ public class IowaCityCallsForService {
                 .load( path );
 
         Flight flight = Flight.newFlight()
-                .addEntity().to( ES_NAME ).as( ES_TYPE_CFS )
+                .createEntities()
+                .addEntity( "cfs" )
+                .to( ES_NAME )
+                .ofType( ES_TYPE_CFS )
                 .key( CFS_NUMBER_FQN,
                         FIRST_NAME_FQN,
                         LAST_NAME_FQN,
@@ -187,22 +195,24 @@ public class IowaCityCallsForService {
                         ADDRESS_FQN,
                         TYPE_OF_CALL_FQN,
                         RESOLUTION_FQN )
-                .addProperty().value( row -> row.getAs( "CALL FOR SERVICE" ) ).as( CFS_NUMBER_FQN ).ok()
-                .addProperty().value( IowaCityCallsForService::getFirstName ).as( FIRST_NAME_FQN ).ok()
-                .addProperty().value( IowaCityCallsForService::getLastName ).as( LAST_NAME_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "DOB" ) == null ?
+                .addProperty( CFS_NUMBER_FQN ).value( row -> row.getAs( "CALL FOR SERVICE" ) ).ok()
+                .addProperty( FIRST_NAME_FQN ).value( IowaCityCallsForService::getFirstName ).ok()
+                .addProperty( LAST_NAME_FQN ).value( IowaCityCallsForService::getLastName ).ok()
+                .addProperty( DOB_FQN ).value( row -> row.getAs( "DOB" ) == null ?
                         null :
                         LocalDate.parse( row.getAs( "DOB" ), cfsDataFormatter ).toString() )
-                .as( DOB_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "PERSON TYPE" ) ).as( INVOLVEMENT_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "ADDRESS" ) ).as( ADDRESS_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "TYPE OF CALL" ) ).as( TYPE_OF_CALL_FQN ).ok()
-                .addProperty().value( row -> row.getAs( "CLEARED BY" ) ).as( RESOLUTION_FQN ).ok()
+                .ok()
+                .addProperty( INVOLVEMENT_FQN ).value( row -> row.getAs( "PERSON TYPE" ) ).ok()
+                .addProperty( ADDRESS_FQN ).value( row -> row.getAs( "ADDRESS" ) ).ok()
+                .addProperty( TYPE_OF_CALL_FQN ).value( row -> row.getAs( "TYPE OF CALL" ) ).ok()
+                .addProperty( RESOLUTION_FQN ).value( row -> row.getAs( "CLEARED BY" ) ).ok()
+                .ok()
                 .ok()
                 .done();
-
+        Map<Flight, Dataset<Row>> flights = new HashMap<>();
+        flights.put( flight, payload );
         Shuttle shuttle = new Shuttle( environment, jwtToken );
-        shuttle.launch( flight, payload );
+        shuttle.launch( flights );
     }
 
     public static String getFirstName( Row row ) {

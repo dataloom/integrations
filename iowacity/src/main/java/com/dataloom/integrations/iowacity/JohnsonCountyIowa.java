@@ -4,6 +4,7 @@ package com.dataloom.integrations.iowacity;
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
  */
 
+import com.dataloom.client.RetrofitFactory;
 import com.kryptnostic.shuttle.Flight;
 import com.kryptnostic.shuttle.MissionControl;
 import com.kryptnostic.shuttle.Shuttle;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JohnsonCountyIowa {
     // Logger is used to output useful debugging messages to the console
@@ -34,10 +37,11 @@ public class JohnsonCountyIowa {
          * will cause the program to exit with an exception.
          */
         final String path = args[ 0 ];
-        final String username = args[ 1 ];
-        final String password = args[ 2 ];
+        //final String username = args[ 1 ];
+        //final String password = args[ 2 ];
         final SparkSession sparkSession = MissionControl.getSparkSession();
-        final String jwtToken = MissionControl.getIdToken( username, password );
+        final String jwtToken = args[ 1 ];//MissionControl.getIdToken( username, password );
+        final RetrofitFactory.Environment environment = RetrofitFactory.Environment.PRODUCTION;
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
         Dataset<Row> payload = sparkSession
@@ -47,7 +51,9 @@ public class JohnsonCountyIowa {
                 .load( path );
 
         Flight flight = Flight.newFlight()
-                .addEntity( ENTITY_SET_TYPE )
+                .createEntities()
+                .addEntity( "booking" )
+                .ofType( ENTITY_SET_TYPE )
                 .to( ENTITY_SET_NAME )
                 .key( ENTITY_SET_KEY1, ENTITY_SET_KEY2, ENTITY_SET_KEY3 )
                 .addProperty( new FullQualifiedName( "publicsafety.datereleased" ) )
@@ -103,10 +109,12 @@ public class JohnsonCountyIowa {
                 .addProperty( new FullQualifiedName( "publicsafety.howreleased" ) )
                 .value( row -> row.getAs( "How Released" ) ).ok()
                 .ok()
+                .ok()
                 .done();
-
-        Shuttle shuttle = new Shuttle( jwtToken );
-        shuttle.launch( flight, payload );
+        Map<Flight, Dataset<Row>> flights = new HashMap<>(  );
+        flights.put( flight, payload );
+        Shuttle shuttle = new Shuttle( environment, jwtToken );
+        shuttle.launch( flights );
     }
 
     // CUSTOM FUNCTIONS DEFINED BELOW
