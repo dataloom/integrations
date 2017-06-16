@@ -1,0 +1,71 @@
+propertyTypes:
+- type: "j.ArrestAgency"
+  title: "Arrest Agency"
+  description: "An agency which employs the arresting official."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "METAPHONE"
+- type: "nc.PersonGivenName"
+  title: "Given Name"
+  description: "First name of a person"
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "METAPHONE"
+- type: "nc.PersonSurName"
+  title: "Surname"
+  description: "Last name of a person"
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "METAPHONE"
+- type: "nc.PersonSex"
+  title: "Person Sex"
+  description: "A data concept for a gender or sex of a person."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "nc.PersonRace"
+  title: "Person Sex"
+  description: "A data concept for the race of a person."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "nc.PersonEthnicity"
+  title: "Person Sex"
+  description: "A data concept for the ethnicity of a person."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "nc.PersonBirthDate"
+  title: "Person Sex"
+  description: "A date a person was born."
+  schemas: []
+  datatype: "Date"
+  piiField: false
+  analyzer: "STANDARD"
+
+
+entityTypes:
+- type: "test.a"
+  title: "A"
+  description: "An entity type"
+  key:
+  - "test.p0"
+  properties:
+  - "test.p1"
+  - "test.p2"
+  baseType: null
+
+entitySets:
+- type: "test.a"
+  name: "tester"
+  title: "Tester"
+  description: "This is a test entity set"
+  contacts:
+  - "info@openlattice.com"
+  - "support@openlattice.com"
