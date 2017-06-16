@@ -1,0 +1,37 @@
+---
+layout: none
+---
+{% include email/email-header.html %}
+<table class="body-wrap" bgcolor="#f6f6f6" style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; width: 100%; margin: 30px 0px 30px 0px; padding: 20px;">
+  <tr style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; margin: 0; padding: 0;">
+    <td style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; margin: 0; padding: 0;"></td>
+    <td class="container" bgcolor="white" style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; clear: both !important; display: block !important; max-width: 600px !important; margin: 0 auto; padding: 20px; border: 1px solid #f0f0f0; height: 100%;">
+      <!-- content -->
+      <div class="content" style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; display: block; max-width: 600px; margin: 0 auto; padding: 0;">
+        <table style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; width: 100%; margin: 0; padding: 0;">
+          <tr style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; margin: 0; padding: 0;">
+            <td style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; margin: 0; padding: 0;">
+              <div>
+                <img style="max-width: 120px; margin: auto; padding-top: 0px; display: block;" src="http://help.thedataloom.com/assets/loom-logo-big.png">
+              </div>
+              {{ content }}
+              <!-- button -->
+              <table class="btn-primary" cellpadding="0" cellspacing="0" border="0" style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; width: auto !important; margin: 0 auto; padding: 40px 0 0 0;">
+                <tr style="font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 1.6em; margin: 0; padding: 0;">
+                  <td style="font-family: 'Lato', Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 14px; line-height: 1.6em; border-radius: 25px; text-align: center; vertical-align: top; background: #4203c5; margin: 0; padding: 0;" align="center" valign="top">
+                    <a href="https://thedataloom.com/gallery/#/login" style="width: 100px; font-family: 'Lato', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; line-height: 2; color: #ffffff; border-radius: 3px; display: inline-block; cursor: pointer; text-decoration: none; margin: 0; padding: 0; border-color: #4203c5; border-style: solid; border-width: 10px 20px; ">Sign In</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="text-align: center; font-family: 'Lato', Helvetica, Arial, 'Lucida Grande', sans-serif; font-size: 12px; line-height: 1.2em; font-weight: 200; margin: 50px 50px 0px 50px; padding: 0; color: #808080;">
+                825 Marshall St #117, Redwood City, CA 94063<br><br>
+                If you no longer wish to receive updates from Loom, reply to this email with the subject "Unsubscribe"
+              </p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </td>
+  </tr>
+</table>
+{% include email/email-footer.html %}
