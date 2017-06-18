@@ -1,4 +1,4 @@
-package com.dataloom.integrations.iowacity;
+package com.openlattice.integrations.cruft;
 
 /**
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;

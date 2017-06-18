@@ -113,21 +113,72 @@ propertyTypes:
   analyzer: "STANDARD"
 
 entityTypes:
-- type: "test.a"
-  title: "A"
-  description: "An entity type"
+- type: "general.person"
+  title: "Person"
+  description: "A person"
   key:
-  - "test.p0"
+  - "nc.SubjectIdentification"
   properties:
-  - "test.p1"
-  - "test.p2"
+  - "nc.PersonGivenName"
+  - "nc.PersonSurName"
+  - "nc.PersonSex"
+  - "nc.PersonRace"
+  - "nc.PersonEthnicity"
+  - "nc.PersonBirthDate"
+  - "nc.SubjectIdentification"
+  baseType: null
+- type: "lawenforcement.arrest"
+  title: "Arrest"
+  description: "An arrest"
+  key:
+  - "j.ArrestSequenceID"
+  properties:
+  - "j.ArrestSequenceID"
+  - "publicsafety.ArrestDate"
+  - "publicsafety.OffenseDate"
+  - "j.OffenseQualifierText"
+  - "j.OffenseViolatedStatute"
+  - "j.EnforcementOfficialBadgeIdentification"
+  - "j.ArrestCategory"
+  - "j.ArrestLocation"
   baseType: null
 
+associationTypes:
+- type:
+    type: "lawenforcement.arrestedin"
+    title: "Arrested In"
+    description: "Links together a person with an even they were arrested in."
+    key:
+    - "j.ArrestSequenceID"
+    - "nc.SubjectIdentification"
+    properties:
+    - "j.ArrestSequenceID"
+    - "nc.SubjectIdentification"
+  src:
+  - "general.person"
+  dst:
+  - "lawnenforcement.arrest"
+  bidirectional: false
+
 entitySets:
-- type: "test.a"
-  name: "tester"
-  title: "Tester"
-  description: "This is a test entity set"
+- type: "general.person"
+  name: "VeronaArrestSuspects"
+  title: "Verona Arrest Suspects"
+  description: "Suspects arrested by the city of Verona PD"
   contacts:
-  - "info@openlattice.com"
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrest"
+  name: "VeronaArrests"
+  title: "Verona Arrests"
+  description: "Arrests by the city of Verona PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrestedin"
+  name: "VeronaArrestIn"
+  title: "Verona Arrested In"
+  description: "Arrest In links for the city of Verona PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
   - "support@openlattice.com"

@@ -1,4 +1,4 @@
-package com.dataloom.integrations.iowacity;
+package com.openlattice.integrations.cruft;
 
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.edm.EdmApi;

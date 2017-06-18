@@ -6,9 +6,14 @@ package com.openlattice.integrations.wisconsin.danecounty;
 
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
+import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
+import com.dataloom.mappers.ObjectMappers;
+import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
+import com.openlattice.shuttle.Shuttle;
+import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -32,7 +37,6 @@ public class VeronaPoliceDept {
     public static FullQualifiedName DOB_FQN                      = new FullQualifiedName( "nc.PersonBirthDate" );
     public static FullQualifiedName OFFICER_ID_FQN               = new FullQualifiedName( "publicsafety.officerID" );
     public static FullQualifiedName ARREST_DATE_FQN              = new FullQualifiedName( "publicsafety.arrestdate" );
-
 
     public static void main( String[] args ) throws InterruptedException {
         /*
@@ -59,10 +63,18 @@ public class VeronaPoliceDept {
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
-/*
+        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader.loadConfiguration( RequiredEdmElements.class );
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
+        if( requiredEdmElements != null ) {
+            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm );
+            reem.ensureEdmElementsExist( requiredEdmElements );
+        }
         payload = payload.sample( false, .10 );
         // @formatter:off
+/*
         Flight flight = Flight.newFlight()
+
                 .addEntity( new FullQualifiedName( "publicsafety.jaildata" ) )
                     .to( ENTITY_SET_NAME )
                     .key( new FullQualifiedName( "general.guid" ) )
@@ -86,10 +98,11 @@ public class VeronaPoliceDept {
                         .ok()
                     .ok()
                 .done();
-        // @formatter:on
 
-        Shuttle shuttle = new Shuttle( jwtToken );
-        shuttle.launch( flight, payload );*/
+        // @formatter:on
+*/
+    //    Shuttle shuttle = new Shuttle( jwtToken );
+   //     shuttle.launch( flight, payload );*/
     }
 
     public static String getFirstName( Object obj ) {
