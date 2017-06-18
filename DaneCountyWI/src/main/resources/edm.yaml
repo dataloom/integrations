@@ -157,7 +157,7 @@ associationTypes:
   src:
   - "general.person"
   dst:
-  - "lawnenforcement.arrest"
+  - "lawenforcement.arrest"
   bidirectional: false
 
 entitySets:
@@ -176,7 +176,7 @@ entitySets:
   - "Reyes.Noemi@countyofdane.com"
   - "support@openlattice.com"
 - type: "lawenforcement.arrestedin"
-  name: "VeronaArrestIn"
+  name: "VeronaArrestedIn"
   title: "Verona Arrested In"
   description: "Arrest In links for the city of Verona PD"
   contacts:

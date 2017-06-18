@@ -11,32 +11,41 @@ import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.FormattedDateTime;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
+import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class VeronaPoliceDept {
-    private static final Logger logger          = LoggerFactory.getLogger( VeronaPoliceDept.class );
-    private static final Environment environment = Environment.PRODUCTION;
-    public static        String ENTITY_SET_NAME = "veronapd_dccjs";
-    public static FullQualifiedName ARREST_AGENCY_FQN            = new FullQualifiedName( "j.ArrestAgency" );
-    public static FullQualifiedName FIRSTNAME_FQN                = new FullQualifiedName( "nc.PersonGivenName" );
+    private static final Logger            logger            = LoggerFactory.getLogger( VeronaPoliceDept.class );
+    private static final Environment       environment       = Environment.PRODUCTION;
+    public static        String            ENTITY_SET_NAME   = "veronapd_dccjs";
+    public static        FullQualifiedName ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
+    public static        FullQualifiedName FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
     //public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
-    public static FullQualifiedName LASTNAME_FQN                 = new FullQualifiedName( "nc.PersonSurName" );
-    public static FullQualifiedName SEX_FQN                      = new FullQualifiedName( "nc.PersonSex" );
-    public static FullQualifiedName RACE_FQN                     = new FullQualifiedName( "nc.PersonRace" );
-    public static FullQualifiedName ETHNICITY_FQN                     = new FullQualifiedName( "nc.PersonEthnicity" );
-    public static FullQualifiedName DOB_FQN                      = new FullQualifiedName( "nc.PersonBirthDate" );
-    public static FullQualifiedName OFFICER_ID_FQN               = new FullQualifiedName( "publicsafety.officerID" );
-    public static FullQualifiedName ARREST_DATE_FQN              = new FullQualifiedName( "publicsafety.arrestdate" );
+    public static        FullQualifiedName LASTNAME_FQN      = new FullQualifiedName( "nc.PersonSurName" );
+    public static        FullQualifiedName SEX_FQN           = new FullQualifiedName( "nc.PersonSex" );
+    public static        FullQualifiedName RACE_FQN          = new FullQualifiedName( "nc.PersonRace" );
+    public static        FullQualifiedName ETHNICITY_FQN     = new FullQualifiedName( "nc.PersonEthnicity" );
+    public static        FullQualifiedName DOB_FQN           = new FullQualifiedName( "nc.PersonBirthDate" );
+    public static        FullQualifiedName OFFICER_ID_FQN    = new FullQualifiedName( "publicsafety.officerID" );
+    public static        FullQualifiedName ARREST_DATE_FQN   = new FullQualifiedName( "publicsafety.arrestdate" );
+    private static final DateTimeHelper dtHelper = new DateTimeHelper( DateTimeZone.forOffsetHours( -6 ), "MM/dd/YY HH:mm");
+    private static final DateTimeHelper bdHelper = new DateTimeHelper( DateTimeZone.forOffsetHours( -6 ), "MM/dd/YY");
 
     public static void main( String[] args ) throws InterruptedException {
         /*
@@ -56,53 +65,105 @@ public class VeronaPoliceDept {
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
-
-
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
-        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader.loadConfiguration( RequiredEdmElements.class );
+        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
+                .loadConfiguration( RequiredEdmElements.class );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
-        if( requiredEdmElements != null ) {
+        if ( requiredEdmElements != null ) {
             RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm );
             reem.ensureEdmElementsExist( requiredEdmElements );
         }
-        payload = payload.sample( false, .10 );
-        // @formatter:off
-/*
-        Flight flight = Flight.newFlight()
 
-                .addEntity( new FullQualifiedName( "publicsafety.jaildata" ) )
-                    .to( ENTITY_SET_NAME )
-                    .key( new FullQualifiedName( "general.guid" ) )
-                    .addProperty( new FullQualifiedName( "general.guid" ) )
-                        .value( row -> UUID.randomUUID() )
-                        .ok()
-                    .addProperty( new FullQualifiedName( "general.firstname" ) )
-                        .value( row -> getFirstName( row.getAs( "Name" ) ) )
-                        .ok()
-                    .addProperty( new FullQualifiedName( "general.lastname" ) )
-                        .value( row -> getLastName( row.getAs( "Name" ) ) )
-                        .ok()
-                    .addProperty( new FullQualifiedName( "general.dob" ) )
-                        .value( row -> row.getAs( "Date of Birth" ) )
-                        .ok()
-                    .addProperty( new FullQualifiedName( "publicsafety.datebooked" ) )
-                        .value( row -> row.getAs( "Date Booked" ) )
-                        .ok()
-                    .addProperty( new FullQualifiedName( "publicsafety.datereleased" ) )
-                        .value( row -> row.getAs( "Date Released" ) )
-                        .ok()
-                    .ok()
+        Flight flight = Flight.newFlight()
+                .createEntities()
+                .addEntity( "suspect" )
+                .to( "VeronaArrestSuspects" )
+                .ofType( new FullQualifiedName( "general.person" ) )
+                .key( new FullQualifiedName( "nc.SubjectIdentification" ) )
+                .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
+                .value( row -> row.getAs( "SuspectFirstName" ) ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
+                .value( row -> row.getAs( "SuspectLastName" ) ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonSex" ) )
+                .value( row -> row.getAs( "SuspectGender" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
+                .value( row -> row.getAs( "SuspectRace" ) ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonEthnicity" ) )
+                .value( row -> row.getAs( "SuspectEthicity" ) ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
+                .value( row -> bdHelper.parse( row.getAs( "DateofBirth" ) ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
+                .value( VeronaPoliceDept::getSubjectIdentification ).ok()
+                .ok()
+                .addEntity( "arrest" )
+                .to( "VeronaArrests" )
+                .ofType( new FullQualifiedName( "lawenforcement.arrest" ) )
+                .key( new FullQualifiedName( "j.ArrestSequenceID" ) )
+                .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
+                .value( VeronaPoliceDept::getArrestSequenceID )
+                .ok()
+                .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
+                .value( row -> dtHelper.parse( row.getAs( "arrestdate" )  ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "publicsafety.OffenseDate" ) )
+                .value( row -> dtHelper.parse(row.getAs( "IncidentDate" ) ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.OffenseQualifierText" ) )
+                .value( row -> row.getAs( "DescriptionofOffense" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.OffenseViolatedStatute" ) )
+                .value( row -> row.getAs( "OffenseStatute" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.EnforcementOfficialBadgeIdentification" ) )
+                .value( row -> row.getAs( "OfficerBadgeNumber" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.ArrestCategory" ) )
+                .value( row -> row.getAs( "ArrestType" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.ArrestLocation" ) )
+                .value( row -> row.getAs( "IncidentAddress" ) )
+                .ok()
+                .ok()
+                .ok()
+                .createAssociations()
+                .addAssociation( "arrestedin" )
+                .ofType( new FullQualifiedName( "lawenforcement.arrestedin" ) )
+                .to( "VeronaArrestedIn" )
+                .key( new FullQualifiedName( "j.ArrestSequenceID" ),
+                        new FullQualifiedName( "nc.SubjectIdentification" ) )
+                .fromEntity( "suspect" )
+                .toEntity( "arrest" )
+                .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
+                .value( VeronaPoliceDept::getSubjectIdentification )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
+                .value( VeronaPoliceDept::getArrestSequenceID )
+                .ok()
+                .ok()
+                .ok()
                 .done();
 
-        // @formatter:on
-*/
-    //    Shuttle shuttle = new Shuttle( jwtToken );
-   //     shuttle.launch( flight, payload );*/
+        Shuttle shuttle = new Shuttle( jwtToken );
+        Map<Flight, Dataset<Row>> flights = new HashMap<>( 1 );
+        flights.put( flight, payload );
+
+        shuttle.launch( flights );
+    }
+
+
+    public static String getArrestSequenceID( Row row ) {
+        return row.getAs( "Agency" ) + "-" + row.getAs( "ArrestorCitationNumber" );
+    }
+
+    public static String getSubjectIdentification( Row row ) {
+        return row.getAs( "Agency" ) + "-" + row.getAs( "SuspectUniqueIDforyourAgency" );
     }
 
     public static String getFirstName( Object obj ) {
