@@ -13,6 +13,13 @@ propertyTypes:
   datatype: "String"
   piiField: false
   analyzer: "METAPHONE"
+- type: "nc.PersonMiddleName"
+  title: "Middle Name"
+  description: "A first name of a person."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "METAPHONE"
 - type: "nc.PersonSurName"
   title: "Surname"
   description: "A last name or family name of a person."
@@ -62,6 +69,13 @@ propertyTypes:
   datatype: "String"
   piiField: false
   analyzer: "STANDARD"
+- type: "justice.ArrestTrackingNumber"
+  title: "Arrest Tracking Number"
+  description: "The tracking number of an arrest"
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
 - type: "publicsafety.ArrestDate"
   title: "Arrest Date"
   description: "A date of an arrest."
@@ -72,6 +86,13 @@ propertyTypes:
 - type: "publicsafety.OffenseDate"
   title: "Offense Date"
   description: "A date of an incident, an act or a course of action which may constitute a violation of a criminal statute, ordinance or rule."
+  schemas: []
+  datatype: "Date"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "justice.ReferralDate"
+  title: "Referral Date"
+  description: "The date when a charge was referred to the courts"
   schemas: []
   datatype: "Date"
   piiField: false
@@ -111,6 +132,62 @@ propertyTypes:
   datatype: "String"
   piiField: false
   analyzer: "STANDARD"
+- type: "justice.plea"
+  title: "Plea"
+  description: "A plea entered for a charge"
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "justice.disposition"
+  title: "Disposition"
+  description: "The disposition of a charge"
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "justice.severity"
+  title: "Severity"
+  description: "The severity of a charge"
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "justice.SentencingConditionsMet"
+  title: "Sentencing Conditions Met"
+  description: "Indicates whether sentencing conditions were met or not."
+  schemas: []
+  datatype: "Boolean"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "justice.ChargeStatus"
+  title: "Charge Status"
+  description: "The status of a charge"
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "justice.EventType"
+  title: "Event Type"
+  description: "The type of a charge related event"
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "j.CaseNumberText"
+  title: "Case Number"
+  description: "An identifying number for a case that this activity is a part of, where the case number belongs to the agency that owns the activity information."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "general.stringid"
+  title: "Id"
+  description: "A string that uniquely identifies an instance of an entity or association."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
 
 entityTypes:
 - type: "general.person"
@@ -142,12 +219,37 @@ entityTypes:
   - "j.ArrestCategory"
   - "j.ArrestLocation"
   baseType: null
+- type: "justice.charge"
+  title: "Charge"
+  description: "A charge"
+  key:
+  - "justice.ArrestTrackingNumber"
+  properties:
+  - "justice.ArrestTrackingNumber"
+  - "publicsafety.ArrestDate"
+  - "justice.plea"
+  - "justice.ReferralDate"
+  - "justice.disposition"
+  - "j.OffenseQualifierText"
+  - "justice.severity"
+  - "justice.SentencingConditionsMet"
+  - "justice.ChargeStatus"
+  - "justice.EventType"
+  baseType: null
+- type: "justice.case"
+  title: "Case"
+  description: "A case"
+  key:
+  - "j.CaseNumberText"
+  properties:
+  - "justice.ArrestTrackingNumber"
+  - "j.CaseNumberText"
 
 associationTypes:
 - type:
     type: "lawenforcement.arrestedin"
     title: "Arrested In"
-    description: "Links together a person with an even they were arrested in."
+    description: "Links together a person with an event they were arrested in."
     key:
     - "j.ArrestSequenceID"
     - "nc.SubjectIdentification"
@@ -159,8 +261,50 @@ associationTypes:
   dst:
   - "lawenforcement.arrest"
   bidirectional: false
+- type:
+    type: "general.appearsin"
+    title: "Appears In"
+    description: "An association where in one entity appears in another entity or event."
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "general.person"
+  - "justice.charge"
+  dst:
+  - "justice.case"
+  bidirectional: false
 
 entitySets:
+- type: "justice.case"
+  name: "DaneCountyCases"
+  title: "Dane County Cases"
+  description: "Court cases in Dane County, WI"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "justice.charge"
+  name: "DaneCountyCharges"
+  title: "Dane County Charges"
+  description: "Charges in Dane County, WI"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "general.appearsin"
+  name: "AppearsInDaneCountyCase"
+  title: "Appears In Dane County Case"
+  description: "Represents the link between and entity and a court case in Dane County, WI"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "general.person"
+  name: "DaneCountyDefendants"
+  title: "Dane County Defendants"
+  description: "Defendants in Dane County"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
 - type: "general.person"
   name: "VeronaArrestSuspects"
   title: "Verona Arrest Suspects"
@@ -182,3 +326,86 @@ entitySets:
   contacts:
   - "Reyes.Noemi@countyofdane.com"
   - "support@openlattice.com"
+- type: "general.person"
+  name: "SunPrairieArrestSuspects"
+  title: "Sun Prairie Arrest Suspects"
+  description: "Suspects arrested by the city of Sun Prairie PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrest"
+  name: "SunPrairieArrests"
+  title: "Sun Prairie Arrests"
+  description: "Arrests by the city of Sun Prairie PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrestedin"
+  name: "SunPrairieArrestedIn"
+  title: "Sun Prairie Arrested In"
+  description: "Arrest In links for the city of Sun Prairie PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "general.person"
+  name: "MiddletonArrestSuspects"
+  title: "Middleton Arrest Suspects"
+  description: "Suspects arrested by the city of Middleton PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrest"
+  name: "MiddletonArrests"
+  title: "Middleton Arrests"
+  description: "Arrests by the city of Middleton PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrestedin"
+  name: "MiddletonArrestedIn"
+  title: "Middleton Arrested In"
+  description: "Arrest In links for the city of Middleton PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "general.person"
+  name: "MononaArrestSuspects"
+  title: "Monona Arrest Suspects"
+  description: "Suspects arrested by the city of Monona PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrest"
+  name: "MononaArrests"
+  title: "Monona Arrests"
+  description: "Arrests by the city of Monona PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrestedin"
+  name: "MononaArrestedIn"
+  title: "Monona Arrested In"
+  description: "Arrest In links for the city of Monona PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "general.person"
+  name: "FitchburgArrestSuspects"
+  title: "Fitchburg Arrest Suspects"
+  description: "Suspects arrested by the city of Fitchburg PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrest"
+  name: "FitchburgArrests"
+  title: "Fitchburg Arrests"
+  description: "Arrests by the city of Fitchburg PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrestedin"
+  name: "FitchburgArrestedIn"
+  title: "Fitchburg Arrested In"
+  description: "Arrest In links for the city of Fitchburg PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"

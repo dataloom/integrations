@@ -1,7 +1,10 @@
 package com.openlattice.integrations.cruft;
 
 import com.dataloom.client.RetrofitFactory;
+import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
+import com.dataloom.data.serializers.FullQualifedNameJacksonSerializer;
 import com.dataloom.edm.EdmApi;
+import com.dataloom.mappers.ObjectMappers;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
@@ -15,7 +18,7 @@ import retrofit2.Retrofit;
  */
 public class EdmSetup {
     private static final Logger logger = LoggerFactory.getLogger( EdmSetup.class );
-    private static final RetrofitFactory.Environment environment = RetrofitFactory.Environment.PRODUCTION;
+    private static final RetrofitFactory.Environment environment = RetrofitFactory.Environment.LOCAL;
     public static FullQualifiedName ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
     public static FullQualifiedName FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
     //public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
@@ -27,8 +30,7 @@ public class EdmSetup {
     public static FullQualifiedName OFFICER_ID_FQN    = new FullQualifiedName( "publicsafety.officerID" );
     public static FullQualifiedName ARREST_DATE_FQN   = new FullQualifiedName( "publicsafety.arrestdate" );
 //    static {
-//        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
-//        FullQualifedNameJacksonSerializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+//
 //    }
     public static void main( String[] args ) {
         final String jwtToken = args[ 0 ];
@@ -41,7 +43,8 @@ public class EdmSetup {
         RequiredEdmElements elements = ConfigurationService.StaticLoader.loadConfiguration( RequiredEdmElements.class );
 
         RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm );
-
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
+        FullQualifedNameJacksonSerializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         reem.ensureEdmElementsExist( elements );
     }
 }

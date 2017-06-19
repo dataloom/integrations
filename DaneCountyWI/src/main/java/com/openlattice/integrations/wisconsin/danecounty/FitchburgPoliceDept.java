@@ -1,17 +1,11 @@
 package com.openlattice.integrations.wisconsin.danecounty;
 
-/**
- * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
- */
-
 import com.dataloom.client.RetrofitFactory;
-import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.shuttle.Flight;
-import com.openlattice.shuttle.FormattedDateTime;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.dates.DateTimeHelper;
@@ -21,7 +15,6 @@ import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,22 +23,30 @@ import retrofit2.Retrofit;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VeronaPoliceDept {
-    private static final Logger            logger            = LoggerFactory.getLogger( VeronaPoliceDept.class );
-    private static final Environment       environment       = Environment.STAGING;
-    public static        String            ENTITY_SET_NAME   = "veronapd_dccjs";
-    public static        FullQualifiedName ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
-    public static        FullQualifiedName FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
+/**
+ * Created by mtamayo on 6/19/17.
+ */
+public class FitchburgPoliceDept {
+
+    private static final Logger                      logger            = LoggerFactory
+            .getLogger( VeronaPoliceDept.class );
+    private static final   RetrofitFactory.Environment environment       = RetrofitFactory.Environment.LOCAL;
+    private static final   DateTimeHelper              dtHelper          = new DateTimeHelper( DateTimeZone
+            .forOffsetHours( -6 ), "MM/dd/YY HH:mm" );
+    private static final   DateTimeHelper              bdHelper          = new DateTimeHelper( DateTimeZone
+            .forOffsetHours( -6 ), "MM/dd/YY" );
+    public static          String                      ENTITY_SET_NAME   = "veronapd_dccjs";
+    public static          FullQualifiedName           ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
+    public static          FullQualifiedName           FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
     //public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
-    public static        FullQualifiedName LASTNAME_FQN      = new FullQualifiedName( "nc.PersonSurName" );
-    public static        FullQualifiedName SEX_FQN           = new FullQualifiedName( "nc.PersonSex" );
-    public static        FullQualifiedName RACE_FQN          = new FullQualifiedName( "nc.PersonRace" );
-    public static        FullQualifiedName ETHNICITY_FQN     = new FullQualifiedName( "nc.PersonEthnicity" );
-    public static        FullQualifiedName DOB_FQN           = new FullQualifiedName( "nc.PersonBirthDate" );
-    public static        FullQualifiedName OFFICER_ID_FQN    = new FullQualifiedName( "publicsafety.officerID" );
-    public static        FullQualifiedName ARREST_DATE_FQN   = new FullQualifiedName( "publicsafety.arrestdate" );
-    private static final DateTimeHelper dtHelper = new DateTimeHelper( DateTimeZone.forOffsetHours( -6 ), "MM/dd/YY HH:mm");
-    private static final DateTimeHelper bdHelper = new DateTimeHelper( DateTimeZone.forOffsetHours( -6 ), "MM/dd/YY");
+    public static          FullQualifiedName           LASTNAME_FQN      = new FullQualifiedName( "nc.PersonSurName" );
+    public static          FullQualifiedName           SEX_FQN           = new FullQualifiedName( "nc.PersonSex" );
+    public static        FullQualifiedName           RACE_FQN          = new FullQualifiedName( "nc.PersonRace" );
+    public static        FullQualifiedName           ETHNICITY_FQN     = new FullQualifiedName( "nc.PersonEthnicity" );
+    public static        FullQualifiedName           DOB_FQN           = new FullQualifiedName( "nc.PersonBirthDate" );
+    public static        FullQualifiedName           OFFICER_ID_FQN    = new FullQualifiedName( "publicsafety.officerID" );
+    public static        FullQualifiedName           ARREST_DATE_FQN   = new FullQualifiedName(
+            "publicsafety.arrestdate" );
 
     public static void main( String[] args ) throws InterruptedException {
         /*
@@ -82,7 +83,7 @@ public class VeronaPoliceDept {
         Flight flight = Flight.newFlight()
                 .createEntities()
                 .addEntity( "suspect" )
-                .to( "VeronaArrestSuspects" )
+                .to( "FitchburgArrestSuspects" )
                 .ofType( new FullQualifiedName( "general.person" ) )
                 .key( new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
@@ -103,17 +104,17 @@ public class VeronaPoliceDept {
                 .value( VeronaPoliceDept::getSubjectIdentification ).ok()
                 .ok()
                 .addEntity( "arrest" )
-                .to( "VeronaArrests" )
+                .to( "FitchburgArrests" )
                 .ofType( new FullQualifiedName( "lawenforcement.arrest" ) )
                 .key( new FullQualifiedName( "j.ArrestSequenceID" ) )
                 .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
-                .value( VeronaPoliceDept::getArrestSequenceID )
+                .value( FitchburgPoliceDept::getArrestSequenceID )
                 .ok()
                 .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
-                .value( row -> dtHelper.parse( row.getAs( "arrestdate" )  ) )
+                .value( row -> dtHelper.parse( row.getAs( "arrestdate" ) ) )
                 .ok()
                 .addProperty( new FullQualifiedName( "publicsafety.OffenseDate" ) )
-                .value( row -> dtHelper.parse(row.getAs( "IncidentDate" ) ) )
+                .value( row -> dtHelper.parse( row.getAs( "IncidentDate" ) ) )
                 .ok()
                 .addProperty( new FullQualifiedName( "j.OffenseQualifierText" ) )
                 .value( row -> row.getAs( "DescriptionofOffense" ) )
@@ -135,16 +136,16 @@ public class VeronaPoliceDept {
                 .createAssociations()
                 .addAssociation( "arrestedin" )
                 .ofType( new FullQualifiedName( "lawenforcement.arrestedin" ) )
-                .to( "VeronaArrestedIn" )
+                .to( "FitchburgArrestedIn" )
                 .key( new FullQualifiedName( "j.ArrestSequenceID" ),
                         new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .fromEntity( "suspect" )
                 .toEntity( "arrest" )
                 .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
-                .value( VeronaPoliceDept::getSubjectIdentification )
+                .value( FitchburgPoliceDept::getSubjectIdentification )
                 .ok()
                 .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
-                .value( VeronaPoliceDept::getArrestSequenceID )
+                .value( FitchburgPoliceDept::getArrestSequenceID )
                 .ok()
                 .ok()
                 .ok()
@@ -164,17 +165,5 @@ public class VeronaPoliceDept {
 
     public static String getSubjectIdentification( Row row ) {
         return row.getAs( "Agency" ) + "-" + row.getAs( "SuspectUniqueIDforyourAgency" );
-    }
-
-    public static String getFirstName( Object obj ) {
-        String name = obj.toString();
-        String[] names = name.split( "," );
-        return names[ 1 ].trim();
-    }
-
-    public static String getLastName( Object obj ) {
-        String name = obj.toString();
-        String[] names = name.split( "," );
-        return names[ 0 ].trim();
     }
 }
