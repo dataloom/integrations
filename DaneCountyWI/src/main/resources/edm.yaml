@@ -1,195 +1,156 @@
 propertyTypes:
-- type: "j.ArrestAgency"
-  title: "Arrest Agency"
-  description: "An agency which employs the arresting official."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "METAPHONE"
-- type: "nc.PersonGivenName"
-  title: "Given Name"
-  description: "A first name of a person."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "METAPHONE"
-- type: "nc.PersonMiddleName"
-  title: "Middle Name"
-  description: "A first name of a person."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "METAPHONE"
-- type: "nc.PersonSurName"
-  title: "Surname"
-  description: "A last name or family name of a person."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "METAPHONE"
-- type: "nc.PersonSex"
-  title: "Person Sex"
-  description: "A data concept for a gender or sex of a person."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "nc.PersonRace"
-  title: "Person Race"
-  description: "A data concept for a classification of a person based on factors such as geographical locations and genetics."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "nc.PersonEthnicity"
-  title: "Person Ethnicity"
-  description: "A data concept for a cultural lineage of a person."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "nc.PersonBirthDate"
-  title: "Person Birth Date"
-  description: "A date a person was born."
-  schemas: []
-  datatype: "Date"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "nc.SubjectIdentification"
-  title: "Subject Identification"
-  description: "An assigned identification that identifies a subject."
-  schemas: []
-  datatype: "String"
+- datatype: "Int32"
   piiField: true
   analyzer: "STANDARD"
-- type: "j.ArrestSequenceID"
-  title: "Arrest Sequence ID"
-  description: "A sequential identifier number assigned to the arrest of a subject."
-  schemas: []
-  datatype: "String"
+  properties:
+  - type: "person.age"
+    title: "Age"
+    description: "The age of a person"
+- datatype: "Boolean"
   piiField: false
   analyzer: "STANDARD"
-- type: "justice.ArrestTrackingNumber"
-  title: "Arrest Tracking Number"
-  description: "The tracking number of an arrest"
-  schemas: []
-  datatype: "String"
+  properties:
+  - type: "justice.SentencingConditionsMet"
+    title: "Sentencing Conditions Met"
+    description: "Indicates whether sentencing conditions were met or not."
+- datatype: "Date"
   piiField: false
   analyzer: "STANDARD"
-- type: "publicsafety.ArrestDate"
-  title: "Arrest Date"
-  description: "A date of an arrest."
-  schemas: []
-  datatype: "Date"
+  properties:
+  - type: "nc.PersonBirthDate"
+    title: "Person Birth Date"
+    description: "A date a person was born."
+  - type: "publicsafety.ArrestDate"
+    title: "Arrest Date"
+    description: "A date of an arrest."
+  - type: "publicsafety.OffenseDate"
+    title: "Offense Date"
+    description: "A date of an incident, an act or a course of action which may constitute a violation of a criminal statute, ordinance or rule."
+  - type: "justice.ReferralDate"
+    title: "Referral Date"
+    description: "The date when a charge was referred to the courts"
+- datatype: "String"
+  piiField: false
+  analyzer: "METAPHONE"
+  properties:
+  - type: "j.ArrestAgency"
+    title: "Arrest Agency"
+    description: "An agency which employs the arresting official."
+  - type: "nc.PersonGivenName"
+    title: "Given Name"
+    description: "A first name of a person."
+  - type: "nc.PersonMiddleName"
+    title: "Middle Name"
+    description: "A first name of a person."
+  - type: "nc.PersonSurName"
+    title: "Surname"
+    description: "A last name or family name of a person."
+- datatype: "String"
   piiField: false
   analyzer: "STANDARD"
-- type: "publicsafety.OffenseDate"
-  title: "Offense Date"
-  description: "A date of an incident, an act or a course of action which may constitute a violation of a criminal statute, ordinance or rule."
-  schemas: []
-  datatype: "Date"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "justice.ReferralDate"
-  title: "Referral Date"
-  description: "The date when a charge was referred to the courts"
-  schemas: []
-  datatype: "Date"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "j.OffenseQualifierText"
-  title: "Offense Qualifier Text"
-  description: "A set of details that further characterizes an offense."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "j.OffenseViolatedStatute"
-  title: "Offense Violated Statute"
-  description: "A set of details about a statute, rule, or ordinance that was violated as a result of an offense."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "j.EnforcementOfficialBadgeIdentification"
-  title: "Enforcement Official Badge Identification"
-  description: "An identification used to refer to an enforcement official."
-  schemas: []
-  datatype: "String"
-  piiField: true
-  analyzer: "STANDARD"  
-- type: "j.ArrestCategory"
-  title: "Arrest Category"
-  description: "A data concept for a kind of arrest that occurred."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "j.ArrestLocation"
-  title: "Arrest Location"
-  description: "A location where a subject was arrested."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "justice.plea"
-  title: "Plea"
-  description: "A plea entered for a charge"
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "justice.disposition"
-  title: "Disposition"
-  description: "The disposition of a charge"
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "justice.severity"
-  title: "Severity"
-  description: "The severity of a charge"
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "justice.SentencingConditionsMet"
-  title: "Sentencing Conditions Met"
-  description: "Indicates whether sentencing conditions were met or not."
-  schemas: []
-  datatype: "Boolean"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "justice.ChargeStatus"
-  title: "Charge Status"
-  description: "The status of a charge"
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "justice.EventType"
-  title: "Event Type"
-  description: "The type of a charge related event"
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "j.CaseNumberText"
-  title: "Case Number"
-  description: "An identifying number for a case that this activity is a part of, where the case number belongs to the agency that owns the activity information."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
-- type: "general.stringid"
-  title: "Id"
-  description: "A string that uniquely identifies an instance of an entity or association."
-  schemas: []
-  datatype: "String"
-  piiField: false
-  analyzer: "STANDARD"
+  properties:
+  - type: "nc.PersonSex"
+    title: "Person Sex"
+    description: "A data concept for a gender or sex of a person."
+  - type: "nc.PersonRace"
+    title: "Person Race"
+    description: "A data concept for a classification of a person based on factors such as geographical locations and genetics."
+  - type: "nc.PersonEthnicity"
+    title: "Person Ethnicity"
+    description: "A data concept for a cultural lineage of a person."
+  - type: "nc.SubjectIdentification"
+    title: "Subject Identification"
+    description: "An assigned identification that identifies a subject."
+  - type: "j.ArrestSequenceID"
+    title: "Arrest Sequence ID"
+    description: "A sequential identifier number assigned to the arrest of a subject."
+  - type: "justice.ArrestTrackingNumber"
+    title: "Arrest Tracking Number"
+    description: "The tracking number of an arrest"
+  - type: "j.OffenseQualifierText"
+    title: "Offense Qualifier Text"
+    description: "A set of details that further characterizes an offense."
+  - type: "j.OffenseViolatedStatute"
+    title: "Offense Violated Statute"
+    description: "A set of details about a statute, rule, or ordinance that was violated as a result of an offense."
+  - type: "j.EnforcementOfficialBadgeIdentification"
+    title: "Enforcement Official Badge Identification"
+    description: "An identification used to refer to an enforcement official."
+  - type: "j.ArrestCategory"
+    title: "Arrest Category"
+    description: "A data concept for a kind of arrest that occurred."
+  - type: "j.ArrestLocation"
+    title: "Arrest Location"
+    description: "A location where a subject was arrested."
+  - type: "justice.plea"
+    title: "Plea"
+    description: "A plea entered for a charge"
+  - type: "justice.disposition"
+    title: "Disposition"
+    description: "The disposition of a charge"
+  - type: "justice.severity"
+    title: "Severity"
+    description: "The severity of a charge"
+  - type: "justice.ChargeStatus"
+    title: "Charge Status"
+    description: "The status of a charge"
+  - type: "justice.EventType"
+    title: "Event Type"
+    description: "The type of a charge related event"
+  - type: "j.CaseNumberText"
+    title: "Case Number"
+    description: "An identifying number for a case that this activity is a part of, where the case number belongs to the agency that owns the activity information."
+  - type: "general.stringid"
+    title: "Id"
+    description: "A string that uniquely identifies an instance of an entity or association."
+  - type: "justice.dacasenumber"
+    title: "DA Case #"
+    description: "The DA Case # for an incident."
+  - type: "justice.AgencyCaseNumber"
+    title: "Agency Case #"
+    description: "The Agency Case # for an incident."
+  - type: "justice.courtcasenumber"
+    title: "Court Case #"
+    description: "The Court Case # for an incident."
+  - type: "justice.courtcasetype"
+    title: "Court Case Type"
+    description: "The Court Case Type for an incident."
+  - type: "justice.CaseStatus"
+    title: "Case Status"
+    description: "The Case Status for an incident"
+  - type: "justice.ReferralType"
+    title: "Referral Type"
+    description: "The type of referral from agency to another."
+  - type: "justice.ReferralAgency"
+    title: "Referral Agency"
+    description: "The agency that performed the referral."
+  - type: "location.city"
+    title: "City"
+    description: "A city"
+  - type: "location.state"
+    title: "State"
+    description: "A state"
+  - type: "location.zip"
+    title: "Zip"
+    description: "A zip"
+  - type: "justice.weapons"
+    title: "Weapons"
+    description: "Weapons found during an arrest"
+  - type: "justice.OffenderAlcohol"
+    title: "Offender Alcohol"
+    description: "Offender Alcohol"
+  - type: "justice.VictimAlcohol"
+    title: "Victim Alcohol"
+    description: "Victim Alcohol"
 
 entityTypes:
+- type: "justice.agency"
+  title: "Agency"
+  description: "A criminal justice agency."
+  key:
+  - "j.ArrestAgency"
+  properties:
+  - "j.ArrestAgency"
 - type: "general.person"
   title: "Person"
   description: "A person"
@@ -197,12 +158,14 @@ entityTypes:
   - "nc.SubjectIdentification"
   properties:
   - "nc.PersonGivenName"
+  - "nc.PersonMiddleName"
   - "nc.PersonSurName"
   - "nc.PersonSex"
   - "nc.PersonRace"
   - "nc.PersonEthnicity"
   - "nc.PersonBirthDate"
   - "nc.SubjectIdentification"
+  - "person.age"
   baseType: null
 - type: "lawenforcement.arrest"
   title: "Arrest"
@@ -210,6 +173,7 @@ entityTypes:
   key:
   - "j.ArrestSequenceID"
   properties:
+  - "j.CaseNumberText"
   - "j.ArrestSequenceID"
   - "publicsafety.ArrestDate"
   - "publicsafety.OffenseDate"
@@ -218,6 +182,10 @@ entityTypes:
   - "j.EnforcementOfficialBadgeIdentification"
   - "j.ArrestCategory"
   - "j.ArrestLocation"
+  - "justice.OffenderAlcohol"
+  - "justice.VictimAlcohol"
+  - "justice.weapons"
+  - "justice.EventType"
   baseType: null
 - type: "justice.charge"
   title: "Charge"
@@ -237,6 +205,22 @@ entityTypes:
   - "justice.EventType"
   baseType: null
 - type: "justice.case"
+  title: "Case"
+  description: "A case"
+  key:
+  - "j.CaseNumberText"
+  properties:
+  - "justice.ArrestTrackingNumber"
+  - "j.CaseNumberText"
+  - "justice.CaseStatus"
+  - "justice.ReferralDate"
+  - "justice.ReferralType"
+  - "justice.ReferralAgency"
+  - "justice.AgencyCaseNumber"
+  - "justice.courtcasenumber"
+  - "justice.courtcasetype"
+  - "justice.dacasenumber"
+- type: "danecountywi.dacase"
   title: "Case"
   description: "A case"
   key:
@@ -275,12 +259,45 @@ associationTypes:
   dst:
   - "justice.case"
   bidirectional: false
+- type:
+    type: "general.assignto"
+    title: "Assign To"
+    description: "An association describe that one entity was assigned to another"
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "justice.case"
+  dst:
+  - "general.person"
+  bidirectional: false
+- type:
+    type: "justice.chargedwith"
+    title: "Charged With"
+    description: "An association describe that one entity was assigned to another"
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "justice.charge"
+  dst:
+  - "general.person"
+  bidirectional: false
 
 entitySets:
 - type: "justice.case"
   name: "DaneCountyCases"
   title: "Dane County Cases"
   description: "Court cases in Dane County, WI"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "justice.case"
+  name: "DADaneCountyCases"
+  title: "DA Dane County Cases"
+  description: "DA Court cases in Dane County, WI"
   contacts:
   - "Reyes.Noemi@countyofdane.com"
   - "support@openlattice.com"
@@ -298,10 +315,31 @@ entitySets:
   contacts:
   - "Reyes.Noemi@countyofdane.com"
   - "support@openlattice.com"
+- type: "justice.chargedwith"
+  name: "ChargedWithInDaneCountyCase"
+  title: "Charged With In Dane County Case"
+  description: "Represents the charges between an entity during a court case in Dane County, WI"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "general.appearsin"
+  name: "AppearsInDaDaneCountyCase"
+  title: "Appears In Dane County DA Case"
+  description: "Represents the link between and entity and a court case in Dane County, WI"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
 - type: "general.person"
   name: "DaneCountyDefendants"
   title: "Dane County Defendants"
   description: "Defendants in Dane County"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "general.person"
+  name: "DaneCountyDADefendants"
+  title: "Dane County DA Defendants"
+  description: "DA Defendants in Dane County"
   contacts:
   - "Reyes.Noemi@countyofdane.com"
   - "support@openlattice.com"
@@ -409,3 +447,25 @@ entitySets:
   description: "Arrest In links for the city of Fitchburg PD"
   contacts:
   - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "general.person"
+  name: "MadisonArrestSuspects"
+  title: "Madison Arrest Suspects"
+  description: "Suspects arrested by the city of Madison PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrest"
+  name: "MadisonArrests"
+  title: "Madison Arrests"
+  description: "Arrests by the city of Madison PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+- type: "lawenforcement.arrestedin"
+  name: "MadisonArrestedIn"
+  title: "Madison Arrested In"
+  description: "Arrest In links for the city of Madison PD"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"

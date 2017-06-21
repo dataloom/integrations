@@ -188,6 +188,16 @@ public class ClerkOfCourtsDemo2010 {
                 .value( row -> row.getAs( "ATN" ) )
                 .ok()
                 .ok()
+                .addAssociation( "chargedwith" )
+                .ofType( new FullQualifiedName( "justice.charged" ) )
+                .to( "ChargedWithInDaneCountyCase" )
+                .key( new FullQualifiedName( "general.stringid" ) )
+                .fromEntity( "charge" )
+                .toEntity( "defendant" )
+                .addProperty( new FullQualifiedName( "general.stringid" ) )
+                .value( row -> row.getAs( "ATN" ) )
+                .ok()
+                .ok()
                 .ok()
                 .done();
 

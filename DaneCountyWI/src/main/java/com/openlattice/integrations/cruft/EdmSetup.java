@@ -18,7 +18,7 @@ import retrofit2.Retrofit;
  */
 public class EdmSetup {
     private static final Logger logger = LoggerFactory.getLogger( EdmSetup.class );
-    private static final RetrofitFactory.Environment environment = RetrofitFactory.Environment.LOCAL;
+    private static final RetrofitFactory.Environment environment = RetrofitFactory.Environment.STAGING;
     public static FullQualifiedName ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
     public static FullQualifiedName FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
     //public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
