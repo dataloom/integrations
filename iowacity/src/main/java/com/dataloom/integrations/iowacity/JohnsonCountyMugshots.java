@@ -1,9 +1,11 @@
 package com.dataloom.integrations.iowacity;
 
 import com.dataloom.client.RetrofitFactory;
+import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.edm.type.Analyzer;
 import com.dataloom.edm.type.PropertyType;
+import com.dataloom.mappers.ObjectMappers;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.openlattice.shuttle.Flight;
@@ -100,14 +102,15 @@ public class JohnsonCountyMugshots {
                 logger.error( "Duplicate image id {} for mni {}", imageId, indexId );
             }
         } );
-
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         Flight flight = Flight.newFlight()
                 .createEntities()
                 .addEntity( SUBJECTS_ALIAS )
                 .ofType( SUBJECTS_ENTITY_SET_TYPE )
                 .to( SUBJECTS_ENTITY_SET_NAME )
                 .key( SUBJECTS_ENTITY_SET_KEY_1 )
-//                .useCurrentSync()
+                                .useCurrentSync()
                 .addProperty( PERSON_XREF_FQN )
                 .value( row -> {
                     final String imageId = row.getAs( "Image_ID" );
