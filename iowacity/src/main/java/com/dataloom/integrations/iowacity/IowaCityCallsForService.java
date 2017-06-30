@@ -75,8 +75,8 @@ public class IowaCityCallsForService {
     }
 
     public static void main( String[] args ) throws InterruptedException {
-        String path = args[ 0 ];
-        jwtToken = args[ 1 ];
+        final String path = args[ 1] ;
+        final String jwtToken = args[ 2 ];
 
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );

@@ -207,16 +207,17 @@ public class JohnsonCountyJailBookings {
     // public static String SUBJECT_INTERACTED_WITH_OFFICER_ALIAS = "jcinteractedwith";
 
     public static void main( String[] args ) throws InterruptedException {
-        String path = new File(
-                JohnsonCountyJailBookings.class.getClassLoader().getResource( "Jail_Record_Formatted.csv" )
-                        .getPath() )
-                                .getAbsolutePath();
+        if( args.length < 3 ) {
+            System.out.println("expected: <path> <jwtToken>");
+            return;
+        }
 
+        final String path = args[ 1] ;
+        final String jwtToken = args[ 2 ];
         // final String username = "replace me with email username";
         // final String password = "replace me with password";
         final SparkSession sparkSession = MissionControl.getSparkSession();
         // final String jwtToken = MissionControl.getIdToken( username, password );
-        final String jwtToken = "[JWT TOKEN GOES HERE]";
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
         /*

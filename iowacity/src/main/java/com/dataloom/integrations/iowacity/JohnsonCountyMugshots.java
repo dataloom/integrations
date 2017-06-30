@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableSet;
 import com.kryptnostic.shuttle.Flight;
 import com.kryptnostic.shuttle.MissionControl;
 import com.kryptnostic.shuttle.Shuttle;
+import org.apache.commons.lang.StringUtils;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -43,10 +44,13 @@ public class JohnsonCountyMugshots {
     public static        FullQualifiedName   MUG_SHOT_FQN              = new FullQualifiedName( "publicsafety.mugshot" );
 
     public static void main( String[] args ) throws InterruptedException {
-        String extractedPhotosCSV = args[ 0 ];
-        String smartIndexCSV = args[ 1 ];
-        String photoDirectory = args[ 2 ];
-        String jwtToken = args[ 3 ];
+        if ( args.length < 5 ) {
+            System.err.println( "Expected: <photoCSV> <smartIndexCSV> <photoDir> <jwtToken>" );
+        }
+        final String extractedPhotosCSV = args[ 1 ];
+        final String smartIndexCSV = args[ 2 ];
+        final String photoDirectory = args[ 3 ];
+        final String jwtToken = args[ 4 ];
         final SparkSession sparkSession = MissionControl.getSparkSession();
         Retrofit retrofit = RetrofitFactory.newClient( RetrofitFactory.Environment.PRODUCTION, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
@@ -82,6 +86,13 @@ public class JohnsonCountyMugshots {
         smartIndex.toLocalIterator().forEachRemaining( row -> {
             final String imageId = row.getAs( "Image_ID" );
             final String indexId = row.getAs( "Index_ID" );
+            if ( StringUtils.isBlank( imageId ) ) {
+                logger.warn( "Image id is blank for mni {}", indexId );
+            }
+
+            if ( StringUtils.isBlank( indexId ) ) {
+                logger.warn( "index id is blank for mni {}", imageId );
+            }
             if ( imageIdToMni.putIfAbsent( imageId, indexId ) != null ) {
                 logger.error( "Duplicate image id {} for mni {}", imageId, indexId );
             }
@@ -95,7 +106,21 @@ public class JohnsonCountyMugshots {
                 .key( SUBJECTS_ENTITY_SET_KEY_1 )
                 .useCurrentSync()
                 .addProperty( PERSON_XREF_FQN )
-                .value( row -> imageIdToMni.getOrDefault( row.getString( 0 ), "" ) )
+                .value( row -> {
+                    final String imageId = row.getAs( "Image_ID" );
+
+                    if ( StringUtils.isBlank( imageId ) ) {
+                        logger.warn( "This isn't going well. Found a blank image id" );
+                        return "";
+                    }
+
+                    final String mni = imageIdToMni.getOrDefault( imageId, "" );
+
+                    if ( StringUtils.isBlank( mni ) ) {
+                        logger.warn( "Unable to find MNI for image id {}", imageId );
+                    }
+                    return mni;
+                } )
                 .ok()
                 .addProperty( MUG_SHOT_FQN )
                 .value( row -> {

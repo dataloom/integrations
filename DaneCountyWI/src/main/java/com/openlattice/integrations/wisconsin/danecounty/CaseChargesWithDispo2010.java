@@ -4,6 +4,7 @@ import com.dataloom.client.RetrofitFactory;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -171,14 +172,14 @@ public class CaseChargesWithDispo2010 {
         Preconditions.checkState( names.size() > 0, "Must have at least some parts of name" );
 
         if ( name.contains( " Jr" ) || name.contains( " JR" ) ) {
-            return names.get( 0 ).trim() + " Jr";
+            return names.get( 0 ).trim().replace( ",","" ) + " Jr";
         }
 
         if ( name.contains( " Sr" ) || name.contains( " SR" ) ) {
-            return names.get( 0 ).trim() + " Sr";
+            return names.get( 0 ).trim().replace( ",","" ) + " Sr";
         }
 
-        return names.get( 0 );
+        return names.get( 0 ).replace( ",","" );
     }
 
     public static String getSubjectIdentification( Row row ) {

@@ -164,6 +164,9 @@ public class MadisonPoliceDept {
 
     public static String safeDOBParse(Row row ) {
         String dob = row.getAs("DOB");
+        if (dob == null ) {
+            return null;
+        }
         if( dob.contains( "#" ) ) {
             return null;
         }
