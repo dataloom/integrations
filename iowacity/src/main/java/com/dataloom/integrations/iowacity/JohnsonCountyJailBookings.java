@@ -205,7 +205,7 @@ public class JohnsonCountyJailBookings {
             "jciowa.OfficerInteractedWithSubject2" );
     public static FullQualifiedName SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_TYPE_KEY_1 = PERSON_XREF_FQN;
     // public static String SUBJECT_INTERACTED_WITH_OFFICER_ALIAS = "jcinteractedwith";
-
+    public static final Environment environment = Environment.STAGING;
     public static void main( String[] args ) throws InterruptedException {
         if( args.length < 3 ) {
             System.out.println("expected: <path> <jwtToken>");
@@ -227,7 +227,7 @@ public class JohnsonCountyJailBookings {
         /*
          * PROPERTY TYPES
          */
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         UUID Jail_Record_XREF = edm
@@ -1622,7 +1622,7 @@ public class JohnsonCountyJailBookings {
 
         flights.put( flight, payload );
 
-        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
+        Shuttle shuttle = new Shuttle( environment, jwtToken );
         shuttle.launch( flights );
     }
 

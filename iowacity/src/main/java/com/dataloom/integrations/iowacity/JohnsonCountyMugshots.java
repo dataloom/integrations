@@ -32,16 +32,19 @@ import java.util.UUID;
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
  */
 public class JohnsonCountyMugshots {
-    private static final Logger              logger                    = LoggerFactory
+    private static final Logger                      logger                    = LoggerFactory
             .getLogger( JohnsonCountyMugshots.class );
-    private static final Map<String, String> imageIdToMni              = new HashMap<>( 130486 );
-    private static final Base64.Encoder      encoder                   = Base64.getEncoder();
-    public static        String              SUBJECTS_ENTITY_SET_NAME  = "jcsubjects";
-    public static        FullQualifiedName   SUBJECTS_ENTITY_SET_TYPE  = new FullQualifiedName( "nc.PersonType" );
-    public static        FullQualifiedName   PERSON_XREF_FQN           = new FullQualifiedName( "publicsafety.xref" );
-    public static        FullQualifiedName   SUBJECTS_ENTITY_SET_KEY_1 = PERSON_XREF_FQN;
-    public static        String              SUBJECTS_ALIAS            = "subjects";
-    public static        FullQualifiedName   MUG_SHOT_FQN              = new FullQualifiedName( "publicsafety.mugshot" );
+    private static final Map<String, String>         imageIdToMni              = new HashMap<>( 130486 );
+    private static final Base64.Encoder              encoder                   = Base64.getEncoder();
+    public static        String                      SUBJECTS_ENTITY_SET_NAME  = "jcsubjects";
+    public static        FullQualifiedName           SUBJECTS_ENTITY_SET_TYPE  = new FullQualifiedName( "nc.PersonType" );
+    public static        FullQualifiedName           PERSON_XREF_FQN           = new FullQualifiedName(
+            "publicsafety.xref" );
+    public static        FullQualifiedName           SUBJECTS_ENTITY_SET_KEY_1 = PERSON_XREF_FQN;
+    public static        String                      SUBJECTS_ALIAS            = "subjects";
+    public static        FullQualifiedName           MUG_SHOT_FQN              = new FullQualifiedName(
+            "publicsafety.mugshot" );
+    public static        RetrofitFactory.Environment environment               = RetrofitFactory.Environment.STAGING;
 
     public static void main( String[] args ) throws InterruptedException {
         if ( args.length < 5 ) {
@@ -52,7 +55,7 @@ public class JohnsonCountyMugshots {
         final String photoDirectory = args[ 3 ];
         final String jwtToken = args[ 4 ];
         final SparkSession sparkSession = MissionControl.getSparkSession();
-        Retrofit retrofit = RetrofitFactory.newClient( RetrofitFactory.Environment.PRODUCTION, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
         UUID MugShot = edm
                 .createPropertyType( new PropertyType(
@@ -138,7 +141,7 @@ public class JohnsonCountyMugshots {
 
         flights.put( flight, payload );
 
-        Shuttle shuttle = new Shuttle( RetrofitFactory.Environment.PRODUCTION, jwtToken );
+        Shuttle shuttle = new Shuttle( environment, jwtToken );
         shuttle.launch( flights );
     }
 

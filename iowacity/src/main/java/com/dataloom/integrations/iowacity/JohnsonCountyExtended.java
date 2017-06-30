@@ -300,7 +300,7 @@ public class JohnsonCountyExtended {
             "jciowa.ChargesLeadToSentence2" );
     public static FullQualifiedName CHARGE_LEADS_TO_SENTENCE_ENTITY_TYPE_KEY_1    = CHARGE_ID_FQN;
     public static String            CHARGE_LEADS_TO_SENTENCE_ALIAS                = "leadsto";
-
+    public static final Environment environment = Environment.STAGING;
     public static void main( String[] args ) throws InterruptedException {
 
         if( args.length < 3 ) {
@@ -321,7 +321,7 @@ public class JohnsonCountyExtended {
         /*
          * PROPERTY TYPES
          */
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         // NEW PROPERTY TYPES
@@ -2130,7 +2130,7 @@ public class JohnsonCountyExtended {
 
         flights.put( flight, payload );
 
-        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
+        Shuttle shuttle = new Shuttle( environment, jwtToken );
         shuttle.launch( flights );
     }
 
