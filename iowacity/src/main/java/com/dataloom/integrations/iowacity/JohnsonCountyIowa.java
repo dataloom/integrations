@@ -5,9 +5,9 @@ package com.dataloom.integrations.iowacity;
  */
 
 import com.dataloom.client.RetrofitFactory;
-import com.kryptnostic.shuttle.Flight;
-import com.kryptnostic.shuttle.MissionControl;
-import com.kryptnostic.shuttle.Shuttle;
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.MissionControl;
+import com.openlattice.shuttle.Shuttle;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
