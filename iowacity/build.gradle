@@ -9,16 +9,20 @@ plugins {
 apply from: "https://raw.githubusercontent.com/kryptnostic/gradles/master/mavenRepos.gradle"
 
 description = "Iowa City Jail Data"
-group = "com.kryptnostic"
+group = "com.openlattice"
 version = 'v0.0.1'
 
 mainClassName = "com.dataloom.integrations.iowacity.IowaCity"
-applicationDefaultJvmArgs = ["-Xmx8G", "-Xms8G", "-server"]
+applicationDefaultJvmArgs = ["-Xmx12G", "-Xms12G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 //TODO: Use credentials from environment variables.
-run.args = ["jaildata.csv","username","password"]
+run {
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
 
 configurations {
     provided
