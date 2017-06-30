@@ -125,7 +125,7 @@ public class JohnsonCountyMugshots {
                     if ( StringUtils.isBlank( mni ) ) {
                         logger.warn( "Unable to find MNI for image id {}", imageId );
                     }
-                    return mni;
+                    return "{" + mni + "}";
                 } )
                 .ok()
                 .addProperty( MUG_SHOT_FQN )

@@ -170,6 +170,7 @@ entityTypes:
   - "nc.SubjectIdentification"
   - "person.age"
   - "justice.xref"
+  - "publicsafety.mugshot"
   baseType: null
 - type: "lawenforcement.arrest"
   title: "Arrest"
