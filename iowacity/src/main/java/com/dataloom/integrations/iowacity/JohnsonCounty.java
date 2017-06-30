@@ -1267,6 +1267,7 @@ public class JohnsonCounty {
          * ENTITY SETS
          */
 
+        logger.info("Creating entity sets.");
         edm.createEntitySets( ImmutableSet.of( new EntitySet(
                 peopleType,
                 SUBJECTS_ENTITY_SET_NAME,
