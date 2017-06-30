@@ -39,7 +39,27 @@ sourceSets {
 }
 
 dependencies {
-    compile 'com.kryptnostic:shuttle:0.1.8-SNAPSHOT'
+    if (project.hasProperty('developmentMode') && project.developmentMode) {
+        logger.quiet(project.name + " using project dependencies.")
+        compile project(":shuttle")
+        /*compile project(":loom-api")
+
+        testCompile( project(path: ":loom-api", configuration: "tests"))
+        testCompile( project(path: ":rhizome", configuration: "tests"))
+        te stCompile( project(path: ":rhizome-client", configuration: "tests"))*/
+    } else {
+        logger.quiet(project.name + " using jar dependencies.")
+        compile 'com.kryptnostic:shuttle:0.1.8-SNAPSHOT'
+
+        /*compile "com.kryptnostic:rhizome:${rhizome_version}"
+        compile "com.kryptnostic:loom-api:${loom_api_version}"
+        compile "com.kryptnostic:kindling:${kindling_version}"
+
+        testCompile "com.kryptnostic:loom-api:${loom_api_version}:tests"
+        testCompile "com.kryptnostic:rhizome:${rhizome_version}:tests"
+        testCompile "com.kryptnostic:rhizome-client:${rhizome_client_version}:tests"*/
+    }
+
     compile fileTree(dir: "lib/", include: "*.jar")
 
     /*

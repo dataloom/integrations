@@ -1,23 +1,5 @@
-package com.kryptnostic.shuttle;
+package com.dataloom.integrations.iowacity;
 
-import java.io.File;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.UUID;
-
-import com.dataloom.integrations.iowacity.FormattedDateTime;
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spark_project.guava.collect.Maps;
-
-import com.auth0.Auth0;
-import com.auth0.authentication.AuthenticationAPIClient;
-import com.auth0.request.AuthenticationRequest;
 import com.dataloom.authorization.securable.SecurableObjectType;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
@@ -29,8 +11,22 @@ import com.dataloom.edm.type.EntityType;
 import com.dataloom.edm.type.PropertyType;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.MissionControl;
+import com.openlattice.shuttle.Shuttle;
+import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
+import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spark_project.guava.collect.Maps;
 import retrofit2.Retrofit;
+
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.UUID;
 
 public class JohnsonCounty {
     // Logger is used to output useful debugging messages to the console

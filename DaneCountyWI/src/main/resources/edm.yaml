@@ -142,6 +142,9 @@ propertyTypes:
   - type: "justice.VictimAlcohol"
     title: "Victim Alcohol"
     description: "Victim Alcohol"
+  - type: "justice.xref"
+    title: "XREF"
+    description: "Cross-reference Identifier"
 
 entityTypes:
 - type: "justice.agency"
@@ -166,6 +169,7 @@ entityTypes:
   - "nc.PersonBirthDate"
   - "nc.SubjectIdentification"
   - "person.age"
+  - "justice.xref"
   baseType: null
 - type: "lawenforcement.arrest"
   title: "Arrest"

@@ -1,7 +1,5 @@
 package com.dataloom.integrations.iowacity;
 
-import com.kryptnostic.shuttle.JohnsonCounty;
-
 /**
  * Created by mtamayo on 6/29/17.
  */
