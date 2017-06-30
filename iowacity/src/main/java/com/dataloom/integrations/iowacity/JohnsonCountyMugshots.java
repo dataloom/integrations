@@ -107,7 +107,7 @@ public class JohnsonCountyMugshots {
                 .ofType( SUBJECTS_ENTITY_SET_TYPE )
                 .to( SUBJECTS_ENTITY_SET_NAME )
                 .key( SUBJECTS_ENTITY_SET_KEY_1 )
-                .useCurrentSync()
+//                .useCurrentSync()
                 .addProperty( PERSON_XREF_FQN )
                 .value( row -> {
                     final String imageId = row.getAs( "Image_ID" );
