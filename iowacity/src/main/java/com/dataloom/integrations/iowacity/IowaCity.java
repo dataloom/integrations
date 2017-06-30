@@ -4,9 +4,6 @@ package com.dataloom.integrations.iowacity;
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
  */
 
-import com.kryptnostic.shuttle.Flight;
-import com.kryptnostic.shuttle.MissionControl;
-import com.kryptnostic.shuttle.Shuttle;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
