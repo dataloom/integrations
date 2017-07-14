@@ -1,4 +1,4 @@
-rootProject.name='dataloom-integrations'
+rootProject.name='integrations'
 
 include 'template'
 include 'slcstolencars2012'

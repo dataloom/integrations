@@ -8,17 +8,18 @@ plugins {
 
 apply from: "https://raw.githubusercontent.com/kryptnostic/gradles/master/mavenRepos.gradle"
 
-//Version is provided by kryptnostic.gradle script
-description = "CA Arrest Records 1980 - 2015"
-group = "com.kryptnostic"
+description = "Dane County Wisconsin Data Integrations"
+group = "com.openlattice"
 version = 'v0.0.1'
 
-mainClassName = "com.dataloom.integrations.slc.CaArrests"
+mainClassName = "com.dataloom.integrations.iowacity.IowaCity"
 applicationDefaultJvmArgs = ["-Xmx8G", "-Xms8G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-run.args = ["unused","Stolen_Vehicles_2012_Salt_Lake_City.csv"]
+//TODO: Use credentials from environment variables.
+run.args = ["jaildata.csv","username","password"]
+
 configurations {
     provided
 }
@@ -34,9 +35,6 @@ sourceSets {
 }
 
 dependencies {
-
-    compile fileTree(dir: "lib/", include: "*.jar")
-
     if (project.hasProperty('developmentMode') && project.developmentMode) {
         logger.quiet(project.name + " using project dependencies.")
         compile project(":shuttle")
@@ -47,7 +45,7 @@ dependencies {
         te stCompile( project(path: ":rhizome-client", configuration: "tests"))*/
     } else {
         logger.quiet(project.name + " using jar dependencies.")
-        compile 'com.kryptnostic:shuttle:0.1.6-SNAPSHOT'
+        compile 'com.kryptnostic:shuttle:0.1.8-SNAPSHOT'
 
         /*compile "com.kryptnostic:rhizome:${rhizome_version}"
         compile "com.kryptnostic:loom-api:${loom_api_version}"
@@ -57,6 +55,8 @@ dependencies {
         testCompile "com.kryptnostic:rhizome:${rhizome_version}:tests"
         testCompile "com.kryptnostic:rhizome-client:${rhizome_client_version}:tests"*/
     }
+
+    compile fileTree(dir: "lib/", include: "*.jar")
 
     /*
      * TESTING

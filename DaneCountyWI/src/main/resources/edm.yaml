@@ -1,0 +1,133 @@
+propertyTypes:
+- type: "j.ArrestAgency"
+  title: "Arrest Agency"
+  description: "An agency which employs the arresting official."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "METAPHONE"
+- type: "nc.PersonGivenName"
+  title: "Given Name"
+  description: "A first name of a person."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "METAPHONE"
+- type: "nc.PersonSurName"
+  title: "Surname"
+  description: "A last name or family name of a person."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "METAPHONE"
+- type: "nc.PersonSex"
+  title: "Person Sex"
+  description: "A data concept for a gender or sex of a person."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "nc.PersonRace"
+  title: "Person Race"
+  description: "A data concept for a classification of a person based on factors such as geographical locations and genetics."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "nc.PersonEthnicity"
+  title: "Person Ethnicity"
+  description: "A data concept for a cultural lineage of a person."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "nc.PersonBirthDate"
+  title: "Person Birth Date"
+  description: "A date a person was born."
+  schemas: []
+  datatype: "Date"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "nc.SubjectIdentification"
+  title: "Subject Identification"
+  description: "An assigned identification that identifies a subject."
+  schemas: []
+  datatype: "String"
+  piiField: true
+  analyzer: "STANDARD"
+- type: "j.ArrestSequenceID"
+  title: "Arrest Sequence ID"
+  description: "A sequential identifier number assigned to the arrest of a subject."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "publicsafety.ArrestDate"
+  title: "Arrest Date"
+  description: "A date of an arrest."
+  schemas: []
+  datatype: "Date"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "publicsafety.OffenseDate"
+  title: "Offense Date"
+  description: "A date of an incident, an act or a course of action which may constitute a violation of a criminal statute, ordinance or rule."
+  schemas: []
+  datatype: "Date"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "j.OffenseQualifierText"
+  title: "Offense Qualifier Text"
+  description: "A set of details that further characterizes an offense."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "j.OffenseViolatedStatute"
+  title: "Offense Violated Statute"
+  description: "A set of details about a statute, rule, or ordinance that was violated as a result of an offense."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "j.EnforcementOfficialBadgeIdentification"
+  title: "Enforcement Official Badge Identification"
+  description: "An identification used to refer to an enforcement official."
+  schemas: []
+  datatype: "String"
+  piiField: true
+  analyzer: "STANDARD"  
+- type: "j.ArrestCategory"
+  title: "Arrest Category"
+  description: "A data concept for a kind of arrest that occurred."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+- type: "j.ArrestLocation"
+  title: "Arrest Location"
+  description: "A location where a subject was arrested."
+  schemas: []
+  datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+
+entityTypes:
+- type: "test.a"
+  title: "A"
+  description: "An entity type"
+  key:
+  - "test.p0"
+  properties:
+  - "test.p1"
+  - "test.p2"
+  baseType: null
+
+entitySets:
+- type: "test.a"
+  name: "tester"
+  title: "Tester"
+  description: "This is a test entity set"
+  contacts:
+  - "info@openlattice.com"
+  - "support@openlattice.com"

@@ -1,6 +1,7 @@
 package com.kryptnostic.shuttle;
 
 import java.io.File;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.catalyst.expressions.aggregate.First;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spark_project.guava.collect.Maps;
