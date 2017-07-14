@@ -5,9 +5,9 @@ package com.dataloom.integrations.iowacity;
  */
 
 import com.dataloom.client.RetrofitFactory;
-import com.kryptnostic.shuttle.Flight;
-import com.kryptnostic.shuttle.MissionControl;
-import com.kryptnostic.shuttle.Shuttle;
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.MissionControl;
+import com.openlattice.shuttle.Shuttle;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -36,11 +36,9 @@ public class JohnsonCountyIowa {
          * existence of the file, and making sure authentication was successful. A failure in one of these cases
          * will cause the program to exit with an exception.
          */
-        final String path = args[ 0 ];
-        //final String username = args[ 1 ];
-        //final String password = args[ 2 ];
+        final String path = args[ 1] ;
+        final String jwtToken = args[ 2 ];
         final SparkSession sparkSession = MissionControl.getSparkSession();
-        final String jwtToken = args[ 1 ];//MissionControl.getIdToken( username, password );
         final RetrofitFactory.Environment environment = RetrofitFactory.Environment.PRODUCTION;
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 

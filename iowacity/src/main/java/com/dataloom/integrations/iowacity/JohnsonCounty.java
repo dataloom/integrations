@@ -1,11 +1,21 @@
-package com.kryptnostic.shuttle;
+package com.dataloom.integrations.iowacity;
 
-import java.io.File;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.UUID;
-
-import com.dataloom.integrations.iowacity.FormattedDateTime;
+import com.dataloom.authorization.securable.SecurableObjectType;
+import com.dataloom.client.RetrofitFactory;
+import com.dataloom.client.RetrofitFactory.Environment;
+import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
+import com.dataloom.edm.EdmApi;
+import com.dataloom.edm.EntitySet;
+import com.dataloom.edm.type.Analyzer;
+import com.dataloom.edm.type.AssociationType;
+import com.dataloom.edm.type.EntityType;
+import com.dataloom.edm.type.PropertyType;
+import com.dataloom.mappers.ObjectMappers;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.MissionControl;
+import com.openlattice.shuttle.Shuttle;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -14,33 +24,21 @@ import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spark_project.guava.collect.Maps;
-
-import com.auth0.Auth0;
-import com.auth0.authentication.AuthenticationAPIClient;
-import com.auth0.request.AuthenticationRequest;
-import com.dataloom.authorization.securable.SecurableObjectType;
-import com.dataloom.client.RetrofitFactory;
-import com.dataloom.client.RetrofitFactory.Environment;
-import com.dataloom.edm.EdmApi;
-import com.dataloom.edm.EntitySet;
-import com.dataloom.edm.type.Analyzer;
-import com.dataloom.edm.type.AssociationType;
-import com.dataloom.edm.type.EntityType;
-import com.dataloom.edm.type.PropertyType;
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-
 import retrofit2.Retrofit;
 
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.UUID;
+
 public class JohnsonCounty {
+    //    public static String            SUBJECT_INTERACTED_WITH_OFFICER_ALIAS             = "jcinteractedwith";
+    public static final Environment       environment                                       = Environment.STAGING;
     // Logger is used to output useful debugging messages to the console
     private static final Logger logger = LoggerFactory.getLogger( JohnsonCounty.class );
-
     // PROPERTIES
     public static FullQualifiedName JAIL_RECORD_XREF_FQN = new FullQualifiedName( "publicsafety.xref" );
     public static FullQualifiedName PERSON_XREF_FQN      = new FullQualifiedName( "publicsafety.xref" );
     public static FullQualifiedName OFFICER_XREF_FQN     = new FullQualifiedName( "publicsafety.xref" );
-
     public static FullQualifiedName JAIL_ID_FQN                  = new FullQualifiedName( "publicsafety.JailID" );
     public static FullQualifiedName ACTUAL_NO_FQN                = new FullQualifiedName( "publicsafety.ActualNumber" );
     public static FullQualifiedName ARREST_NO_FQN                = new FullQualifiedName( "j.ArrestSequenceID" );
@@ -101,60 +99,50 @@ public class JohnsonCounty {
     public static FullQualifiedName RELEASE_NOTES_FQN            = new FullQualifiedName( "publicsafety.ReleaseNotes" );
     public static FullQualifiedName ARREST_ID_LONG_FQN           = new FullQualifiedName( "publicsafety.ArrestID" );
     public static FullQualifiedName RELEASE_OFFICER_USERNAME_FQN = new FullQualifiedName( "nc.SystemUserName" );
-
     public static FullQualifiedName MUGSHOT_FQN          = new FullQualifiedName( "publicsafety.mugshot" );
     public static FullQualifiedName OFFICER_CATEGORY_FQN = new FullQualifiedName( "j.EnforcementOfficialCategoryText" );
-
     // ENTITIES
     public static String            SUBJECTS_ENTITY_SET_NAME  = "jcsubjects";
     public static FullQualifiedName SUBJECTS_ENTITY_SET_TYPE  = new FullQualifiedName( "nc.PersonType" );
     public static FullQualifiedName SUBJECTS_ENTITY_SET_KEY_1 = PERSON_XREF_FQN;
     public static String            SUBJECTS_ALIAS            = "subjects";
-
     public static String            BOOKINGS_ENTITY_SET_NAME   = "jcbookings";
     public static FullQualifiedName BOOKINGS_ENTITY_SET_TYPE   = new FullQualifiedName( "jciowa.BookingType" );
     public static FullQualifiedName BOOKINGS_ENTITY_TYPE_KEY_1 = JAIL_RECORD_XREF_FQN;
     public static String            BOOKINGS_ALIAS             = "bookings";
-
     public static String            JAIL_RECORDS_ENTITY_SET_NAME   = "jcjailrecords";
     public static FullQualifiedName JAIL_RECORDS_ENTITY_SET_TYPE   = new FullQualifiedName( "jciowa.JailRecordType" );
     public static FullQualifiedName JAIL_RECORDS_ENTITY_TYPE_KEY_1 = JAIL_RECORD_XREF_FQN;
     public static String            JAIL_RECORDS_ALIAS             = "jailrecords";
-
     public static String            OFFICERS_ENTITY_SET_NAME   = "jcofficers";
     public static FullQualifiedName OFFICERS_ENTITY_SET_TYPE   = new FullQualifiedName( "j.EnforcementOfficialType" );
     public static FullQualifiedName OFFICERS_ENTITY_TYPE_KEY_1 = OFFICER_XREF_FQN;
     public static String            OFFICERS_ALIAS             = "officers";
-
     // ASSOCIATIONS
     public static String            WAS_BOOKED_IN_ENTITY_SET_NAME  = "jcwasbookedin";
     public static FullQualifiedName WAS_BOOKED_IN_ENTITY_SET_TYPE  = new FullQualifiedName(
             "jciowa.PersonJailBookingAssociation" );
     public static FullQualifiedName WAS_BOOKED_ENTITY_SET_KEY_1    = PERSON_XREF_FQN;
     public static String            WAS_BOOKED_IN_ENTITY_SET_ALIAS = "personwasbookedin";
-
     public static String            DETAILS_OF_IN_ENTITY_SET_NAME  = "jcdetailsof";
     public static FullQualifiedName DETAILS_OF_IN_ENTITY_SET_TYPE  = new FullQualifiedName(
             "jciowa.DetailsOfAssociation" );
     public static FullQualifiedName DETAILS_OF_ENTITY_SET_KEY_1    = JAIL_RECORD_XREF_FQN;
     public static String            DETAILS_OF_IN_ENTITY_SET_ALIAS = "detailsof";
-
-    public static String            SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_SET_NAME   = "jcinteractedwith";
-    public static FullQualifiedName SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_SET_TYPE   = new FullQualifiedName(
+    public static       String            SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_SET_NAME   = "jcinteractedwith";
+    public static       FullQualifiedName SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.OfficerInteractedWithSubject" );
-    public static FullQualifiedName SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_TYPE_KEY_1 = PERSON_XREF_FQN;
-    //    public static String            SUBJECT_INTERACTED_WITH_OFFICER_ALIAS             = "jcinteractedwith";
+    public static       FullQualifiedName SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_TYPE_KEY_1 = PERSON_XREF_FQN;
 
     public static void main( String[] args ) throws InterruptedException {
-        String path = new File( JohnsonCounty.class.getClassLoader().getResource( "Jail_Record_Formatted.csv" )
-                .getPath() )
-                .getAbsolutePath();
+        if ( args.length < 3 ) {
+            System.out.println( "expected: <path> <jwtToken>" );
+            return;
+        }
 
-        //        final String username = "replace me with email username";
-        //        final String password = "replace me with password";
+        final String path = args[ 1 ];
+        final String jwtToken = args[ 2 ];
         final SparkSession sparkSession = MissionControl.getSparkSession();
-        //        final String jwtToken = MissionControl.getIdToken( username, password );
-        final String jwtToken = "JWTTOKENGOESHERE";
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
         
         /*
@@ -166,7 +154,7 @@ public class JohnsonCounty {
         /*
          * PROPERTY TYPES
          */
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.LOCAL, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         UUID Jail_Record_XREF = edm
@@ -1268,6 +1256,7 @@ public class JohnsonCounty {
          * ENTITY SETS
          */
 
+        logger.info( "Creating entity sets." );
         edm.createEntitySets( ImmutableSet.of( new EntitySet(
                 peopleType,
                 SUBJECTS_ENTITY_SET_NAME,
@@ -1324,7 +1313,8 @@ public class JohnsonCounty {
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
-
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         Flight flight = Flight.newFlight()
                 .createEntities()
 
@@ -1567,7 +1557,7 @@ public class JohnsonCounty {
 
         flights.put( flight, payload );
 
-        Shuttle shuttle = new Shuttle( Environment.LOCAL, jwtToken );
+        Shuttle shuttle = new Shuttle( environment, jwtToken );
         shuttle.launch( flights );
     }
 

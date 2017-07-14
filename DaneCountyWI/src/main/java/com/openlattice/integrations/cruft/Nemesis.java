@@ -1,4 +1,4 @@
-package com.dataloom.integrations.iowacity;
+package com.openlattice.integrations.cruft;
 
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 

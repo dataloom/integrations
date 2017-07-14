@@ -1,4 +1,4 @@
-package com.dataloom.integrations.iowacity;
+package com.openlattice.integrations.cruft;
 
 /**
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
@@ -8,19 +8,15 @@ import com.dataloom.client.LoomClient;
 import com.dataloom.edm.type.Analyzer;
 import com.dataloom.edm.type.PropertyType;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
 
 import java.util.concurrent.ExecutionException;
 
 import com.dataloom.edm.EdmApi;
-import com.dataloom.edm.type.Analyzer;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
 // Uncomment to run integration locally
 import com.dataloom.client.RetrofitFactory.Environment;
-
-import static com.dataloom.integrations.iowacity.Nemesis.*;
 
 public class CreateNemesisProperties {
 
@@ -32,7 +28,7 @@ public class CreateNemesisProperties {
 
         // NON PII
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_01,
+                Nemesis.DEM_01,
                 "EMS Agency Unique State ID",
                 Optional.of(
                         "The unique ID assigned to the EMS Agency which is associated with all state licensure numbers and information." ),
@@ -41,7 +37,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_02,
+                Nemesis.DEM_02,
                 "EMS Agency Number",
                 Optional.of( "The state-assigned provider number of the responding agency" ),
                 ImmutableSet.of(),
@@ -49,7 +45,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_03,
+                Nemesis.DEM_03,
                 "EMS Agency State",
                 Optional.of( "The state/territory which assigned the EMS agency number." ),
                 ImmutableSet.of(),
@@ -57,7 +53,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_04,
+                Nemesis.DEM_04,
                 "EMS Agency Service Area States",
                 Optional.of(
                         "The states in which the EMS Agency provides services including the state associated with the EMS Agency Number." ),
@@ -66,7 +62,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_05,
+                Nemesis.DEM_05,
                 "EMS Agency Service Area County(s)",
                 Optional.of( "The county(s) within each state for which the agency formally provides service." ),
                 ImmutableSet.of(),
@@ -74,7 +70,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_06,
+                Nemesis.DEM_06,
                 "EMS Agency Census Tracts",
                 Optional.of( "The US census tracts in which the EMS agency formally provides service." ),
                 ImmutableSet.of(),
@@ -82,7 +78,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_07,
+                Nemesis.DEM_07,
                 "EMS Agency Service Area ZIP Codes",
                 Optional.of( "The ZIP codes for the EMS Agency's service area." ),
                 ImmutableSet.of(),
@@ -90,7 +86,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_08,
+                Nemesis.DEM_08,
                 "Primary Type of Service",
                 Optional.of( "The primary service type provided by the agency." ),
                 ImmutableSet.of(),
@@ -98,7 +94,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_09,
+                Nemesis.DEM_09,
                 "Level of Service",
                 Optional.of(
                         "The level of service which the agency provides EMS care for every request for service (the minimum certification level). This may be the license level granted by the state EMS office." ),
@@ -107,7 +103,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_10,
+                Nemesis.DEM_10,
                 "Organization Status",
                 Optional.of(
                         "The primary organizational status of the agency. The definition of Volunteer or Non-Volunteer is based on state or local definitions." ),
@@ -116,7 +112,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_11,
+                Nemesis.DEM_11,
                 "Organizational Type",
                 Optional.of(
                         "The organizational structure from which EMS services are delivered (fire, hospital, county, etc.)" ),
@@ -125,7 +121,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_12,
+                Nemesis.DEM_12,
                 "EMS Agency Organizational Tax Status",
                 Optional.of( "The EMS Agencies business/corporate organizational tax status" ),
                 ImmutableSet.of(),
@@ -133,7 +129,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_13,
+                Nemesis.DEM_13,
                 "Statistical Calendar Year",
                 Optional.of(
                         "The calendar year to which the information pertains for the EMS Agency and the specific EMS Agency Number (dAgency.02)." ),
@@ -142,7 +138,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_14,
+                Nemesis.DEM_14,
                 "Total Primary Service Area Size",
                 Optional.of( "The total square miles in the agency's service area." ),
                 ImmutableSet.of(),
@@ -150,7 +146,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_15,
+                Nemesis.DEM_15,
                 "Total Service Area Population",
                 Optional.of(
                         "The total population in the agency's service area based if possible on year 2010 census data." ),
@@ -159,7 +155,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_16,
+                Nemesis.DEM_16,
                 "911 EMS Call Center Volume per Year",
                 Optional.of( "The number of 911 EMS called per year based on last calendar year." ),
                 ImmutableSet.of(),
@@ -167,7 +163,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_17,
+                Nemesis.DEM_17,
                 "EMS Dispatch Volume per Year",
                 Optional.of( "The number of EMS dispatches per year based on last calendar year." ),
                 ImmutableSet.of(),
@@ -175,7 +171,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_18,
+                Nemesis.DEM_18,
                 "EMS Patient Transport Volume per Year",
                 Optional.of( "The number of EMS transports per year based on last calendar year." ),
                 ImmutableSet.of(),
@@ -183,7 +179,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_19,
+                Nemesis.DEM_19,
                 "EMS Patient Contact Volume per Year",
                 Optional.of( "The number of EMS patient contacts per year based on last calendar year." ),
                 ImmutableSet.of(),
@@ -191,7 +187,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_20,
+                Nemesis.DEM_20,
                 "EMS Agency Time Zone",
                 Optional.of( "The time zone for the EMS Agency." ),
                 ImmutableSet.of(),
@@ -199,7 +195,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_21,
+                Nemesis.DEM_21,
                 "National Provider Identifier",
                 Optional.of(
                         "The National Provider Identifier associated with National Provider System (NPS) and used in all standard HIPPA transactions such as electronic claim filing." ),
@@ -208,7 +204,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_22,
+                Nemesis.DEM_22,
                 "Fire Department ID Number",
                 Optional.of(
                         "The state assigned Fire Department ID Number for EMS Agency(s) operating within a Fire Department." ),
@@ -217,7 +213,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_23,
+                Nemesis.DEM_23,
                 "State Associated with the Certification/Licensure Levels",
                 Optional.of( "The state associated with the state certification/licensure levels." ),
                 ImmutableSet.of(),
@@ -225,7 +221,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_24,
+                Nemesis.DEM_24,
                 "State Certification Licensure Levels",
                 Optional.of(
                         "All of the potential levels of certification/licensure for EMS personnel recognized by the state." ),
@@ -234,7 +230,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_25,
+                Nemesis.DEM_25,
                 "Procedures Permitted by the State",
                 Optional.of( "A list of all of the procedures permitted by the EMS Agency's licensing state." ),
                 ImmutableSet.of(),
@@ -242,7 +238,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_26,
+                Nemesis.DEM_26,
                 "Medications Permitted by the State",
                 Optional.of(
                         "A list of all of the medications permitted by the state to be used by each EMS state certification/licensure level." ),
@@ -251,7 +247,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_27,
+                Nemesis.DEM_27,
                 "Protocols Permitted by the State",
                 Optional.of( "A list of all of the protocols permitted by the state." ),
                 ImmutableSet.of(),
@@ -259,7 +255,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_28,
+                Nemesis.DEM_28,
                 "EMS Certification Levels Permitted to Perform Each Procedure",
                 Optional.of(
                         "EMS certification levels which are permitted to perform the procedure listed in dConfiguration.07." ),
@@ -268,7 +264,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_29,
+                Nemesis.DEM_29,
                 "EMS Agency Procedures",
                 Optional.of(
                         "A list of all procedures that the agency has implemented and available for use by any/all EMS certification levels." ),
@@ -277,7 +273,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_30,
+                Nemesis.DEM_30,
                 "EMS Certification Level Permitted to Administer Each Medication",
                 Optional.of(
                         "All EMS certification levels which are permitted to administer the medications listed in dConfiguration.09 (EMS Agency Medications)." ),
@@ -286,7 +282,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_31,
+                Nemesis.DEM_31,
                 "EMS Agency Medications",
                 Optional.of( "A list of all medications the agency has implemented and have available for use." ),
                 ImmutableSet.of(),
@@ -294,7 +290,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_32,
+                Nemesis.DEM_32,
                 "EMS Agency Protocols",
                 Optional.of(
                         "A list of all of the EMS field protocols that the agency has in place and available for use." ),
@@ -303,7 +299,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_33,
+                Nemesis.DEM_33,
                 "EMS Agency Specialty Service Capability",
                 Optional.of(
                         "Special training or services provided by the EMS Agency and available to the EMS service area/community." ),
@@ -312,7 +308,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_34,
+                Nemesis.DEM_34,
                 "Emergency Medical Dispatch (EMD) Provided to EMS Agency Service Area",
                 Optional.of(
                         "Indication as to whether Emergency Medical Dispatch is provided to the EMS Agency's service area." ),
@@ -321,7 +317,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_35,
+                Nemesis.DEM_35,
                 "Patient Monitoring Capability(s)",
                 Optional.of(
                         "The EMS Agency's patient monitoring capability which can be provided to any/all patients presenting to EMS." ),
@@ -330,7 +326,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_36,
+                Nemesis.DEM_36,
                 "Crew Call Sign",
                 Optional.of(
                         "The EMS crew call sign used to dispatch and communicate with the unit.  This may be the same as the EMS Unit/Vehicle Number in many agencies." ),
@@ -341,7 +337,7 @@ public class CreateNemesisProperties {
 
         // PII
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_37,
+                Nemesis.DEM_37,
                 "Agency Contact Last Name",
                 Optional.of( "The Last Name of the agency's primary contact." ),
                 ImmutableSet.of(),
@@ -351,7 +347,7 @@ public class CreateNemesisProperties {
 
         // NON PII
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                DEM_38,
+                Nemesis.DEM_38,
                 "Agency Contact ZIP Code",
                 Optional.of( "The ZIP code of the Agency's contact's mailing address." ),
                 ImmutableSet.of(),
@@ -359,7 +355,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_01,
+                Nemesis.EMS_01,
                 "Airway Device Placement Confirmed Method",
                 Optional.of( "The method used to confirm the airway device placement." ),
                 ImmutableSet.of(),
@@ -367,7 +363,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_02,
+                Nemesis.EMS_02,
                 "Cardiac Arrest",
                 Optional.of( "Indication of the presence of a cardiac arrest at any time." ),
                 ImmutableSet.of(),
@@ -375,7 +371,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_03,
+                Nemesis.EMS_03,
                 "Cardiac Arrest Etiology",
                 Optional.of(
                         "Indication of the etiology or cause of the cardiac arrest (classified as cardiac, non-cardiac, etc.)" ),
@@ -384,7 +380,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_04,
+                Nemesis.EMS_04,
                 "Resuscitation Attempted By EMS",
                 Optional.of(
                         "Indication of an attempt to resuscitate the patient who is in cardiac arrest (attempted, not attempted due to DNR, etc.)" ),
@@ -393,7 +389,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_05,
+                Nemesis.EMS_05,
                 "Arrest Witnessed By",
                 Optional.of( "Indication of who the cardiac arrest was witnessed by" ),
                 ImmutableSet.of(),
@@ -403,7 +399,7 @@ public class CreateNemesisProperties {
 
         // NON PII
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_06,
+                Nemesis.EMS_06,
                 "CPR Care Provided Prior to EMS Arrival",
                 Optional.of( "Documentation of the CPR provided prior to EMS arrival" ),
                 ImmutableSet.of(),
@@ -411,7 +407,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_07,
+                Nemesis.EMS_07,
                 "AED Use Prior to EMS Arrival",
                 Optional.of( "Documentation of AED use Prior to EMS Arrival" ),
                 ImmutableSet.of(),
@@ -419,7 +415,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_08,
+                Nemesis.EMS_08,
                 "Type of CPR Provided",
                 Optional.of( "Documentation of the type/technique of CPR used by EMS." ),
                 ImmutableSet.of(),
@@ -427,7 +423,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_09,
+                Nemesis.EMS_09,
                 "Therapeutic Hypothermia Initiated",
                 Optional.of( "Documentation of EMS initiation of Therapeutic Hypothermia." ),
                 ImmutableSet.of(),
@@ -435,7 +431,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_10,
+                Nemesis.EMS_10,
                 "First Monitored Arrest Rhythm of the Patient",
                 Optional.of( "Documentation of what the first monitored arrest rhythm which was noted" ),
                 ImmutableSet.of(),
@@ -443,7 +439,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_11,
+                Nemesis.EMS_11,
                 "Any Return of Spontaneous Circulation",
                 Optional.of( "Indication whether or not there was any return of spontaneous circulation." ),
                 ImmutableSet.of(),
@@ -451,7 +447,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_12,
+                Nemesis.EMS_12,
                 "Date/Time of Cardiac Arrest",
                 Optional.of( "The date/time of the cardiac arrest (if not known, please estimate)." ),
                 ImmutableSet.of(),
@@ -459,7 +455,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_13,
+                Nemesis.EMS_13,
                 "Date/Time Resuscitation Discontinued",
                 Optional.of( "The date/time the CPR was discontinued (or could be time of death)" ),
                 ImmutableSet.of(),
@@ -467,7 +463,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_14,
+                Nemesis.EMS_14,
                 "Reason CPR/Resuscitation Discontinued",
                 Optional.of( "The reason that CPR or the resuscitation efforts were discontinued." ),
                 ImmutableSet.of(),
@@ -475,7 +471,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_15,
+                Nemesis.EMS_15,
                 "Cardiac Rhythm on Arrival at Destination",
                 Optional.of( "The patient's cardiac rhythm upon delivery or transfer to the destination" ),
                 ImmutableSet.of(),
@@ -483,7 +479,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_16,
+                Nemesis.EMS_16,
                 "End of EMS Cardiac Arrest Event",
                 Optional.of( "The patient's outcome at the end of the EMS event." ),
                 ImmutableSet.of(),
@@ -491,7 +487,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_17,
+                Nemesis.EMS_17,
                 "Crew Member ID",
                 Optional.of( "The state certification/licensure ID number assigned to the crew member." ),
                 ImmutableSet.of(),
@@ -499,7 +495,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_18,
+                Nemesis.EMS_18,
                 "Crew Member Level",
                 Optional.of( "The functioning level of the crew member ID during this EMS patient encounter." ),
                 ImmutableSet.of(),
@@ -507,7 +503,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_19,
+                Nemesis.EMS_19,
                 "Complaint Reported by Dispatch",
                 Optional.of( "The complaint dispatch reported to the responding unit." ),
                 ImmutableSet.of(),
@@ -515,7 +511,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_20,
+                Nemesis.EMS_20,
                 "EMD Performed",
                 Optional.of( "Indication of whether Emergency Medical Dispatch was performed for this EMS event." ),
                 ImmutableSet.of(),
@@ -523,7 +519,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_21,
+                Nemesis.EMS_21,
                 "Destination/Transferred To, Name",
                 Optional.of( "The destination the patient was delivered or transferred to." ),
                 ImmutableSet.of(),
@@ -531,7 +527,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_22,
+                Nemesis.EMS_22,
                 "Destination/Transferred To, Code",
                 Optional.of( "The code of the destination the patient was delivered or transferred to." ),
                 ImmutableSet.of(),
@@ -539,7 +535,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_23,
+                Nemesis.EMS_23,
                 "Destination State",
                 Optional.of( "The state of the destination the patient was delivered or transferred to." ),
                 ImmutableSet.of(),
@@ -547,7 +543,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_24,
+                Nemesis.EMS_24,
                 "Destination County",
                 Optional.of( "The destination county in which  the patient was delivered or transferred to." ),
                 ImmutableSet.of(),
@@ -555,7 +551,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_25,
+                Nemesis.EMS_25,
                 "Destination ZIP Code",
                 Optional.of( "The destination ZIP code in which the patient was delivered or transferred to." ),
                 ImmutableSet.of(),
@@ -563,7 +559,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_26,
+                Nemesis.EMS_26,
                 "Incident/Patient Disposition",
                 Optional.of( "Type of disposition treatment and/or transport of the patient by this EMS Unit." ),
                 ImmutableSet.of(),
@@ -571,7 +567,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_27,
+                Nemesis.EMS_27,
                 "EMS Transport Method",
                 Optional.of( "Transport method by this EMS Unit." ),
                 ImmutableSet.of(),
@@ -579,7 +575,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_28,
+                Nemesis.EMS_28,
                 "Transport Mode from Scene",
                 Optional.of( "Indication whether the transport was emergent or non-emergent." ),
                 ImmutableSet.of(),
@@ -587,7 +583,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_29,
+                Nemesis.EMS_29,
                 "Additional Transport Mode Descriptors",
                 Optional.of( "The documentation of transport mode techniques for this EMS response." ),
                 ImmutableSet.of(),
@@ -595,7 +591,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_30,
+                Nemesis.EMS_30,
                 "Condition of Patient at Destination",
                 Optional.of( "The condition of the patient after care by EMS" ),
                 ImmutableSet.of(),
@@ -603,7 +599,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_31,
+                Nemesis.EMS_31,
                 "Reason for Choosing Destination",
                 Optional.of( "The reason the unit chose to deliver or transfer the patient to the destination" ),
                 ImmutableSet.of(),
@@ -611,7 +607,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_32,
+                Nemesis.EMS_32,
                 "Type of Destination",
                 Optional.of( "The type of destination the patient was delivered or transferred to" ),
                 ImmutableSet.of(),
@@ -619,7 +615,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_33,
+                Nemesis.EMS_33,
                 "Hospital In-Patient Destination",
                 Optional.of(
                         "The location within the hospital that the patient was taken directly by EMS (e.g. Cath Lab, ICU, etc.)" ),
@@ -628,7 +624,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_34,
+                Nemesis.EMS_34,
                 "Hospital Designation",
                 Optional.of(
                         "The designation associated with the hospital for this transport(e.g. Trauma, STEMI, Peds, etc)" ),
@@ -637,7 +633,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_35,
+                Nemesis.EMS_35,
                 "Destination Team Pre-Arrival Activation",
                 Optional.of(
                         "Activation of the Destination Healthcare Facility Team prior to EMS arrival for acute ill or injured patient." ),
@@ -646,7 +642,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_36,
+                Nemesis.EMS_36,
                 "Date/Time of Destination Prearrival Activation",
                 Optional.of(
                         "Date/Time EMS Notified/Activated the Destination Healthcare Facility Team prior to EMS arrival for acute ill or injured patient." ),
@@ -655,7 +651,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_37,
+                Nemesis.EMS_37,
                 "Date/Time of Assessment",
                 Optional.of( "The date/time of the assessment" ),
                 ImmutableSet.of(),
@@ -663,7 +659,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_38,
+                Nemesis.EMS_38,
                 "Skin Assessment",
                 Optional.of( "The assessment findings associated with the patient's skin." ),
                 ImmutableSet.of(),
@@ -671,7 +667,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_39,
+                Nemesis.EMS_39,
                 "Head Assessment",
                 Optional.of( "The assessment findings associated with the patient's head." ),
                 ImmutableSet.of(),
@@ -679,7 +675,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_40,
+                Nemesis.EMS_40,
                 "Face Assessment",
                 Optional.of( "The assessment findings associated with the patient's face." ),
                 ImmutableSet.of(),
@@ -687,7 +683,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_41,
+                Nemesis.EMS_41,
                 "Neck Assessment",
                 Optional.of( "The assessment findings associated with the patient's neck." ),
                 ImmutableSet.of(),
@@ -695,7 +691,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_42,
+                Nemesis.EMS_42,
                 "Chest/Lungs Assessment",
                 Optional.of( "The assessment findings associated with the patient's chest/lungs." ),
                 ImmutableSet.of(),
@@ -703,7 +699,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_43,
+                Nemesis.EMS_43,
                 "Heart Assessment",
                 Optional.of( "The assessment findings associated with the patient's heart." ),
                 ImmutableSet.of(),
@@ -711,7 +707,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_44,
+                Nemesis.EMS_44,
                 "Abdominal Assessment Finding Location",
                 Optional.of( "The location of the patient's abdomen assessment findings." ),
                 ImmutableSet.of(),
@@ -719,7 +715,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_45,
+                Nemesis.EMS_45,
                 "Abdomen Assessment",
                 Optional.of( "The assessment findings associated with the patient's abdomen." ),
                 ImmutableSet.of(),
@@ -727,7 +723,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_46,
+                Nemesis.EMS_46,
                 "Pelvis/Genitourinary Assessment",
                 Optional.of( "The assessment findings associated with the patient's pelvis/genitourinary." ),
                 ImmutableSet.of(),
@@ -735,7 +731,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_47,
+                Nemesis.EMS_47,
                 "Back and Spine Assessment Finding Location",
                 Optional.of( "The location of the patient's back and spine assessment findings." ),
                 ImmutableSet.of(),
@@ -743,7 +739,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_48,
+                Nemesis.EMS_48,
                 "Back and Spine Assessment",
                 Optional.of(
                         "The assessment findings associated with the patient's spine (Cervical, Thoracic, Lumbar, and Sacral) and back exam." ),
@@ -752,7 +748,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_49,
+                Nemesis.EMS_49,
                 "Extremity Assessment Finding Location",
                 Optional.of( "The location of the patient's extremity assessment findings." ),
                 ImmutableSet.of(),
@@ -760,7 +756,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_50,
+                Nemesis.EMS_50,
                 "Extremities Assessment",
                 Optional.of( "The assessment findings associated with the patient's extremities." ),
                 ImmutableSet.of(),
@@ -768,7 +764,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_51,
+                Nemesis.EMS_51,
                 "Eye Assessment Finding Location",
                 Optional.of( "The location of the patient's eye assessment findings." ),
                 ImmutableSet.of(),
@@ -776,7 +772,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_52,
+                Nemesis.EMS_52,
                 "Eye Assessment",
                 Optional.of( "The assessment findings of the patient's eye examination." ),
                 ImmutableSet.of(),
@@ -784,7 +780,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_53,
+                Nemesis.EMS_53,
                 "Mental Status Assessment",
                 Optional.of( "The assessment findings of the patient's mental status examination." ),
                 ImmutableSet.of(),
@@ -792,7 +788,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_54,
+                Nemesis.EMS_54,
                 "Neurological Assessment",
                 Optional.of( "The assessment findings of the patient's neurological examination." ),
                 ImmutableSet.of(),
@@ -800,7 +796,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_55,
+                Nemesis.EMS_55,
                 "Barriers to Patient Care",
                 Optional.of(
                         "Indication of whether or not there were any patient specific barriers to serving the patient at the scene" ),
@@ -809,7 +805,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_56,
+                Nemesis.EMS_56,
                 "Alcohol/Drug Use Indicators",
                 Optional.of(
                         "Indicators for the potential use of alcohol or drugs by the patient related to the patient's current illness or injury." ),
@@ -818,7 +814,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_57,
+                Nemesis.EMS_57,
                 "Cause of Injury",
                 Optional.of( "The category of the reported/suspected external cause of the injury." ),
                 ImmutableSet.of(),
@@ -826,7 +822,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_58,
+                Nemesis.EMS_58,
                 "Trauma Center Criteria",
                 Optional.of(
                         "Field Triage Criteria for transport to a trauma center as defined by the Centers for Disease Control and Prevention and the American College of Surgeons-Committee on Trauma." ),
@@ -835,7 +831,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_59,
+                Nemesis.EMS_59,
                 "Vehicular, Pedestrian, or Other Injury Risk Factor",
                 Optional.of( "The kind of risk factor predictors present at the incident" ),
                 ImmutableSet.of(),
@@ -843,7 +839,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_60,
+                Nemesis.EMS_60,
                 "Main Area of the Vehicle Impacted by the Collision",
                 Optional.of( "The area or location of initial impact on the vehicle based on 12-point clock diagram." ),
                 ImmutableSet.of(),
@@ -851,7 +847,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_61,
+                Nemesis.EMS_61,
                 "Location of Patient in Vehicle",
                 Optional.of(
                         "The seat row location of the vehicle at the time of the crash with the front seat numbered as 1" ),
@@ -860,7 +856,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_62,
+                Nemesis.EMS_62,
                 "Use of Occupant Safety Equipment",
                 Optional.of( "Safety equipment in use by the patient at the time of the injury" ),
                 ImmutableSet.of(),
@@ -868,7 +864,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_63,
+                Nemesis.EMS_63,
                 "Airbag Deployment",
                 Optional.of( "Indication of Airbag Deployment" ),
                 ImmutableSet.of(),
@@ -876,7 +872,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_64,
+                Nemesis.EMS_64,
                 "Height of Fall (feet)",
                 Optional.of(
                         "The distance in feet the patient fell, measured from the lowest point of the patient to the ground" ),
@@ -885,7 +881,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_65,
+                Nemesis.EMS_65,
                 "Date/Time Medication Administered",
                 Optional.of( "The date/time medication administered to the patient" ),
                 ImmutableSet.of(),
@@ -893,7 +889,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_66,
+                Nemesis.EMS_66,
                 "Medication Administered Prior to this Units EMS Care",
                 Optional.of(
                         "Indicates that the medication administration which is documented was administered prior to this EMS units care" ),
@@ -902,7 +898,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_67,
+                Nemesis.EMS_67,
                 "Medication Given",
                 Optional.of( "The medication given to the patient" ),
                 ImmutableSet.of(),
@@ -910,7 +906,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_68,
+                Nemesis.EMS_68,
                 "Medication Dosage",
                 Optional.of( "The dose or amount of the medication given to the patient" ),
                 ImmutableSet.of(),
@@ -918,7 +914,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_69,
+                Nemesis.EMS_69,
                 "Medication Dosage Units",
                 Optional.of( "The unit of medication dosage given to patient" ),
                 ImmutableSet.of(),
@@ -926,7 +922,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_70,
+                Nemesis.EMS_70,
                 "Response to Medication",
                 Optional.of( "The patient's response to the medication" ),
                 ImmutableSet.of(),
@@ -934,7 +930,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_71,
+                Nemesis.EMS_71,
                 "Medication Complication",
                 Optional.of(
                         "Any complication (abnormal effect on the patient) associated with the administration of the medication to the patient by EMS" ),
@@ -943,7 +939,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_72,
+                Nemesis.EMS_72,
                 "Medication Crew (Healthcare Professionals) ID",
                 Optional.of(
                         "The statewide assigned ID number of the EMS crew member giving the treatment to the patient" ),
@@ -952,7 +948,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_73,
+                Nemesis.EMS_73,
                 "Role/Type of Person Administering Medication",
                 Optional.of(
                         "The type (level) of EMS or Healthcare Professional Administering the Medication. For medications administered prior to EMS arrival, this may be a non-EMS healthcare professional." ),
@@ -961,7 +957,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_74,
+                Nemesis.EMS_74,
                 "Suspected EMS Work Related Exposure, Injury, or Death",
                 Optional.of(
                         "Indication of an EMS work related exposure, injury, or death associated with this EMS event." ),
@@ -970,7 +966,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_75,
+                Nemesis.EMS_75,
                 "Emergency Department Disposition",
                 Optional.of( "The known disposition of the patient from the Emergency Department (ED)" ),
                 ImmutableSet.of(),
@@ -978,7 +974,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_76,
+                Nemesis.EMS_76,
                 "Hospital Disposition",
                 Optional.of( "The known disposition of the patient from the hospital, if admitted." ),
                 ImmutableSet.of(),
@@ -988,7 +984,7 @@ public class CreateNemesisProperties {
 
         // PII
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_77,
+                Nemesis.EMS_77,
                 "Last Name",
                 Optional.of( "The patient's last (family) name" ),
                 ImmutableSet.of(),
@@ -996,7 +992,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.of( Analyzer.METAPHONE ) ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_78,
+                Nemesis.EMS_78,
                 "First Name",
                 Optional.of( "The patient's first (given) name" ),
                 ImmutableSet.of(),
@@ -1004,7 +1000,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.of( Analyzer.METAPHONE ) ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_79,
+                Nemesis.EMS_79,
                 "Patient's Home Address",
                 Optional.of( "The patient's home mailing or street address" ),
                 ImmutableSet.of(),
@@ -1012,7 +1008,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_80,
+                Nemesis.EMS_80,
                 "Patient's Home City",
                 Optional.of( "The patient's home city or township or residence" ),
                 ImmutableSet.of(),
@@ -1020,7 +1016,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_81,
+                Nemesis.EMS_81,
                 "Patient's Home County",
                 Optional.of( "The patient's home county or parish or residence" ),
                 ImmutableSet.of(),
@@ -1028,7 +1024,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_82,
+                Nemesis.EMS_82,
                 "Patient's Home State",
                 Optional.of(
                         "The patient's home state, territory, or province, or District of Columbia, where the patient resides." ),
@@ -1037,7 +1033,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_83,
+                Nemesis.EMS_83,
                 "Patient's Home ZIP Code",
                 Optional.of( "The patient's home ZIP code of residence" ),
                 ImmutableSet.of(),
@@ -1045,7 +1041,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_84,
+                Nemesis.EMS_84,
                 "Social Security Number",
                 Optional.of( "The patient's social security number" ),
                 ImmutableSet.of(),
@@ -1053,7 +1049,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_85,
+                Nemesis.EMS_85,
                 "Gender",
                 Optional.of( "The Patient's Gender" ),
                 ImmutableSet.of(),
@@ -1061,7 +1057,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_86,
+                Nemesis.EMS_86,
                 "Race",
                 Optional.of( "The patient's race as defined by the OMB (US Office of Management and Budget)" ),
                 ImmutableSet.of(),
@@ -1069,7 +1065,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_87,
+                Nemesis.EMS_87,
                 "Age",
                 Optional.of( "The patient's age (either calculated from date of birth or best approximation)" ),
                 ImmutableSet.of(),
@@ -1077,7 +1073,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_88,
+                Nemesis.EMS_88,
                 "Age Units",
                 Optional.of( "The unit used to define the patient's age" ),
                 ImmutableSet.of(),
@@ -1085,7 +1081,7 @@ public class CreateNemesisProperties {
                 Optional.of( true ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_89,
+                Nemesis.EMS_89,
                 "Date of Birth",
                 Optional.of( "The patient's date of birth" ),
                 ImmutableSet.of(),
@@ -1095,7 +1091,7 @@ public class CreateNemesisProperties {
 
         // NON PII
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_90,
+                Nemesis.EMS_90,
                 "Primary Method of Payment",
                 Optional.of( "The primary method of payment or type of insurance associated with this EMS encounter" ),
                 ImmutableSet.of(),
@@ -1103,7 +1099,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_91,
+                Nemesis.EMS_91,
                 "CMS Service Level",
                 Optional.of( "The CMS service level for this EMS encounter." ),
                 ImmutableSet.of(),
@@ -1111,7 +1107,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_92,
+                Nemesis.EMS_92,
                 "EMS Condition Code",
                 Optional.of( "The condition code associated with the CMS EMS negotiated rule-making process." ),
                 ImmutableSet.of(),
@@ -1119,7 +1115,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_93,
+                Nemesis.EMS_93,
                 "Date/Time Procedure Performed",
                 Optional.of( "The date/time the procedure was performed on the patient" ),
                 ImmutableSet.of(),
@@ -1127,7 +1123,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_94,
+                Nemesis.EMS_94,
                 "Procedure Performed Prior to this Units EMS Care",
                 Optional.of(
                         "Indicates that the procedure which was performed and documented was performed prior to this EMS units care." ),
@@ -1136,7 +1132,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_95,
+                Nemesis.EMS_95,
                 "Procedure",
                 Optional.of( "The procedure performed on the patient." ),
                 ImmutableSet.of(),
@@ -1144,7 +1140,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_96,
+                Nemesis.EMS_96,
                 "Number of Procedure Attempts",
                 Optional.of(
                         "The number of attempts taken to complete a procedure or intervention regardless of success." ),
@@ -1153,7 +1149,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_97,
+                Nemesis.EMS_97,
                 "Procedure Successful",
                 Optional.of( "Indicates that this procedure attempt which was performed on the patient was successful" ),
                 ImmutableSet.of(),
@@ -1161,7 +1157,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_98,
+                Nemesis.EMS_98,
                 "Procedure Complication",
                 Optional.of(
                         "Any complication (abnormal effect on the patient) associated with the performance of the procedure on the patient" ),
@@ -1170,7 +1166,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_99,
+                Nemesis.EMS_99,
                 "Response to Procedure",
                 Optional.of( "The patient's response to the procedure" ),
                 ImmutableSet.of(),
@@ -1178,7 +1174,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_100,
+                Nemesis.EMS_100,
                 "Procedure Crew Members ID",
                 Optional.of(
                         "The statewide assigned ID number of the EMS crew member performing the procedure on the patient" ),
@@ -1187,7 +1183,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_101,
+                Nemesis.EMS_101,
                 "Role/Type of Person Performing the Procedure",
                 Optional.of(
                         "The type (level) of EMS or Healthcare Professional performing the procedure. For procedures performed prior to EMS arrival, this may be a non-EMS healthcare professional." ),
@@ -1196,7 +1192,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_102,
+                Nemesis.EMS_102,
                 "Protocols Used",
                 Optional.of( "The protocol used by EMS personnel to direct the clinical care of the patient" ),
                 ImmutableSet.of(),
@@ -1204,7 +1200,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_103,
+                Nemesis.EMS_103,
                 "Protocol Age Category",
                 Optional.of( "The age group the protocol is written to address" ),
                 ImmutableSet.of(),
@@ -1212,7 +1208,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_104,
+                Nemesis.EMS_104,
                 "Patient Care Report Number",
                 Optional.of(
                         "The unique number automatically assigned by the EMS agency for each Patient Care Report (PCR). This should be a unique number for the EMS agency for all of time." ),
@@ -1221,7 +1217,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_105,
+                Nemesis.EMS_105,
                 "Software Creator",
                 Optional.of(
                         "The name of the vendor, manufacturer, and developer who designed the application that created this record." ),
@@ -1230,7 +1226,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_106,
+                Nemesis.EMS_106,
                 "Software Name",
                 Optional.of( "The name of the application used to create this record." ),
                 ImmutableSet.of(),
@@ -1238,7 +1234,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_107,
+                Nemesis.EMS_107,
                 "Software Version",
                 Optional.of( "The version of the application used to create this record." ),
                 ImmutableSet.of(),
@@ -1246,7 +1242,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_108,
+                Nemesis.EMS_108,
                 "EMS Agency Number",
                 Optional.of( "The state-assigned provider number of the responding agency" ),
                 ImmutableSet.of(),
@@ -1254,7 +1250,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_109,
+                Nemesis.EMS_109,
                 "Incident Number",
                 Optional.of( "The incident number assigned by the 911 Dispatch System" ),
                 ImmutableSet.of(),
@@ -1262,7 +1258,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_110,
+                Nemesis.EMS_110,
                 "EMS Response Number",
                 Optional.of(
                         "The internal EMS response number which is unique for each EMS Vehicle's (Unit) response to an incident within an EMS Agency." ),
@@ -1271,7 +1267,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_111,
+                Nemesis.EMS_111,
                 "Type of Service Requested",
                 Optional.of(
                         "The type of service or category of service requested of the EMS Agency responding for this specific EMS event" ),
@@ -1280,7 +1276,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_112,
+                Nemesis.EMS_112,
                 "Primary Role of the Unit",
                 Optional.of( "The Primary role of the EMS Unit which responded to this specific EMS event" ),
                 ImmutableSet.of(),
@@ -1288,7 +1284,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_113,
+                Nemesis.EMS_113,
                 "Type of Dispatch Delay",
                 Optional.of(
                         "The dispatch delays, if any, associated with the dispatch of the EMS unit to the EMS event." ),
@@ -1297,7 +1293,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_114,
+                Nemesis.EMS_114,
                 "Type of Response Delay",
                 Optional.of( "The response delays, if any, of the EMS unit associated with the EMS event." ),
                 ImmutableSet.of(),
@@ -1305,7 +1301,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_115,
+                Nemesis.EMS_115,
                 "Type of Scene Delay",
                 Optional.of( "The scene delays, if any, of the EMS unit associated with the EMS event." ),
                 ImmutableSet.of(),
@@ -1313,7 +1309,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_116,
+                Nemesis.EMS_116,
                 "Type of Transport Delay",
                 Optional.of( "The transport delays, if any, of the EMS unit associated with the EMS event." ),
                 ImmutableSet.of(),
@@ -1321,7 +1317,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_117,
+                Nemesis.EMS_117,
                 "Type of Turn-Around Delay",
                 Optional.of( "The turn-around delays, if any, of EMS unit associated with the EMS event." ),
                 ImmutableSet.of(),
@@ -1329,7 +1325,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_118,
+                Nemesis.EMS_118,
                 "EMS Vehicle (Unit) Number",
                 Optional.of( "The unique physical vehicle number of the responding unit." ),
                 ImmutableSet.of(),
@@ -1337,7 +1333,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_119,
+                Nemesis.EMS_119,
                 "EMS Unit Call Sign",
                 Optional.of(
                         "The EMS unit number used to dispatch and communicate with the unit. This may be the same as the EMS Unit/Vehicle Number in many agencies." ),
@@ -1346,7 +1342,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_120,
+                Nemesis.EMS_120,
                 "Level of Care of This Unit",
                 Optional.of(
                         "The level of care (BLS or ALS) the unit is able to provide based on the units’ treatment capabilities for this EMS response." ),
@@ -1355,7 +1351,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_121,
+                Nemesis.EMS_121,
                 "Response Mode to Scene",
                 Optional.of(
                         "The indication whether the response was emergent or non-emergent. An emergent response is an immediate response (typically using lights and sirens)." ),
@@ -1364,7 +1360,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_122,
+                Nemesis.EMS_122,
                 "Additional Response Mode Descriptors",
                 Optional.of( "The documentation of response mode techniques used for this EMS response." ),
                 ImmutableSet.of(),
@@ -1372,7 +1368,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_123,
+                Nemesis.EMS_123,
                 "First EMS Unit on Scene",
                 Optional.of( "Documentation that this EMS Unit was the first EMS Unit for the EMS Agency on the Scene" ),
                 ImmutableSet.of(),
@@ -1380,7 +1376,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_124,
+                Nemesis.EMS_124,
                 "Number of Patients at Scene",
                 Optional.of( "Indicator of how many total patients were at the scene" ),
                 ImmutableSet.of(),
@@ -1388,7 +1384,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_125,
+                Nemesis.EMS_125,
                 "Mass Casualty Incident",
                 Optional.of(
                         "Indicator if this event would be considered a mass casualty incident (overwhelmed existing EMS resources)" ),
@@ -1397,7 +1393,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_126,
+                Nemesis.EMS_126,
                 "Triage Classification for MCI Patient",
                 Optional.of(
                         "The color associated with the initial triage assessment/classification of the MCI patient." ),
@@ -1406,7 +1402,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_127,
+                Nemesis.EMS_127,
                 "Incident Location Type",
                 Optional.of( "The kind of location where the incident happened" ),
                 ImmutableSet.of(),
@@ -1416,7 +1412,7 @@ public class CreateNemesisProperties {
 
         // PII?
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_128,
+                Nemesis.EMS_128,
                 "Scene GPS Location",
                 Optional.of( "The GPS coordinates associated with the Scene." ),
                 ImmutableSet.of(),
@@ -1426,7 +1422,7 @@ public class CreateNemesisProperties {
 
         // PII?
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_129,
+                Nemesis.EMS_129,
                 "Incident Street Address",
                 Optional.of(
                         "“The street address where the patient was found, or, if no patient, the address to which the unit responded.”" ),
@@ -1437,7 +1433,7 @@ public class CreateNemesisProperties {
 
         // NON PII
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_130,
+                Nemesis.EMS_130,
                 "Incident City",
                 Optional.of(
                         "The city or township (if applicable) where the patient was found or to which the unit responded (or best approximation)" ),
@@ -1446,7 +1442,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_131,
+                Nemesis.EMS_131,
                 "Incident State",
                 Optional.of(
                         "The state, territory, or province where the patient was found or to which the unit responded (or best approximation)" ),
@@ -1455,7 +1451,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_132,
+                Nemesis.EMS_132,
                 "Incident ZIP Code",
                 Optional.of( "The ZIP code of the incident location" ),
                 ImmutableSet.of(),
@@ -1463,7 +1459,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_133,
+                Nemesis.EMS_133,
                 "Incident County",
                 Optional.of(
                         "The county or parish where the patient was found or to which the unit responded (or best approximation)" ),
@@ -1474,7 +1470,7 @@ public class CreateNemesisProperties {
 
         // NON PII
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_134,
+                Nemesis.EMS_134,
                 "Date/Time of Symptom Onset/Last Normal",
                 Optional.of(
                         "The date and time the symptom began as it relates to this EMS event. This is described or estimated by the patient, family, and/or healthcare professionals." ),
@@ -1483,7 +1479,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_135,
+                Nemesis.EMS_135,
                 "Possible Injury",
                 Optional.of( "Indication whether or not there was an injury" ),
                 ImmutableSet.of(),
@@ -1491,7 +1487,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_136,
+                Nemesis.EMS_136,
                 "Chief Complaint Anatomic Location",
                 Optional.of( "The primary anatomic location of the chief complaint as identified by EMS personnel" ),
                 ImmutableSet.of(),
@@ -1499,7 +1495,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_137,
+                Nemesis.EMS_137,
                 "Chief Complaint Organ System",
                 Optional.of( "The primary organ system of the patient injured or medically affected." ),
                 ImmutableSet.of(),
@@ -1507,7 +1503,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_138,
+                Nemesis.EMS_138,
                 "Primary Symptom",
                 Optional.of( "The primary sign and symptom present in the patient or observed by EMS personnel" ),
                 ImmutableSet.of(),
@@ -1515,7 +1511,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_139,
+                Nemesis.EMS_139,
                 "Other Associated Symptoms",
                 Optional.of( "Other symptoms identified by the patient or observed by EMS personnel" ),
                 ImmutableSet.of(),
@@ -1523,7 +1519,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_140,
+                Nemesis.EMS_140,
                 "Provider's Primary Impression",
                 Optional.of(
                         "The EMS personnel's impression of the patient's primary problem or most significant condition which led to the management given to the patient (treatments, medications, or procedures)." ),
@@ -1532,7 +1528,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_141,
+                Nemesis.EMS_141,
                 "Provider's Secondary Impressions",
                 Optional.of(
                         "The EMS personnel's impression of the patient's secondary problem or most significant condition which led to the management given to the patient (treatments, medications, or procedures)." ),
@@ -1541,7 +1537,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_142,
+                Nemesis.EMS_142,
                 "Initial Patient Acuity",
                 Optional.of( "The acuity of the patient’s condition upon EMS arrival at the scene." ),
                 ImmutableSet.of(),
@@ -1549,7 +1545,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_143,
+                Nemesis.EMS_143,
                 "PSAP Call Date/Time",
                 Optional.of(
                         "The date/time the phone rings (911 call to public safety answering point or other designated entity) requesting EMS services." ),
@@ -1558,7 +1554,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_144,
+                Nemesis.EMS_144,
                 "Unit Notified by Dispatch Date/Time",
                 Optional.of( "The date/time the responding unit was notified by dispatch." ),
                 ImmutableSet.of(),
@@ -1566,7 +1562,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_145,
+                Nemesis.EMS_145,
                 "Unit En Route Date/Time",
                 Optional.of( "The date/time the unit responded; that is, the time the vehicle started moving." ),
                 ImmutableSet.of(),
@@ -1574,7 +1570,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_146,
+                Nemesis.EMS_146,
                 "Unit Arrived on Scene Date/Time",
                 Optional.of(
                         "The date/time the responding unit arrived on the scene; that is, the time the vehicle stopped moving at the scene." ),
@@ -1583,7 +1579,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_147,
+                Nemesis.EMS_147,
                 "Arrived at Patient Date/Time",
                 Optional.of( "The date/time the responding unit arrived at the patient's side." ),
                 ImmutableSet.of(),
@@ -1591,7 +1587,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_148,
+                Nemesis.EMS_148,
                 "Unit Left Scene Date/Time",
                 Optional.of( "The date/time the responding unit left the scene with a patient (started moving)." ),
                 ImmutableSet.of(),
@@ -1599,7 +1595,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_149,
+                Nemesis.EMS_149,
                 "Patient Arrived at Destination Date/Time",
                 Optional.of(
                         "The date/time the responding unit arrived with the patient at the destination or transfer point." ),
@@ -1608,7 +1604,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_150,
+                Nemesis.EMS_150,
                 "Destination Patient Transfer of Care Date/Time",
                 Optional.of(
                         "The date/time that patient care was transferred to the destination healthcare facilities staff." ),
@@ -1617,7 +1613,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_151,
+                Nemesis.EMS_151,
                 "Unit Back in Service Date/Time",
                 Optional.of(
                         "The date/time the unit back was back in service and available for response (finished with call, but not necessarily back in home location)." ),
@@ -1626,7 +1622,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_152,
+                Nemesis.EMS_152,
                 "Unit Back at Home Location Date/Time",
                 Optional.of(
                         "The date/time the responding unit was back in their service area. With agencies who utilized Agency Status Management, home location means the service area as assigned through the agency status management protocol." ),
@@ -1635,7 +1631,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_153,
+                Nemesis.EMS_153,
                 "Date/Time Vital Signs Taken",
                 Optional.of( "The date/time vital signs were taken on the patient." ),
                 ImmutableSet.of(),
@@ -1643,7 +1639,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_154,
+                Nemesis.EMS_154,
                 "Obtained Prior to this Units EMS Care",
                 Optional.of(
                         "Indicates that the information which is documented was obtained prior to the documenting EMS units care." ),
@@ -1652,7 +1648,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_155,
+                Nemesis.EMS_155,
                 "Cardiac Rhythm / Electrocardiography (ECG)",
                 Optional.of(
                         "The cardiac rhythm / ECG and other electrocardiography findings of the patient as interpreted by EMS personnel." ),
@@ -1661,7 +1657,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_156,
+                Nemesis.EMS_156,
                 "ECG Type",
                 Optional.of( "The type of ECG associated with the cardiac rhythm." ),
                 ImmutableSet.of(),
@@ -1669,7 +1665,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_157,
+                Nemesis.EMS_157,
                 "Method of ECG Interpretation",
                 Optional.of( "The method of ECG interpretation." ),
                 ImmutableSet.of(),
@@ -1677,7 +1673,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_158,
+                Nemesis.EMS_158,
                 "SBP (Systolic Blood Pressure)",
                 Optional.of( "The patient's systolic blood pressure." ),
                 ImmutableSet.of(),
@@ -1685,7 +1681,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_159,
+                Nemesis.EMS_159,
                 "DBP (Diastolic Blood Pressure)",
                 Optional.of( "The patient's diastolic blood pressure." ),
                 ImmutableSet.of(),
@@ -1693,7 +1689,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_160,
+                Nemesis.EMS_160,
                 "Method of Blood Pressure Measurement",
                 Optional.of( "Indication of method of blood pressure measurement." ),
                 ImmutableSet.of(),
@@ -1701,7 +1697,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_161,
+                Nemesis.EMS_161,
                 "Heart Rate",
                 Optional.of( "The patient's heart rate expressed as a number per minute." ),
                 ImmutableSet.of(),
@@ -1709,7 +1705,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_162,
+                Nemesis.EMS_162,
                 "Pulse Oximetry",
                 Optional.of( "The patient's oxygen saturation." ),
                 ImmutableSet.of(),
@@ -1717,7 +1713,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_163,
+                Nemesis.EMS_163,
                 "Respiratory Rate",
                 Optional.of( "The patient's respiratory rate expressed as a number per minute." ),
                 ImmutableSet.of(),
@@ -1725,7 +1721,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_164,
+                Nemesis.EMS_164,
                 "Carbon Dioxide (CO2)",
                 Optional.of( "The patient's end-tidal or other CO2 level." ),
                 ImmutableSet.of(),
@@ -1733,7 +1729,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_165,
+                Nemesis.EMS_165,
                 "Blood Glucose Level",
                 Optional.of( "The patient's blood glucose level." ),
                 ImmutableSet.of(),
@@ -1741,7 +1737,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_166,
+                Nemesis.EMS_166,
                 "Glasgow Coma Score-Eye",
                 Optional.of( "The patient's Glasgow Coma Score Eye opening." ),
                 ImmutableSet.of(),
@@ -1749,7 +1745,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_167,
+                Nemesis.EMS_167,
                 "Glasgow Coma Score-Verbal",
                 Optional.of( "The patient's Glasgow Coma Score Verbal." ),
                 ImmutableSet.of(),
@@ -1757,7 +1753,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_168,
+                Nemesis.EMS_168,
                 "Glasgow Coma Score-Motor",
                 Optional.of( "The patient's Glasgow Coma Score Motor" ),
                 ImmutableSet.of(),
@@ -1765,7 +1761,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_169,
+                Nemesis.EMS_169,
                 "Glasgow Coma Score-Qualifier",
                 Optional.of( "Documentation of factors which make the GCS score more meaningful." ),
                 ImmutableSet.of(),
@@ -1773,7 +1769,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_170,
+                Nemesis.EMS_170,
                 "Level of Responsiveness (AVPU)",
                 Optional.of( "The patient's highest level of responsiveness." ),
                 ImmutableSet.of(),
@@ -1781,7 +1777,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_171,
+                Nemesis.EMS_171,
                 "Pain Score",
                 Optional.of( "The patient's indication of pain from a scale of 0-10." ),
                 ImmutableSet.of(),
@@ -1789,7 +1785,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_172,
+                Nemesis.EMS_172,
                 "Stroke Scale Score",
                 Optional.of( "The patient's Stroke Scale Results." ),
                 ImmutableSet.of(),
@@ -1797,7 +1793,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_173,
+                Nemesis.EMS_173,
                 "Stroke Scale Type",
                 Optional.of( "The type of stroke pain scale used." ),
                 ImmutableSet.of(),
@@ -1805,7 +1801,7 @@ public class CreateNemesisProperties {
                 Optional.of( false ),
                 Optional.absent() ) );
         edm.createPropertyType( new PropertyType( Optional.absent(),
-                EMS_174,
+                Nemesis.EMS_174,
                 "Reperfusion Checklist",
                 Optional.of( "The results of the patient's Reperfusion Checklist for potential Thrombolysis use." ),
                 ImmutableSet.of(),

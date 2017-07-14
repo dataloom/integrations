@@ -16,9 +16,9 @@ import com.dataloom.edm.type.PropertyType;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.kryptnostic.shuttle.Flight;
-import com.kryptnostic.shuttle.MissionControl;
-import com.kryptnostic.shuttle.Shuttle;
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.MissionControl;
+import com.openlattice.shuttle.Shuttle;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -61,7 +61,6 @@ public class IowaCityJail {
     public static        FullQualifiedName       GUID_FQN          = new FullQualifiedName( "general", "guid" );
     public static        DateTimeFormatter       jailDataFormatter = DateTimeFormat.forPattern( "dd-MMM-yy" );
     private static       Pattern                 p                 = Pattern.compile( ".*\\n*.*\\n*\\((.+),(.+)\\)" );
-    private static String jwtToken;
     private static Environment environment = Environment.PRODUCTION;
 
     static {
@@ -74,8 +73,8 @@ public class IowaCityJail {
 
     public static void main( String[] args ) throws InterruptedException {
         // jwtToken = args[ 0 ];
-        String path = args[ 0 ];
-        jwtToken = args[ 1 ];
+        final String path = args[ 1] ;
+        final String jwtToken = args[ 2 ];
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );

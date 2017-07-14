@@ -1,317 +1,298 @@
 package com.dataloom.integrations.iowacity;
 
-import java.io.File;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.UUID;
-
-import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.catalyst.expressions.aggregate.First;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spark_project.guava.collect.Maps;
-
-import com.auth0.Auth0;
-import com.auth0.authentication.AuthenticationAPIClient;
-import com.auth0.request.AuthenticationRequest;
 import com.dataloom.authorization.securable.SecurableObjectType;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
+import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.edm.EntitySet;
 import com.dataloom.edm.type.Analyzer;
 import com.dataloom.edm.type.AssociationType;
 import com.dataloom.edm.type.EntityType;
 import com.dataloom.edm.type.PropertyType;
+import com.dataloom.mappers.ObjectMappers;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import com.kryptnostic.shuttle.Flight;
-import com.kryptnostic.shuttle.MissionControl;
-import com.kryptnostic.shuttle.Shuttle;
-
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.MissionControl;
+import com.openlattice.shuttle.Shuttle;
+import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
+import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.spark_project.guava.collect.Maps;
 import retrofit2.Retrofit;
 
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.UUID;
+
 public class JohnsonCountyExtended {
+    public static final Environment       environment                                = Environment.STAGING;
     // Logger is used to output useful debugging messages to the console
-    private static final Logger     logger                                        = LoggerFactory
+    private static final Logger logger = LoggerFactory
             .getLogger( JohnsonCountyExtended.class );
-
     // PROPERTIES
-    public static FullQualifiedName JAIL_RECORD_XREF_FQN                          = new FullQualifiedName(
+    public static FullQualifiedName JAIL_RECORD_XREF_FQN = new FullQualifiedName(
             "publicsafety.xref" );
-    public static FullQualifiedName PERSON_XREF_FQN                               = new FullQualifiedName(
+    public static FullQualifiedName PERSON_XREF_FQN      = new FullQualifiedName(
             "publicsafety.xref" );
-    public static FullQualifiedName OFFICER_XREF_FQN                              = new FullQualifiedName(
+    public static FullQualifiedName OFFICER_XREF_FQN     = new FullQualifiedName(
             "publicsafety.xref" );
-
-    public static FullQualifiedName ACTUAL_NO_FQN                                 = new FullQualifiedName(
+    public static FullQualifiedName ACTUAL_NO_FQN                = new FullQualifiedName(
             "publicsafety.ActualNumber" );
-    public static FullQualifiedName ARREST_NO_FQN                                 = new FullQualifiedName(
+    public static FullQualifiedName ARREST_NO_FQN                = new FullQualifiedName(
             "j.ArrestSequenceID" );
-    public static FullQualifiedName FIRSTNAME_FQN                                 = new FullQualifiedName(
+    public static FullQualifiedName FIRSTNAME_FQN                = new FullQualifiedName(
             "nc.PersonGivenName" );
-    public static FullQualifiedName MIDDLENAME_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName(
             "nc.PersonMiddleName" );
-    public static FullQualifiedName LASTNAME_FQN                                  = new FullQualifiedName(
+    public static FullQualifiedName LASTNAME_FQN                 = new FullQualifiedName(
             "nc.PersonSurName" );
-    public static FullQualifiedName ALIAS_FQN                                     = new FullQualifiedName(
+    public static FullQualifiedName ALIAS_FQN                    = new FullQualifiedName(
             "im.PersonNickName" );
-    public static FullQualifiedName DATE_IN_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName DATE_IN_FQN                  = new FullQualifiedName(
             "publicsafety.datebooked2" );
-    public static FullQualifiedName DATE_OUT_FQN                                  = new FullQualifiedName(
+    public static FullQualifiedName DATE_OUT_FQN                 = new FullQualifiedName(
             "publicsafety.datereleased2" );
-    public static FullQualifiedName OFFICER_ID_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName OFFICER_ID_FQN               = new FullQualifiedName(
             "publicsafety.officerID" );
-    public static FullQualifiedName DOB_FQN                                       = new FullQualifiedName(
+    public static FullQualifiedName DOB_FQN                      = new FullQualifiedName(
             "nc.PersonBirthDate" );
-    public static FullQualifiedName HOW_RELEASED_FQN                              = new FullQualifiedName(
+    public static FullQualifiedName HOW_RELEASED_FQN             = new FullQualifiedName(
             "j.BookingRelease" );
-    public static FullQualifiedName CAUTION_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName CAUTION_FQN                  = new FullQualifiedName(
             "intel.SubjectCautionInformationDescriptionText" );
-    public static FullQualifiedName EST_REL_DATE_FQN                              = new FullQualifiedName(
+    public static FullQualifiedName EST_REL_DATE_FQN             = new FullQualifiedName(
             "j.IncarcerationProjectedReleaseDate" );
-    public static FullQualifiedName CURRENCY_FQN                                  = new FullQualifiedName(
+    public static FullQualifiedName CURRENCY_FQN                 = new FullQualifiedName(
             "publicsafety.CurrencyAmount" );
-    public static FullQualifiedName CHANGE_FQN                                    = new FullQualifiedName(
+    public static FullQualifiedName CHANGE_FQN                   = new FullQualifiedName(
             "publicsafety.ChangeAmount" );
-    public static FullQualifiedName CHECKS_FQN                                    = new FullQualifiedName(
+    public static FullQualifiedName CHECKS_FQN                   = new FullQualifiedName(
             "publicsafety.ChecksAmount" );
-    public static FullQualifiedName CALL_ATTORNEY_FQN                             = new FullQualifiedName(
+    public static FullQualifiedName CALL_ATTORNEY_FQN            = new FullQualifiedName(
             "j.BookingTelephoneCall" );
-    public static FullQualifiedName RELEASED_TO_FQN                               = new FullQualifiedName(
+    public static FullQualifiedName RELEASED_TO_FQN              = new FullQualifiedName(
             "j.ReleaseToFacility" );
-    public static FullQualifiedName REMARKS_FQN                                   = new FullQualifiedName( "j.Remark" );
-    public static FullQualifiedName COMIT_AUTH_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName REMARKS_FQN                  = new FullQualifiedName( "j.Remark" );
+    public static FullQualifiedName COMIT_AUTH_FQN               = new FullQualifiedName(
             "j.CommittedToAuthorityText" );
-    public static FullQualifiedName TIME_FRAME_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName TIME_FRAME_FQN               = new FullQualifiedName(
             "publicsafety.TimeFrame" );
-    public static FullQualifiedName TOTAL_TIME_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName TOTAL_TIME_FQN               = new FullQualifiedName(
             "publicsafety.TotalTime" );
-    public static FullQualifiedName HELD_AT_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName HELD_AT_FQN                  = new FullQualifiedName(
             "publicsafety.HeldAt" );
-    public static FullQualifiedName ADULT_JUV_WAIVE_FQN                           = new FullQualifiedName(
+    public static FullQualifiedName ADULT_JUV_WAIVE_FQN          = new FullQualifiedName(
             "scr.TreatAsAdultIndicator" );
-    public static FullQualifiedName JUV_HOLD_AUTH_FQN                             = new FullQualifiedName(
+    public static FullQualifiedName JUV_HOLD_AUTH_FQN            = new FullQualifiedName(
             "publicsafety.JuvHoldAuth" );
-    public static FullQualifiedName PERSON_POST_BAIL_FQN                          = new FullQualifiedName(
+    public static FullQualifiedName PERSON_POST_BAIL_FQN         = new FullQualifiedName(
             "j.BailingPerson" );
-    public static FullQualifiedName ARREST_AGENCY_FQN                             = new FullQualifiedName(
+    public static FullQualifiedName ARREST_AGENCY_FQN            = new FullQualifiedName(
             "j.ArrestAgency" );
-    public static FullQualifiedName BOND_COURT_DATETIME_FQN                       = new FullQualifiedName(
+    public static FullQualifiedName BOND_COURT_DATETIME_FQN      = new FullQualifiedName(
             "j.BailHearingDate" );
-    public static FullQualifiedName SEX_FQN                                       = new FullQualifiedName(
+    public static FullQualifiedName SEX_FQN                      = new FullQualifiedName(
             "nc.PersonSex" );
-    public static FullQualifiedName RACE_FQN                                      = new FullQualifiedName(
+    public static FullQualifiedName RACE_FQN                     = new FullQualifiedName(
             "nc.PersonRace" );
-    public static FullQualifiedName SSA_FQN                                       = new FullQualifiedName(
+    public static FullQualifiedName SSA_FQN                      = new FullQualifiedName(
             "publicsafety.SSA" );
-    public static FullQualifiedName SSA_CONVICTION_FQN                            = new FullQualifiedName(
+    public static FullQualifiedName SSA_CONVICTION_FQN           = new FullQualifiedName(
             "publicsafety.SSAConviction" );
-    public static FullQualifiedName SSA_STATUS_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName SSA_STATUS_FQN               = new FullQualifiedName(
             "publicsafety.SSAStatus" );
-    public static FullQualifiedName ORI_FQN                                       = new FullQualifiedName(
+    public static FullQualifiedName ORI_FQN                      = new FullQualifiedName(
             "publicsafety.ORI" );
-    public static FullQualifiedName DIS_SUBMIT_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName DIS_SUBMIT_FQN               = new FullQualifiedName(
             "publicsafety.DISSubmit" );
-    public static FullQualifiedName BALANCE_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName BALANCE_FQN                  = new FullQualifiedName(
             "publicsafety.Balance" );
-    public static FullQualifiedName STATUS_FQN                                    = new FullQualifiedName(
+    public static FullQualifiedName STATUS_FQN                   = new FullQualifiedName(
             "publicsafety.Status" );
-    public static FullQualifiedName SID_ST_FQN                                    = new FullQualifiedName(
+    public static FullQualifiedName SID_ST_FQN                   = new FullQualifiedName(
             "publicsafety.SIDSt" );
-    public static FullQualifiedName SID_NO_FQN                                    = new FullQualifiedName(
+    public static FullQualifiedName SID_NO_FQN                   = new FullQualifiedName(
             "publicsafety.SIDNo" );
-    public static FullQualifiedName REASON_CODE_FQN                               = new FullQualifiedName(
+    public static FullQualifiedName REASON_CODE_FQN              = new FullQualifiedName(
             "scr.DetentionReleaseReasonCategoryCodeType" );
-    public static FullQualifiedName ARREST_DATE_FQN                               = new FullQualifiedName(
+    public static FullQualifiedName ARREST_DATE_FQN              = new FullQualifiedName(
             "publicsafety.arrestdate" );
-    public static FullQualifiedName CASE_ID_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName CASE_ID_FQN                  = new FullQualifiedName(
             "j.CaseNumberText" );
-    public static FullQualifiedName HEIGHT_FQN                                    = new FullQualifiedName(
+    public static FullQualifiedName HEIGHT_FQN                   = new FullQualifiedName(
             "nc.PersonHeightMeasure" );
-    public static FullQualifiedName WEIGHT_FQN                                    = new FullQualifiedName(
+    public static FullQualifiedName WEIGHT_FQN                   = new FullQualifiedName(
             "nc.PersonWeightMeasure" );
-    public static FullQualifiedName EYES_FQN                                      = new FullQualifiedName(
+    public static FullQualifiedName EYES_FQN                     = new FullQualifiedName(
             "nc.PersonEyeColorText" );
-    public static FullQualifiedName HAIR_FQN                                      = new FullQualifiedName(
+    public static FullQualifiedName HAIR_FQN                     = new FullQualifiedName(
             "nc.PersonHairColorText" );
-    public static FullQualifiedName TRANSP_AGENCY_FQN                             = new FullQualifiedName(
+    public static FullQualifiedName TRANSP_AGENCY_FQN            = new FullQualifiedName(
             "j.EnforcementOfficialUnit" );
-    public static FullQualifiedName BOOKED_ID_FQN                                 = new FullQualifiedName(
+    public static FullQualifiedName BOOKED_ID_FQN                = new FullQualifiedName(
             "publicsafety.CustodyID" );
-    public static FullQualifiedName PBT_FQN                                       = new FullQualifiedName(
+    public static FullQualifiedName PBT_FQN                      = new FullQualifiedName(
             "publicsafety.PortableBreathTest" );
-    public static FullQualifiedName INTOX_FQN                                     = new FullQualifiedName(
+    public static FullQualifiedName INTOX_FQN                    = new FullQualifiedName(
             "j.IntoxicationLevelText" );
-    public static FullQualifiedName RELEASE_NOTES_FQN                             = new FullQualifiedName(
+    public static FullQualifiedName RELEASE_NOTES_FQN            = new FullQualifiedName(
             "publicsafety.ReleaseNotes" );
-    public static FullQualifiedName ARREST_ID_LONG_FQN                            = new FullQualifiedName(
+    public static FullQualifiedName ARREST_ID_LONG_FQN           = new FullQualifiedName(
             "publicsafety.ArrestID" );
-    public static FullQualifiedName RELEASE_OFFICER_USERNAME_FQN                  = new FullQualifiedName(
+    public static FullQualifiedName RELEASE_OFFICER_USERNAME_FQN = new FullQualifiedName(
             "nc.SystemUserName" );
-
-    public static FullQualifiedName MUGSHOT_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName MUGSHOT_FQN          = new FullQualifiedName(
             "publicsafety.mugshot" );
-    public static FullQualifiedName OFFICER_CATEGORY_FQN                          = new FullQualifiedName(
+    public static FullQualifiedName OFFICER_CATEGORY_FQN = new FullQualifiedName(
             "j.EnforcementOfficialCategoryText" );
-
     // BOOKINGS PROPERTY TYPES
-    public static FullQualifiedName JAIL_ID_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName JAIL_ID_FQN = new FullQualifiedName(
             "publicsafety.JailID" );
-
     // CHARGES PROPERTY TYPE
-    public static FullQualifiedName CHARGE_START_DATE_FQN                         = new FullQualifiedName(
+    public static FullQualifiedName CHARGE_START_DATE_FQN   = new FullQualifiedName(
             "publicsafety.OffenseStartDate" );
-    public static FullQualifiedName CHARGE_RELEASE_DATE_FQN                       = new FullQualifiedName(
+    public static FullQualifiedName CHARGE_RELEASE_DATE_FQN = new FullQualifiedName(
             "publicsafety.OffenseReleaseDate" );
-    public static FullQualifiedName COURT_FQN                                     = new FullQualifiedName(
+    public static FullQualifiedName COURT_FQN               = new FullQualifiedName(
             "j.CourtEventCase" );
-    public static FullQualifiedName CHARGE_FQN                                    = new FullQualifiedName(
+    public static FullQualifiedName CHARGE_FQN              = new FullQualifiedName(
             "j.ArrestCharge" );
-    public static FullQualifiedName INCLUDE_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName INCLUDE_FQN             = new FullQualifiedName(
             "publicsafety.include" );
-    public static FullQualifiedName BOND_MET_FQN                                  = new FullQualifiedName(
+    public static FullQualifiedName BOND_MET_FQN            = new FullQualifiedName(
             "publicsafety.BondMet" );
-    public static FullQualifiedName BOND_FQN                                      = new FullQualifiedName(
+    public static FullQualifiedName BOND_FQN                = new FullQualifiedName(
             "j.BailBondAmount" );
-    public static FullQualifiedName NOTES_FQN                                     = new FullQualifiedName(
+    public static FullQualifiedName NOTES_FQN               = new FullQualifiedName(
             "j.ChargeNarrative" );
-    public static FullQualifiedName CHARGING_AGENCY_FQN                           = new FullQualifiedName(
+    public static FullQualifiedName CHARGING_AGENCY_FQN     = new FullQualifiedName(
             "publicsafety.ChargeAgency" );
-    public static FullQualifiedName ALT_START_DATE_FQN                            = new FullQualifiedName(
+    public static FullQualifiedName ALT_START_DATE_FQN      = new FullQualifiedName(
             "publicsafety.AlternateStartDate" );
-    public static FullQualifiedName NCIC_FQN                                      = new FullQualifiedName(
+    public static FullQualifiedName NCIC_FQN                = new FullQualifiedName(
             "j.ChargeNCICText" );
-    public static FullQualifiedName CHARGE_ID_FQN                                 = new FullQualifiedName(
+    public static FullQualifiedName CHARGE_ID_FQN           = new FullQualifiedName(
             "j.ChargeSequenceID" );
-
     // OFFENSE PROPERTY TYPE
-    public static FullQualifiedName OFFENSE_DATE_FQN                              = new FullQualifiedName(
+    public static FullQualifiedName OFFENSE_DATE_FQN     = new FullQualifiedName(
             "publicsafety.offensedate" );
-    public static FullQualifiedName ARRESTING_AGENCY_FQN                          = new FullQualifiedName(
+    public static FullQualifiedName ARRESTING_AGENCY_FQN = new FullQualifiedName(
             "j.ArrestAgency" );
-    public static FullQualifiedName REASON_HELD_FQN                               = new FullQualifiedName(
+    public static FullQualifiedName REASON_HELD_FQN      = new FullQualifiedName(
             "publicsafety.ReasonHeld" );
-    public static FullQualifiedName WARRANT_NO_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName WARRANT_NO_FQN       = new FullQualifiedName(
             "j.ArrestWarrant" );
-    public static FullQualifiedName STATE_STATUTE_FQN                             = new FullQualifiedName(
+    public static FullQualifiedName STATE_STATUTE_FQN    = new FullQualifiedName(
             "publicsafety.OffenseViolatedStateStatute" );
-    public static FullQualifiedName LOCAL_STATUTE_FQN                             = new FullQualifiedName(
+    public static FullQualifiedName LOCAL_STATUTE_FQN    = new FullQualifiedName(
             "publicsafety.OffenseViolatedLocalStatute" );
-    public static FullQualifiedName SEVERITY_FQN                                  = new FullQualifiedName(
+    public static FullQualifiedName SEVERITY_FQN         = new FullQualifiedName(
             "j.OffenseSeverityLevelText" );
-
     // SENTENCE PROPERTY TYPE
-    public static FullQualifiedName SEX_OFF_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName SEX_OFF_FQN            = new FullQualifiedName(
             "j.SentenceRegisterSexOffenderIndicator" );
-    public static FullQualifiedName TIMESERVED_DAYS_FQN                           = new FullQualifiedName(
+    public static FullQualifiedName TIMESERVED_DAYS_FQN    = new FullQualifiedName(
             "publicsafety.TimeServedDays" );
-    public static FullQualifiedName TIMESERVED_HOURS_FQN                          = new FullQualifiedName(
+    public static FullQualifiedName TIMESERVED_HOURS_FQN   = new FullQualifiedName(
             "publicsafety.TimeServedHours" );
-    public static FullQualifiedName TIMESERVED_MINUTES_FQN                        = new FullQualifiedName(
+    public static FullQualifiedName TIMESERVED_MINUTES_FQN = new FullQualifiedName(
             "publicsafety.TimeServedMinutes" );
-    public static FullQualifiedName NO_COUNTS_FQN                                 = new FullQualifiedName(
+    public static FullQualifiedName NO_COUNTS_FQN          = new FullQualifiedName(
             "publicsafety.NoCounts" );
-    public static FullQualifiedName SENTENCE_DAYS_FQN                             = new FullQualifiedName(
+    public static FullQualifiedName SENTENCE_DAYS_FQN      = new FullQualifiedName(
             "publicsafety.SentenceTermDays" );
-    public static FullQualifiedName SENTENCE_HOURS_FQN                            = new FullQualifiedName(
+    public static FullQualifiedName SENTENCE_HOURS_FQN     = new FullQualifiedName(
             "publicsafety.SentenceTermHours" );
-    public static FullQualifiedName GTDAYS_FQN                                    = new FullQualifiedName(
+    public static FullQualifiedName GTDAYS_FQN             = new FullQualifiedName(
             "publicsafety.GoodTimeDays" );
-    public static FullQualifiedName GTHOURS_FQN                                   = new FullQualifiedName(
+    public static FullQualifiedName GTHOURS_FQN            = new FullQualifiedName(
             "publicsafety.GoodTimeHours" );
-    public static FullQualifiedName GTMINUTES_FQN                                 = new FullQualifiedName(
+    public static FullQualifiedName GTMINUTES_FQN          = new FullQualifiedName(
             "publicsafety.GoodTimeMinutes" );
-    public static FullQualifiedName ENTRY_DATE_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName ENTRY_DATE_FQN         = new FullQualifiedName(
             "j.RegisteredOffenderEntryDate" );
-    public static FullQualifiedName GTPCT_FQN                                     = new FullQualifiedName(
+    public static FullQualifiedName GTPCT_FQN              = new FullQualifiedName(
             "publicsafety.GoodTimePCT" );
-    public static FullQualifiedName PROBATION_FQN                                 = new FullQualifiedName(
+    public static FullQualifiedName PROBATION_FQN          = new FullQualifiedName(
             "j.SentenceModificationProbationIndicator" );
-    public static FullQualifiedName CONCURRENT_FQN                                = new FullQualifiedName(
+    public static FullQualifiedName CONCURRENT_FQN         = new FullQualifiedName(
             "publicsafety.Concurrent" );
-    public static FullQualifiedName CONSEC_WITH_FQN                               = new FullQualifiedName(
+    public static FullQualifiedName CONSEC_WITH_FQN        = new FullQualifiedName(
             "publicsafety.ConsecWith" );
-
     // EXISTING ENTITIES (BOOKINGS IS FROM other integration)
-    public static String            BOOKINGS_ENTITY_SET_NAME                      = "jcjailbookings2";
-    public static FullQualifiedName BOOKINGS_ENTITY_SET_TYPE                      = new FullQualifiedName(
+    public static String            BOOKINGS_ENTITY_SET_NAME   = "jcjailbookings2";
+    public static FullQualifiedName BOOKINGS_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.JailBookingType2" );
-    public static FullQualifiedName BOOKINGS_ENTITY_TYPE_KEY_1                    = JAIL_ID_FQN;
-    public static String            BOOKINGS_ALIAS                                = "bookings";
-
+    public static FullQualifiedName BOOKINGS_ENTITY_TYPE_KEY_1 = JAIL_ID_FQN;
+    public static String            BOOKINGS_ALIAS             = "bookings";
     // NEW ENTITIES
-    public static String            CHARGES_ENTITY_SET_NAME                       = "jciowacharges2";
-    public static FullQualifiedName CHARGES_ENTITY_SET_TYPE                       = new FullQualifiedName(
+    public static String            CHARGES_ENTITY_SET_NAME   = "jciowacharges2";
+    public static FullQualifiedName CHARGES_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.ChargesType2" );
-    public static FullQualifiedName CHARGES_ENTITY_TYPE_KEY_1                     = CHARGE_ID_FQN;
-    public static String            CHARGES_ALIAS                                 = "charges";
-
-    public static String            OFFENSES_ENTITY_SET_NAME                      = "jciowaoffenses2";
-    public static FullQualifiedName OFFENSES_ENTITY_SET_TYPE                      = new FullQualifiedName(
+    public static FullQualifiedName CHARGES_ENTITY_TYPE_KEY_1 = CHARGE_ID_FQN;
+    public static String            CHARGES_ALIAS             = "charges";
+    public static String            OFFENSES_ENTITY_SET_NAME   = "jciowaoffenses2";
+    public static FullQualifiedName OFFENSES_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.OffensesType2" );
-    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_1                    = OFFENSE_DATE_FQN;
-    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_2                    = REASON_HELD_FQN;
-    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_3                    = WARRANT_NO_FQN;
-    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_4                    = STATE_STATUTE_FQN;
-    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_5                    = LOCAL_STATUTE_FQN;
-    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_6                    = SEVERITY_FQN;
-    public static String            OFFENSES_ALIAS                                = "offenses";
-
-    public static String            SENTENCES_ENTITY_SET_NAME                     = "jciowasentences2";
-    public static FullQualifiedName SENTENCES_ENTITY_SET_TYPE                     = new FullQualifiedName(
+    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_1 = OFFENSE_DATE_FQN;
+    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_2 = REASON_HELD_FQN;
+    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_3 = WARRANT_NO_FQN;
+    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_4 = STATE_STATUTE_FQN;
+    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_5 = LOCAL_STATUTE_FQN;
+    public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_6 = SEVERITY_FQN;
+    public static String            OFFENSES_ALIAS             = "offenses";
+    public static String            SENTENCES_ENTITY_SET_NAME    = "jciowasentences2";
+    public static FullQualifiedName SENTENCES_ENTITY_SET_TYPE    = new FullQualifiedName(
             "jciowa.SentencesType2" );
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_1                   = SEX_OFF_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_2                   = TIMESERVED_DAYS_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_3                   = TIMESERVED_HOURS_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_4                   = TIMESERVED_MINUTES_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_5                   = SENTENCE_DAYS_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_6                   = SENTENCE_HOURS_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_7                   = GTDAYS_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_8                   = GTHOURS_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_9                   = GTMINUTES_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_10                  = ENTRY_DATE_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_11                  = GTPCT_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_12                  = PROBATION_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_13                  = CONCURRENT_FQN;
-    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_14                  = CONSEC_WITH_FQN;
-    public static String            SENTENCES_ALIAS                               = "sentences";
-
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_1  = SEX_OFF_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_2  = TIMESERVED_DAYS_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_3  = TIMESERVED_HOURS_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_4  = TIMESERVED_MINUTES_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_5  = SENTENCE_DAYS_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_6  = SENTENCE_HOURS_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_7  = GTDAYS_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_8  = GTHOURS_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_9  = GTMINUTES_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_10 = ENTRY_DATE_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_11 = GTPCT_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_12 = PROBATION_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_13 = CONCURRENT_FQN;
+    public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_14 = CONSEC_WITH_FQN;
+    public static String            SENTENCES_ALIAS              = "sentences";
     // NEW ASSOCIATIONS
     public static String            CHARGES_APPEAR_IN_BOOKING_IN_ENTITY_SET_NAME  = "jciowachargesappearin2";
     public static FullQualifiedName CHARGES_APPEAR_IN_BOOKING_IN_ENTITY_SET_TYPE  = new FullQualifiedName(
             "jciowa.ChargesAppearInJailBooking2" );
     public static FullQualifiedName CHARGES_APPEAR_IN_BOOKING_ENTITY_SET_KEY_1    = CHARGE_ID_FQN;
     public static String            CHARGES_APPEAR_IN_BOOKING_IN_ENTITY_SET_ALIAS = "appearsin";
-
-    public static String            OFFENSE_RESULTS_IN_CHARGES_ENTITY_SET_NAME    = "jciowaoffenseresultsin2";
-    public static FullQualifiedName OFFENSE_RESULTS_IN_CHARGES_ENTITY_SET_TYPE    = new FullQualifiedName(
+    public static String            OFFENSE_RESULTS_IN_CHARGES_ENTITY_SET_NAME   = "jciowaoffenseresultsin2";
+    public static FullQualifiedName OFFENSE_RESULTS_IN_CHARGES_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.OffensesResultInCharge2" );
-    public static FullQualifiedName OFFENSE_RESULTS_IN_CHARGES_ENTITY_TYPE_KEY_1  = CHARGE_ID_FQN;
-    public static String            OFFENSE_RESULTS_IN_CHARGES_ALIAS              = "resultsin";
-
-    public static String            CHARGE_LEADS_TO_SENTENCE_ENTITY_SET_NAME      = "jciowachargeleadsto2";
-    public static FullQualifiedName CHARGE_LEADS_TO_SENTENCE_ENTITY_SET_TYPE      = new FullQualifiedName(
+    public static FullQualifiedName OFFENSE_RESULTS_IN_CHARGES_ENTITY_TYPE_KEY_1 = CHARGE_ID_FQN;
+    public static String            OFFENSE_RESULTS_IN_CHARGES_ALIAS             = "resultsin";
+    public static       String            CHARGE_LEADS_TO_SENTENCE_ENTITY_SET_NAME   = "jciowachargeleadsto2";
+    public static       FullQualifiedName CHARGE_LEADS_TO_SENTENCE_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.ChargesLeadToSentence2" );
-    public static FullQualifiedName CHARGE_LEADS_TO_SENTENCE_ENTITY_TYPE_KEY_1    = CHARGE_ID_FQN;
-    public static String            CHARGE_LEADS_TO_SENTENCE_ALIAS                = "leadsto";
+    public static       FullQualifiedName CHARGE_LEADS_TO_SENTENCE_ENTITY_TYPE_KEY_1 = CHARGE_ID_FQN;
+    public static       String            CHARGE_LEADS_TO_SENTENCE_ALIAS             = "leadsto";
 
     public static void main( String[] args ) throws InterruptedException {
-        String path = new File(
-                JohnsonCountyExtended.class.getClassLoader().getResource( "Jail_Record_Offense_stripped.csv" )
-                        .getPath() )
-                                .getAbsolutePath();
 
-        // final String username = "replace me with email username";
-        // final String password = "replace me with password";
+        if ( args.length < 3 ) {
+            System.out.println( "expected: <path> <jwtToken>" );
+            return;
+        }
+
+        final String path = args[ 1 ];
+        final String jwtToken = args[ 2 ];
         final SparkSession sparkSession = MissionControl.getSparkSession();
         // final String jwtToken = MissionControl.getIdToken( username, password );
-        final String jwtToken = "[JWT TOKEN GOES HERE]";
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
         /*
@@ -321,7 +302,7 @@ public class JohnsonCountyExtended {
         /*
          * PROPERTY TYPES
          */
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         // NEW PROPERTY TYPES
@@ -1962,7 +1943,8 @@ public class JohnsonCountyExtended {
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
-
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         Flight flight = Flight.newFlight()
                 .createEntities()
 
@@ -2130,7 +2112,7 @@ public class JohnsonCountyExtended {
 
         flights.put( flight, payload );
 
-        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
+        Shuttle shuttle = new Shuttle( environment, jwtToken );
         shuttle.launch( flights );
     }
 

@@ -1,4 +1,4 @@
-package com.dataloom.integrations.iowacity;
+package com.openlattice.integrations.cruft;
 
 /**
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
@@ -7,14 +7,8 @@ package com.dataloom.integrations.iowacity;
 import com.kryptnostic.shuttle.Flight;
 import com.kryptnostic.shuttle.MissionControl;
 import com.kryptnostic.shuttle.Shuttle;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.UUID;
 
 public class IowaCity {
     private static final Logger logger          = LoggerFactory.getLogger( IowaCity.class );

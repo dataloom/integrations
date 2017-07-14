@@ -1,10 +1,21 @@
 package com.dataloom.integrations.iowacity;
 
-import java.io.File;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.UUID;
-
+import com.dataloom.authorization.securable.SecurableObjectType;
+import com.dataloom.client.RetrofitFactory;
+import com.dataloom.client.RetrofitFactory.Environment;
+import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
+import com.dataloom.edm.EdmApi;
+import com.dataloom.edm.EntitySet;
+import com.dataloom.edm.type.Analyzer;
+import com.dataloom.edm.type.AssociationType;
+import com.dataloom.edm.type.EntityType;
+import com.dataloom.edm.type.PropertyType;
+import com.dataloom.mappers.ObjectMappers;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.MissionControl;
+import com.openlattice.shuttle.Shuttle;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -13,23 +24,11 @@ import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spark_project.guava.collect.Maps;
-
-import com.dataloom.authorization.securable.SecurableObjectType;
-import com.dataloom.client.RetrofitFactory;
-import com.dataloom.client.RetrofitFactory.Environment;
-import com.dataloom.edm.EdmApi;
-import com.dataloom.edm.EntitySet;
-import com.dataloom.edm.type.Analyzer;
-import com.dataloom.edm.type.AssociationType;
-import com.dataloom.edm.type.EntityType;
-import com.dataloom.edm.type.PropertyType;
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-import com.kryptnostic.shuttle.Flight;
-import com.kryptnostic.shuttle.MissionControl;
-import com.kryptnostic.shuttle.Shuttle;
-
 import retrofit2.Retrofit;
+
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.UUID;
 
 public class JohnsonCountyJailBookings {
     // Logger is used to output useful debugging messages to the console
@@ -205,18 +204,19 @@ public class JohnsonCountyJailBookings {
             "jciowa.OfficerInteractedWithSubject2" );
     public static FullQualifiedName SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_TYPE_KEY_1 = PERSON_XREF_FQN;
     // public static String SUBJECT_INTERACTED_WITH_OFFICER_ALIAS = "jcinteractedwith";
-
+    public static final Environment environment = Environment.STAGING;
     public static void main( String[] args ) throws InterruptedException {
-        String path = new File(
-                JohnsonCountyJailBookings.class.getClassLoader().getResource( "Jail_Record_Formatted.csv" )
-                        .getPath() )
-                                .getAbsolutePath();
+        if( args.length < 3 ) {
+            System.out.println("expected: <path> <jwtToken>");
+            return;
+        }
 
+        final String path = args[ 1] ;
+        final String jwtToken = args[ 2 ];
         // final String username = "replace me with email username";
         // final String password = "replace me with password";
         final SparkSession sparkSession = MissionControl.getSparkSession();
         // final String jwtToken = MissionControl.getIdToken( username, password );
-        final String jwtToken = "[JWT TOKEN GOES HERE]";
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
         /*
@@ -226,7 +226,7 @@ public class JohnsonCountyJailBookings {
         /*
          * PROPERTY TYPES
          */
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         UUID Jail_Record_XREF = edm
@@ -1378,7 +1378,8 @@ public class JohnsonCountyJailBookings {
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
-
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         Flight flight = Flight.newFlight()
                 .createEntities()
 
@@ -1621,7 +1622,7 @@ public class JohnsonCountyJailBookings {
 
         flights.put( flight, payload );
 
-        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
+        Shuttle shuttle = new Shuttle( environment, jwtToken );
         shuttle.launch( flights );
     }
 

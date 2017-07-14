@@ -1,4 +1,4 @@
-package com.dataloom.integrations.iowacity;
+package com.openlattice.integrations.cruft;
 
 import com.google.common.base.Splitter;
 import org.apache.commons.lang.StringUtils;
