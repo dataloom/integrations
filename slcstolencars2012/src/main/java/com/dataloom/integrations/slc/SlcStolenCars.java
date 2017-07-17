@@ -3,15 +3,25 @@ package com.dataloom.integrations.slc;
 import com.auth0.Auth0;
 import com.auth0.authentication.AuthenticationAPIClient;
 import com.auth0.request.AuthenticationRequest;
+import com.dataloom.authorization.securable.SecurableObjectType;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.edm.EdmApi;
+import com.dataloom.edm.EntitySet;
+import com.dataloom.edm.type.EntityType;
 import com.dataloom.edm.type.PropertyType;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.kryptnostic.shuttle.Flight;
-import com.kryptnostic.shuttle.Shuttle;
+import com.google.common.collect.Sets;
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.Shuttle;
+import java.io.File;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
@@ -22,31 +32,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
 
-import java.io.File;
-import java.util.Map;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class SlcStolenCars {
     private static final SparkSession sparkSession;
-    private static final Logger            logger   = LoggerFactory.getLogger( SlcStolenCars.class );
-    private static final Auth0                   auth0  = new Auth0(
+    private static final Logger                  logger      = LoggerFactory.getLogger( SlcStolenCars.class );
+    private static final Auth0                   auth0       = new Auth0(
             "PTmyExdBckHAiyOjh4w2MqSIUGWWEdf8",
             "loom.auth0.com" );
-    private static final AuthenticationAPIClient client = auth0.newAuthenticationAPIClient();
-    public static        String            ES_NAME  = "slcstolencars2012";
-    public static        FullQualifiedName ES_TYPE  = new FullQualifiedName( "publicsafety", "stolencars" );
-    private static       FullQualifiedName CASE_FQN = new FullQualifiedName( "publicsafety", "case" );
-    private static       FullQualifiedName OC_FQN   = new FullQualifiedName( "publicsafety", "offensecode" );
-    private static       FullQualifiedName OD_FQN   = new FullQualifiedName( "publicsafety", "offensedescription" );
-    private static       FullQualifiedName RD_FQN   = new FullQualifiedName( "publicsafety", "reportdate" );
-    private static       FullQualifiedName OCC_FQN  = new FullQualifiedName( "publicsafety", "occdate" );
-    private static       FullQualifiedName DOW_FQN  = new FullQualifiedName( "general", "dayofweek" );
-    private static       FullQualifiedName ADDR_FQN = new FullQualifiedName( "general", "address" );
-    private static       FullQualifiedName LAT_FQN  = new FullQualifiedName( "location", "latitude" );
-    private static       FullQualifiedName LON_FQN  = new FullQualifiedName( "location", "longitude" );
-    private static Pattern p = Pattern.compile( ".*\\n*.*\\n*\\((.+),(.+)\\)" );
+    private static final AuthenticationAPIClient client      = auth0.newAuthenticationAPIClient();
+    private static final Environment             environment = Environment.STAGING;
+    public static        String                  ES_NAME     = "slcstolencars2012";
+    public static        FullQualifiedName       ES_TYPE     = new FullQualifiedName( "publicsafety", "stolencars" );
+    private static       FullQualifiedName       CASE_FQN    = new FullQualifiedName( "publicsafety", "case" );
+    private static       FullQualifiedName       OC_FQN      = new FullQualifiedName( "publicsafety", "offensecode" );
+    private static       FullQualifiedName       OD_FQN      = new FullQualifiedName( "publicsafety",
+            "offensedescription" );
+    private static       FullQualifiedName       RD_FQN      = new FullQualifiedName( "publicsafety", "reportdate" );
+    private static       FullQualifiedName       OCC_FQN     = new FullQualifiedName( "publicsafety", "occdate" );
+    private static       FullQualifiedName       DOW_FQN     = new FullQualifiedName( "general", "dayofweek" );
+    private static       FullQualifiedName       ADDR_FQN    = new FullQualifiedName( "general", "address" );
+    private static       FullQualifiedName       LAT_FQN     = new FullQualifiedName( "location", "latitude" );
+    private static       FullQualifiedName       LON_FQN     = new FullQualifiedName( "location", "longitude" );
+    private static       Pattern                 p           = Pattern.compile( ".*\\n*.*\\n*\\((.+),(.+)\\)" );
     private static String jwtToken;
 
     static {
@@ -65,7 +71,7 @@ public class SlcStolenCars {
         jwtToken = args[ 0 ];
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
         String path = new File( args[ 1 ] ).getAbsolutePath();
-        Retrofit retrofit = RetrofitFactory.newClient( Environment.PRODUCTION, () -> jwtToken );
+        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
         UUID caseId = edm.createPropertyType( new PropertyType( CASE_FQN, "Case #", Optional.of(
@@ -90,7 +96,7 @@ public class SlcStolenCars {
                 ImmutableSet.of(),
                 EdmPrimitiveTypeKind.String ) );
         UUID occId = edm.createPropertyType( new PropertyType( OCC_FQN, "Offense Code Commited Date", Optional.of(
-                "I'm not really sure what this means." ), ImmutableSet.of(), EdmPrimitiveTypeKind.String ) );
+                "The day the offense was committed" ), ImmutableSet.of(), EdmPrimitiveTypeKind.String ) );
         UUID dowId = edm.createPropertyType( new PropertyType(
                 DOW_FQN,
                 "Day of Week",
@@ -127,15 +133,26 @@ public class SlcStolenCars {
         latId = edm.getPropertyTypeId( LAT_FQN.getNamespace(), LAT_FQN.getName() );
         lonId = edm.getPropertyTypeId( LON_FQN.getNamespace(), LON_FQN.getName() );
 
-        UUID esId = edm.getEntityTypeId(
-                ES_TYPE.getNamespace(), ES_TYPE.getName() );
-
-        //        edm.createEntitySets( ImmutableSet.of( new EntitySet(
-        //                esId,
-        //                ES_NAME,
-        //                "Salt Lake Lake City Stolen Cars (2012)",
-        //                Optional.of(
-        //                        "Cars stolen in Salt Lake City in 2012." ) ) ) );
+        UUID esId = edm.createEntityType( new EntityType( ES_TYPE,
+                "Stolen Cars",
+                "Car stolen in a city",
+                ImmutableSet.of(),
+                Sets.newLinkedHashSet( Arrays.asList( caseId ) ),
+                Sets.newLinkedHashSet( Arrays.asList( caseId, ocId, odId, rdId, occId, dowId, addrId, latId, lonId ) ),
+                Optional.absent(),
+                Optional.of( SecurableObjectType.EntityType ) ) );
+        if ( esId == null ) {
+            esId = edm.getEntityTypeId(
+                    ES_TYPE.getNamespace(), ES_TYPE.getName() );
+        }
+        edm.createEntitySets( ImmutableSet.of( new EntitySet(
+                Optional.<UUID>absent(),
+                esId,
+                ES_NAME,
+                "Salt Lake Lake City Stolen Cars (2012)",
+                Optional.of(
+                        "Cars stolen in Salt Lake City in 2012." ),
+                ImmutableSet.of( "support@openlattice.com" ) ) ) );
 
         /*
          * Get the dataset.
@@ -178,7 +195,7 @@ public class SlcStolenCars {
                 .done();
         // @formatter:on
         flights.put( flight, payload );
-        Shuttle shuttle = new Shuttle( Environment.PRODUCTION, jwtToken );
+        Shuttle shuttle = new Shuttle( Environment.STAGING, jwtToken );
         shuttle.launch( flights );
 
     }
