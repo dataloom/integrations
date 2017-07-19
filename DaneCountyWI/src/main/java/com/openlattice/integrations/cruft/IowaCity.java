@@ -4,9 +4,6 @@ package com.openlattice.integrations.cruft;
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
  */
 
-import com.kryptnostic.shuttle.Flight;
-import com.kryptnostic.shuttle.MissionControl;
-import com.kryptnostic.shuttle.Shuttle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

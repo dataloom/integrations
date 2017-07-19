@@ -1,6 +1,7 @@
 package com.openlattice.integrations.wisconsin.danecounty;
 
 import com.dataloom.client.RetrofitFactory;
+import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
@@ -34,7 +35,7 @@ import java.util.Map;
 public class ClerkOfCourtsCharges2010 {
     private static final Logger                      logger            = LoggerFactory
             .getLogger( VeronaPoliceDept.class );
-    private static final RetrofitFactory.Environment environment       = RetrofitFactory.Environment.LOCAL;
+    private static final RetrofitFactory.Environment environment       = Environment.STAGING;
     private static final DateTimeHelper              dtHelper          = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -6 ), "MM/dd/YY HH:mm" );
     private static final DateTimeHelper              bdHelper          = new DateTimeHelper( DateTimeZone
