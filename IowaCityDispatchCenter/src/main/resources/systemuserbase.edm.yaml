@@ -1,0 +1,62 @@
+propertyTypes:
+- datatype: "String"
+  piiField: false
+  analyzer: "STANDARD"
+  properties:
+  - type: "ICDC.FirstName"
+    title: "First Name"
+    description: "First Name"
+  - type: "ICDC.LastName"
+    title: "Last Name"
+    description: "Last Name"
+  - type: "ICDC.Title"
+    title: "Title"
+    description: "Title"
+  - type: "ICDC.EmployeeId"
+    title: "Employee ID"
+    description: "Employee ID"
+  - type: "ICDC.ORI"
+    title: "ORI"
+    description: "ORI"
+- datatype: "Boolean"
+  piiField: false
+  analyzer: "STANDARD"
+  properties:
+  - type: "ICDC.Active"
+    title: "Active"
+    description: "Indicates whether the person is an active/inactive employee, or in other words, a current/past employee."
+- datatype: "Guid"
+  piiField: false
+  analyzer: "STANDARD"
+  properties:
+  - type: "ICDC.OfficerId"
+    title: "Officer ID"
+    description: "Officer ID"
+
+entityTypes:
+- type: "ICDC.Employee"
+  title: "Employee"
+  description: "Iowa City Dispatch Center - all employees in the system"
+  baseType: null
+  key:
+  - "ICDC.EmployeeId"
+  - "ICDC.OfficerId"
+  properties:
+  - "ICDC.FirstName"
+  - "ICDC.LastName"
+  - "ICDC.Title"
+  - "ICDC.EmployeeId"
+  - "ICDC.OfficerId"
+  - "ICDC.ORI"
+  - "ICDC.Active"
+
+entitySets:
+- type: "ICDC.Employee"
+  name: "IowaCityDispatchCenterEmployees"
+  title: "Iowa City Dispatch Center Employees"
+  description: "Iowa City Dispatch Center - All employees in the system"
+  contacts:
+  - "David-Schwindt@iowa-city.org"
+  - "support@openlattice.com"
+
+associationTypes: []
