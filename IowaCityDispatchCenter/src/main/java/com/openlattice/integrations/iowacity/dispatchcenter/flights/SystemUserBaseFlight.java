@@ -2,11 +2,12 @@ package com.openlattice.integrations.iowacity.dispatchcenter.flights;
 
 import com.google.common.io.Resources;
 import com.openlattice.shuttle.Flight;
-import com.openlattice.shuttle.MissionControl;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,12 @@ import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getUU
 
 public class SystemUserBaseFlight {
 
-    // PropertyTypes
+    private static final Logger logger = LoggerFactory.getLogger( SystemUserBaseFlight.class );
+
+    /*
+     * PropertyTypes
+     */
+
     public static FullQualifiedName FIRST_NAME_FQN  = new FullQualifiedName( "ICDC.FirstName" );
     public static FullQualifiedName LAST_NAME_FQN   = new FullQualifiedName( "ICDC.LastName" );
     public static FullQualifiedName TITLE_FQN       = new FullQualifiedName( "ICDC.Title" );
@@ -27,17 +33,22 @@ public class SystemUserBaseFlight {
     public static FullQualifiedName ORI_FQN         = new FullQualifiedName( "ICDC.ORI" );
     public static FullQualifiedName ACTIVE_FQN      = new FullQualifiedName( "ICDC.Active" );
 
-    // EntityTypes
+    /*
+     * EntityTypes
+     */
+
     public static FullQualifiedName EMPLOYEE_ET_FQN = new FullQualifiedName( "ICDC.Employee" );
 
-    // EntitySets
+    /*
+     * EntitySets
+     */
+
     public static FullQualifiedName EMPLOYEES_ES_FQN   = new FullQualifiedName( "ICDC.Employees" );
     public static String            EMPLOYEES_ES_ALIAS = EMPLOYEES_ES_FQN.getFullQualifiedNameAsString();
     public static String            EMPLOYEES_ES_NAME  = "IowaCityDispatchCenter_Employees";
 
-    private static Dataset<Row> getPayloadFromCsv() {
+    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession ) {
 
-        final SparkSession sparkSession = MissionControl.getSparkSession();
         String csvPath = Resources.getResource( "systemuserbase.csv" ).getPath();
 
         Dataset<Row> payload = sparkSession
@@ -49,7 +60,9 @@ public class SystemUserBaseFlight {
         return payload;
     }
 
-    public static Map<Flight, Dataset<Row>> getFlight() {
+    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession ) {
+
+        Dataset<Row> payload = getPayloadFromCsv( sparkSession );
 
         // @formatter:off
         Flight flight = Flight
@@ -72,7 +85,7 @@ public class SystemUserBaseFlight {
         // @formatter:on
 
         Map<Flight, Dataset<Row>> result = new HashMap<>( 1 );
-        result.put( flight, getPayloadFromCsv() );
+        result.put( flight, payload );
 
         return result;
     }

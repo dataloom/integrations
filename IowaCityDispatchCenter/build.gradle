@@ -41,8 +41,6 @@ run {
     }
 }
 
-run.args += ["cassandra", "spark"]
-
 configurations {
     provided
 }

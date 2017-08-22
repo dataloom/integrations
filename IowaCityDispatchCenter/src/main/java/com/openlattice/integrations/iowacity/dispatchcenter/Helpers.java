@@ -91,7 +91,7 @@ public class Helpers {
         if ( timeStr != null ) {
             try {
                 Date date = ( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) ).parse( timeStr );
-                return ( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) ).format( date );
+                return ( new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss" ) ).format( date );
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
