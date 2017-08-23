@@ -161,7 +161,7 @@ public class DispatchFlight {
                 .option( "user", config.getDbUser() )
                 .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver" )
                 .load()
-                .filter( col( "CFS_DateTimeJanet" ).geq( d );
+                .filter( col( "CFS_DateTimeJanet" ).geq( d ) );
 
         //payload.createOrReplaceTempView( "Dispatch" );
 
