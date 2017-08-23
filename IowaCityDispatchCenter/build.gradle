@@ -51,6 +51,14 @@ sourceSets {
     test.runtimeClasspath += configurations.provided
 }
 
+jar {
+    doFirst {
+        manifest {
+            attributes "Class-Path": configurations.runtime.files*.collect { File file -> file.name }.join(" ")
+        }
+    }
+}
+
 dependencies {
     if (project.hasProperty('developmentMode') && project.developmentMode) {
         logger.quiet(project.name + " using project dependencies.")
@@ -63,19 +71,10 @@ dependencies {
     compile fileTree(dir: "lib/", include: "*.jar")
 }
 
-task launcherJar(type: Jar) {
-    appendix = "launcher"
-    doFirst {
-        manifest {
-            attributes "Class-Path": configurations.compile.files.collect {File file-> file.name }.join(" ")
-        }
-    }
-}
+
 
 startScripts {
-    dependsOn launcherJar
-    // clear up the classpath because the launcher jar has it.
-    classpath = files(launcherJar.archivePath)
+    classpath = files(jar.archivePath)
 }
 
 eclipse {
