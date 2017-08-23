@@ -7,6 +7,7 @@ import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight;
+import com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchPersonsFlight;
 import com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchTypeFlight;
 import com.openlattice.integrations.iowacity.dispatchcenter.flights.SystemUserBaseFlight;
 import com.openlattice.shuttle.Flight;
@@ -52,11 +53,13 @@ public class IowaCityDispatchCenter {
         Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession );
         Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight.getFlight( sparkSession );
         Map<Flight, Dataset<Row>> dispatchTypeFlight = DispatchTypeFlight.getFlight( sparkSession );
+        Map<Flight, Dataset<Row>> dispatchPersonsFlight = DispatchPersonsFlight.getFlight( sparkSession );
 
         Map<Flight, Dataset<Row>> flights = new HashMap<>();
         flights.putAll( systemUserBaseFlight );
         flights.putAll( dispatchFlight );
         flights.putAll( dispatchTypeFlight );
+        flights.putAll( dispatchPersonsFlight );
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
         shuttle.launch( flights );

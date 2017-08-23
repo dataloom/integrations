@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsDateTime;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getDispatchDate;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getDispatchTime;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsDate;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsTime;
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsUUID;
 
@@ -70,9 +70,9 @@ public class DispatchFlight {
     public static FullQualifiedName NO_SUB_ZONE_OK_FQN      = new FullQualifiedName( "ICDC.NoSubZoneOK" );              // String
     public static FullQualifiedName ESN_FQN                 = new FullQualifiedName( "ICDC.ESN" );                      // String
     public static FullQualifiedName FIRE_DISPATCH_LEVEL_FQN = new FullQualifiedName( "ICDC.FireDispatchLevel" );        // String
-    public static FullQualifiedName CFS_FIRE_FQN            = new FullQualifiedName( "ICDC.CFSFire" );                 // String
-    public static FullQualifiedName CFS_EMS_FQN             = new FullQualifiedName( "ICDC.CFSEMS" );                  // String
-    public static FullQualifiedName CFS_LEA_FQN             = new FullQualifiedName( "ICDC.CFSLEA" );                  // String
+    public static FullQualifiedName CFS_FIRE_FQN            = new FullQualifiedName( "ICDC.CFSFire" );                  // String
+    public static FullQualifiedName CFS_EMS_FQN             = new FullQualifiedName( "ICDC.CFSEMS" );                   // String
+    public static FullQualifiedName CFS_LEA_FQN             = new FullQualifiedName( "ICDC.CFSLEA" );                   // String
     public static FullQualifiedName INCIDENT_M_ADDR_ID_FQN  = new FullQualifiedName( "ICDC.IncidentMasterAddressId" );  // Guid
     public static FullQualifiedName FIRE_DISTRICT_FQN       = new FullQualifiedName( "ICDC.FireDistrict" );             // String
     public static FullQualifiedName LINKED_LEA_FQN          = new FullQualifiedName( "ICDC.LinkedLEA" );                // String
@@ -174,8 +174,8 @@ public class DispatchFlight {
                         .key( DISPATCH_ID_FQN, DISPATCH_NUM_FQN )
                         .addProperty( DISPATCH_ID_FQN ).value( row -> getAsString( row.getAs( "Dis_ID" ) ) ).ok()
                         .addProperty( DISPATCH_NUM_FQN ).value( row -> getAsString( row.getAs( "Dis_No" ) ) ).ok()
-                        .addProperty( DISPATCH_DATE_FQN ).value( row -> getDispatchDate( row.getAs( "Dis_Date" ) ) ).ok()
-                        .addProperty( DISPATCH_TIME_FQN ).value( row -> getDispatchTime( row.getAs( "DIS_TIME" ) ) ).ok()
+                        .addProperty( DISPATCH_DATE_FQN ).value( row -> getAsDate( row.getAs( "Dis_Date" ) ) ).ok()
+                        .addProperty( DISPATCH_TIME_FQN ).value( row -> getAsTime( row.getAs( "DIS_TIME" ) ) ).ok()
                         .addProperty( DISPATCH_CASE_FQN ).value( row -> getAsString( row.getAs( "Dis_Case" ) ) ).ok()
                         .addProperty( DISPATCH_ZONE_FQN ).value( row -> getAsString( row.getAs( "Dis_Zone" ) ) ).ok()
                         .addProperty( DISPATCH_ORI_FQN ).value( row -> getAsString( row.getAs( "Dis_ORI" ) ) ).ok()

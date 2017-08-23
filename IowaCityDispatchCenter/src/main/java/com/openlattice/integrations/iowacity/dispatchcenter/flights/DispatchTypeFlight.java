@@ -22,6 +22,10 @@ import static com.openlattice.integrations.iowacity.dispatchcenter.flights.Syste
 
 public class DispatchTypeFlight {
 
+    /*
+     * PropertyTypes
+     */
+
     public static FullQualifiedName DISPATCH_TYPE_ID_FQN       = new FullQualifiedName( "ICDC.DispatchTypeId" );          // Int64
     public static FullQualifiedName DISPATCH_DATETIME_FQN      = new FullQualifiedName( "ICDC.DispatchDateTime" );        // DateTimeOffset
     public static FullQualifiedName TIMER_CVD_DATETIME_FQN     = new FullQualifiedName( "ICDC.TimerCvdDateTime" );        // DateTimeOffset
@@ -34,7 +38,7 @@ public class DispatchTypeFlight {
     public static FullQualifiedName TRIP_NUM_FQN               = new FullQualifiedName( "ICDC.TripNumber" );              // String
 
     /*
-     * these columns and their values seem to be duplicates
+     * these columns and their values seem to be references to columns in the other data sets
      */
 
     // public static FullQualifiedName DISPATCH_ID_FQN   = new FullQualifiedName( "ICDC.DispatchId" );   // DispatchFlight.DISPATCH_ID_FQN
