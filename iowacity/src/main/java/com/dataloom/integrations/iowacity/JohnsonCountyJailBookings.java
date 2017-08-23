@@ -58,9 +58,9 @@ public class JohnsonCountyJailBookings {
     public static FullQualifiedName ALIAS_FQN                                         = new FullQualifiedName(
             "im.PersonNickName" );
     public static FullQualifiedName DATE_IN_FQN                                       = new FullQualifiedName(
-            "publicsafety.datebooked2" );
+            "publicsafety.datebooked" );
     public static FullQualifiedName DATE_OUT_FQN                                      = new FullQualifiedName(
-            "publicsafety.datereleased2" );
+            "publicsafety.datereleased" );
     public static FullQualifiedName OFFICER_ID_FQN                                    = new FullQualifiedName(
             "publicsafety.officerID" );
     public static FullQualifiedName DOB_FQN                                           = new FullQualifiedName(
@@ -162,44 +162,44 @@ public class JohnsonCountyJailBookings {
             "j.EnforcementOfficialCategoryText" );
 
     // ENTITIES
-    public static String            SUBJECTS_ENTITY_SET_NAME                          = "jcsubjects2";
+    public static String            SUBJECTS_ENTITY_SET_NAME                          = "jcsubjects";
     public static FullQualifiedName SUBJECTS_ENTITY_SET_TYPE                          = new FullQualifiedName(
             "nc.PersonType2" );
     public static FullQualifiedName SUBJECTS_ENTITY_SET_KEY_1                         = PERSON_XREF_FQN;
     public static String            SUBJECTS_ALIAS                                    = "subjects";
 
-    public static String            BOOKINGS_ENTITY_SET_NAME                          = "jcjailbookings2";
+    public static String            BOOKINGS_ENTITY_SET_NAME                          = "jcjailbookings";
     public static FullQualifiedName BOOKINGS_ENTITY_SET_TYPE                          = new FullQualifiedName(
             "jciowa.JailBookingType2" );
     public static FullQualifiedName BOOKINGS_ENTITY_TYPE_KEY_1                        = JAIL_ID_FQN;
     public static String            BOOKINGS_ALIAS                                    = "bookings";
 
-    public static String            JAIL_RECORDS_ENTITY_SET_NAME                      = "jcjailrecords2";
+    public static String            JAIL_RECORDS_ENTITY_SET_NAME                      = "jcjailrecords";
     public static FullQualifiedName JAIL_RECORDS_ENTITY_SET_TYPE                      = new FullQualifiedName(
             "jciowa.JailRecordType2" );
     public static FullQualifiedName JAIL_RECORDS_ENTITY_TYPE_KEY_1                    = JAIL_RECORD_XREF_FQN;
     public static String            JAIL_RECORDS_ALIAS                                = "jailrecords";
 
-    public static String            OFFICERS_ENTITY_SET_NAME                          = "jcofficers2";
+    public static String            OFFICERS_ENTITY_SET_NAME                          = "jcofficers";
     public static FullQualifiedName OFFICERS_ENTITY_SET_TYPE                          = new FullQualifiedName(
             "j.EnforcementOfficialType2" );
     public static FullQualifiedName OFFICERS_ENTITY_TYPE_KEY_1                        = OFFICER_XREF_FQN;
     public static String            OFFICERS_ALIAS                                    = "officers";
 
     // ASSOCIATIONS
-    public static String            WAS_BOOKED_IN_ENTITY_SET_NAME                     = "jcwasbookedin2";
+    public static String            WAS_BOOKED_IN_ENTITY_SET_NAME                     = "jcwasbookedin";
     public static FullQualifiedName WAS_BOOKED_IN_ENTITY_SET_TYPE                     = new FullQualifiedName(
             "jciowa.PersonJailBookingAssociation2" );
     public static FullQualifiedName WAS_BOOKED_ENTITY_SET_KEY_1                       = PERSON_XREF_FQN;
     public static String            WAS_BOOKED_IN_ENTITY_SET_ALIAS                    = "personwasbookedin";
 
-    public static String            DETAILS_OF_IN_ENTITY_SET_NAME                     = "jcdetailsof2";
+    public static String            DETAILS_OF_IN_ENTITY_SET_NAME                     = "jcdetailsof";
     public static FullQualifiedName DETAILS_OF_IN_ENTITY_SET_TYPE                     = new FullQualifiedName(
             "jciowa.DetailsOfAssociation2" );
     public static FullQualifiedName DETAILS_OF_ENTITY_SET_KEY_1                       = JAIL_RECORD_XREF_FQN;
     public static String            DETAILS_OF_IN_ENTITY_SET_ALIAS                    = "detailsof";
 
-    public static String            SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_SET_NAME   = "jcinteractedwith2";
+    public static String            SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_SET_NAME   = "jcinteractedwith";
     public static FullQualifiedName SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.OfficerInteractedWithSubject2" );
     public static FullQualifiedName SUBJECT_INTERACTED_WITH_OFFICER_ENTITY_TYPE_KEY_1 = PERSON_XREF_FQN;

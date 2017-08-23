@@ -1,5 +1,6 @@
 package com.openlattice.integrations.wisconsin.danecounty;
 
+import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
@@ -11,6 +12,8 @@ import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -20,9 +23,6 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by mtamayo on 6/19/17.
@@ -72,12 +72,20 @@ public class MadisonPoliceDept {
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
+        //payload = payload.sample( false, .2 );
+        long total = payload.count();
+        payload = payload.filter( payload.col( "Subject Type" ).equalTo( "Suspect" ) );
+        long stotal = payload.count();
+        logger.info( "Number of rows is: {}/{} ", stotal, total );
+        logger.info( "Percentage of total dataset: {}", ( 1.0 * stotal ) / total );
+
         RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
                 .loadConfiguration( RequiredEdmElements.class );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm );
+            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm,
+                    retrofit.create( PermissionsApi.class ) );
             reem.ensureEdmElementsExist( requiredEdmElements );
         }
 
@@ -99,7 +107,7 @@ public class MadisonPoliceDept {
                 .addProperty( new FullQualifiedName( "nc.PersonEthnicity" ) )
                 .value( row -> row.getAs( "Ethnicty" ) ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
-                .value( MadisonPoliceDept::safeDOBParse)
+                .value( MadisonPoliceDept::safeDOBParse )
                 .ok()
                 .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .value( MadisonPoliceDept::getSubjectIdentification ).ok()
@@ -162,42 +170,43 @@ public class MadisonPoliceDept {
         shuttle.launch( flights );
     }
 
-    public static String safeDOBParse(Row row ) {
-        String dob = row.getAs("DOB");
-        if (dob == null ) {
+    public static String safeDOBParse( Row row ) {
+        String dob = row.getAs( "DOB" );
+        if ( dob == null ) {
             return null;
         }
-        if( dob.contains( "#" ) ) {
+        if ( dob.contains( "#" ) ) {
             return null;
         }
         return bdHelper.parse( row.getAs( "DOB" ) );
     }
+
     public static String safeParse( Row row ) {
         String date = row.getAs( "Date" );
         String time = row.getAs( "Time" );
-        if( StringUtils.endsWith(date,"/10") ) {
+        if ( StringUtils.endsWith( date, "/10" ) ) {
             date = "2010";
         }
-        if( StringUtils.endsWith(date,"/11") ) {
+        if ( StringUtils.endsWith( date, "/11" ) ) {
             date = "2011";
         }
-        if( StringUtils.endsWith(date,"/12") ) {
+        if ( StringUtils.endsWith( date, "/12" ) ) {
             date = "2012";
         }
-        if( StringUtils.endsWith(date,"/13") ) {
+        if ( StringUtils.endsWith( date, "/13" ) ) {
             date = "2013";
         }
-        if( StringUtils.endsWith(date,"/14") ) {
+        if ( StringUtils.endsWith( date, "/14" ) ) {
             date = "2014";
         }
-        if( StringUtils.endsWith(date,"/15") ) {
+        if ( StringUtils.endsWith( date, "/15" ) ) {
             date = "2015";
         }
-        if( StringUtils.endsWith(date,"/16") ) {
+        if ( StringUtils.endsWith( date, "/16" ) ) {
             date = "2016";
 
         }
-        if( StringUtils.endsWith(date,"/17") ) {
+        if ( StringUtils.endsWith( date, "/17" ) ) {
             date = "2017";
         }
         if ( date.contains( "#" ) || time.contains( "#" ) ) {

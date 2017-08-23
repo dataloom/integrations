@@ -67,7 +67,7 @@ data["associations"].each do |association|
 	description		= association["type"]["description"]
 	source			= association["type"]["source"]
 	destination		= association["type"]["destination"]
-	direction		= association["type"]["bi"]
+	forward		= association["type"]["bi"]
 
 	created_etprop 	= get_var_created( atalias )
 	etvar 			= get_var_entity_set_type( atalias )

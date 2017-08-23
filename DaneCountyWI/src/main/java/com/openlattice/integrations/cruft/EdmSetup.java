@@ -1,6 +1,8 @@
 package com.openlattice.integrations.cruft;
 
+import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
+import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.data.serializers.FullQualifedNameJacksonSerializer;
 import com.dataloom.edm.EdmApi;
@@ -17,21 +19,20 @@ import retrofit2.Retrofit;
  * Created by mtamayo on 6/16/17.
  */
 public class EdmSetup {
-    private static final Logger logger = LoggerFactory.getLogger( EdmSetup.class );
-    private static final RetrofitFactory.Environment environment = RetrofitFactory.Environment.STAGING;
-    public static FullQualifiedName ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
-    public static FullQualifiedName FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
+    private static final Logger                      logger            = LoggerFactory.getLogger( EdmSetup.class );
+    private static final RetrofitFactory.Environment environment       = Environment.STAGING;
+    public static        FullQualifiedName           ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
+    public static        FullQualifiedName           FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
     //public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
-    public static FullQualifiedName LASTNAME_FQN      = new FullQualifiedName( "nc.PersonSurName" );
-    public static FullQualifiedName SEX_FQN           = new FullQualifiedName( "nc.PersonSex" );
-    public static FullQualifiedName RACE_FQN          = new FullQualifiedName( "nc.PersonRace" );
-    public static FullQualifiedName ETHNICITY_FQN     = new FullQualifiedName( "nc.PersonEthnicity" );
-    public static FullQualifiedName DOB_FQN           = new FullQualifiedName( "nc.PersonBirthDate" );
-    public static FullQualifiedName OFFICER_ID_FQN    = new FullQualifiedName( "publicsafety.officerID" );
-    public static FullQualifiedName ARREST_DATE_FQN   = new FullQualifiedName( "publicsafety.arrestdate" );
-//    static {
-//
-//    }
+    public static        FullQualifiedName           LASTNAME_FQN      = new FullQualifiedName( "nc.PersonSurName" );
+    public static        FullQualifiedName           SEX_FQN           = new FullQualifiedName( "nc.PersonSex" );
+    public static        FullQualifiedName           RACE_FQN          = new FullQualifiedName( "nc.PersonRace" );
+    public static        FullQualifiedName           ETHNICITY_FQN     = new FullQualifiedName( "nc.PersonEthnicity" );
+    public static        FullQualifiedName           DOB_FQN           = new FullQualifiedName( "nc.PersonBirthDate" );
+    public static        FullQualifiedName           OFFICER_ID_FQN    = new FullQualifiedName( "publicsafety.officerID" );
+    public static        FullQualifiedName           ARREST_DATE_FQN   = new FullQualifiedName(
+            "publicsafety.arrestdate" );
+
     public static void main( String[] args ) {
         final String jwtToken = args[ 0 ];
 
@@ -42,7 +43,8 @@ public class EdmSetup {
 
         RequiredEdmElements elements = ConfigurationService.StaticLoader.loadConfiguration( RequiredEdmElements.class );
 
-        RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm );
+        RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm,
+                retrofit.create( PermissionsApi.class ) );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         FullQualifedNameJacksonSerializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         reem.ensureEdmElementsExist( elements );

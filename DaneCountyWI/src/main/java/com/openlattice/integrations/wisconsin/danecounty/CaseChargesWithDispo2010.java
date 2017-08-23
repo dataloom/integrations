@@ -1,10 +1,10 @@
 package com.openlattice.integrations.wisconsin.danecounty;
 
+import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -15,6 +15,11 @@ import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
+import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -25,8 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
 
-import java.util.*;
-
 /**
  * Created by mtamayo on 6/20/17.
  */
@@ -34,10 +37,12 @@ public class CaseChargesWithDispo2010 {
     private static final Logger                      logger       = LoggerFactory
             .getLogger( CaseChargesWithDispo2010.class );
     private static final RetrofitFactory.Environment environment  = RetrofitFactory.Environment.STAGING;
+    private static final DateTimeHelper              bdHelper     = new DateTimeHelper( DateTimeZone
+            .forOffsetHours( -6 ), "MM/dd/YY" );
     public static        Base64.Encoder              encoder      = Base64.getEncoder();
     public static        Splitter                    nameSplitter = Splitter.on( " " ).omitEmptyStrings()
             .trimResults();
-    private static final     DateTimeHelper              bdHelper     = new DateTimeHelper( DateTimeZone.forOffsetHours( -6 ), "MM/dd/YY");
+
     public static void main( String[] args ) throws InterruptedException {
         final String path = args[ 0 ];
         final String jwtToken = args[ 1 ];
@@ -59,7 +64,8 @@ public class CaseChargesWithDispo2010 {
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm );
+            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm,
+                    retrofit.create( PermissionsApi.class ) );
             reem.ensureEdmElementsExist( requiredEdmElements );
         }
 
@@ -74,7 +80,7 @@ public class CaseChargesWithDispo2010 {
                 .addProperty( new FullQualifiedName( "justice.CaseStatus" ) )
                 .value( row -> row.getAs( "DA Case Status" ) ).ok()
                 .addProperty( new FullQualifiedName( "justice.ReferralDate" ) )
-                .value( row -> wrapParse( row,  "Ref Date" ) ).ok()
+                .value( row -> wrapParse( row, "Ref Date" ) ).ok()
                 .addProperty( new FullQualifiedName( "justice.ReferralType" ) )
                 .value( row -> row.getAs( "Ref Type" ) ).ok()
                 .addProperty( new FullQualifiedName( "justice.ReferralAgency" ) )
@@ -97,7 +103,7 @@ public class CaseChargesWithDispo2010 {
                 .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
                 .value( CaseChargesWithDispo2010::getLastName ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
-                .value( row -> bdHelper.parse( row.getAs( "Defendant DOB" )  ) ).ok()
+                .value( row -> bdHelper.parse( row.getAs( "Defendant DOB" ) ) ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
                 .value( row -> row.getAs( "Defendant Race" ) ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonSex" ) )
@@ -125,10 +131,10 @@ public class CaseChargesWithDispo2010 {
         shuttle.launch( flights );
     }
 
-    public static String wrapParse( Row row , String field ) {
+    public static String wrapParse( Row row, String field ) {
         try {
-            return bdHelper.parse( row.getAs(field ) );
-        } catch (IllegalArgumentException e ) {
+            return bdHelper.parse( row.getAs( field ) );
+        } catch ( IllegalArgumentException e ) {
             logger.info( "Problematic row: {}", row );
         }
         return null;
@@ -136,9 +142,9 @@ public class CaseChargesWithDispo2010 {
 
     public static String getFirstName( Row row ) {
         String name = row.getAs( "Defendant Name" );
-        if( name == null ) return null;
+        if ( name == null ) { return null; }
         List<String> names = nameSplitter.splitToList( name );
-        if( names .size() < 2  ) {
+        if ( names.size() < 2 ) {
             return null;
         }
         Preconditions.checkState( names.size() > 1, "Must have at least some parts of name" );
@@ -147,7 +153,7 @@ public class CaseChargesWithDispo2010 {
 
     public static String getMiddleName( Row row ) {
         String name = row.getAs( "Defendant Name" );
-        if( name == null ) return null;
+        if ( name == null ) { return null; }
         name = name.replace( " Jr", "" );
         name = name.replace( " JR", "" );
         name = name.replace( " Sr", "" );
@@ -172,14 +178,14 @@ public class CaseChargesWithDispo2010 {
         Preconditions.checkState( names.size() > 0, "Must have at least some parts of name" );
 
         if ( name.contains( " Jr" ) || name.contains( " JR" ) ) {
-            return names.get( 0 ).trim().replace( ",","" ) + " Jr";
+            return names.get( 0 ).trim().replace( ",", "" ) + " Jr";
         }
 
         if ( name.contains( " Sr" ) || name.contains( " SR" ) ) {
-            return names.get( 0 ).trim().replace( ",","" ) + " Sr";
+            return names.get( 0 ).trim().replace( ",", "" ) + " Sr";
         }
 
-        return names.get( 0 ).replace( ",","" );
+        return names.get( 0 ).replace( ",", "" );
     }
 
     public static String getSubjectIdentification( Row row ) {

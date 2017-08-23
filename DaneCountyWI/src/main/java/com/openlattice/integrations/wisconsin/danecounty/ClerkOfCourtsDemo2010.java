@@ -1,5 +1,6 @@
 package com.openlattice.integrations.wisconsin.danecounty;
 
+import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
@@ -88,7 +89,8 @@ public class ClerkOfCourtsDemo2010 {
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm );
+            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm,
+                    retrofit.create( PermissionsApi.class ) );
             reem.ensureEdmElementsExist( requiredEdmElements );
         }
 

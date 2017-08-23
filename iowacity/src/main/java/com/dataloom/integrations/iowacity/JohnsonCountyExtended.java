@@ -55,9 +55,9 @@ public class JohnsonCountyExtended {
     public static FullQualifiedName ALIAS_FQN                    = new FullQualifiedName(
             "im.PersonNickName" );
     public static FullQualifiedName DATE_IN_FQN                  = new FullQualifiedName(
-            "publicsafety.datebooked2" );
+            "publicsafety.datebooked" );
     public static FullQualifiedName DATE_OUT_FQN                 = new FullQualifiedName(
-            "publicsafety.datereleased2" );
+            "publicsafety.datereleased" );
     public static FullQualifiedName OFFICER_ID_FQN               = new FullQualifiedName(
             "publicsafety.officerID" );
     public static FullQualifiedName DOB_FQN                      = new FullQualifiedName(
@@ -226,18 +226,18 @@ public class JohnsonCountyExtended {
     public static FullQualifiedName CONSEC_WITH_FQN        = new FullQualifiedName(
             "publicsafety.ConsecWith" );
     // EXISTING ENTITIES (BOOKINGS IS FROM other integration)
-    public static String            BOOKINGS_ENTITY_SET_NAME   = "jcjailbookings2";
+    public static String            BOOKINGS_ENTITY_SET_NAME   = "jcjailbookings";
     public static FullQualifiedName BOOKINGS_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.JailBookingType2" );
     public static FullQualifiedName BOOKINGS_ENTITY_TYPE_KEY_1 = JAIL_ID_FQN;
     public static String            BOOKINGS_ALIAS             = "bookings";
     // NEW ENTITIES
-    public static String            CHARGES_ENTITY_SET_NAME   = "jciowacharges2";
+    public static String            CHARGES_ENTITY_SET_NAME   = "jciowacharges";
     public static FullQualifiedName CHARGES_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.ChargesType2" );
     public static FullQualifiedName CHARGES_ENTITY_TYPE_KEY_1 = CHARGE_ID_FQN;
     public static String            CHARGES_ALIAS             = "charges";
-    public static String            OFFENSES_ENTITY_SET_NAME   = "jciowaoffenses2";
+    public static String            OFFENSES_ENTITY_SET_NAME   = "jciowaoffenses";
     public static FullQualifiedName OFFENSES_ENTITY_SET_TYPE   = new FullQualifiedName(
             "jciowa.OffensesType2" );
     public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_1 = OFFENSE_DATE_FQN;
@@ -247,7 +247,7 @@ public class JohnsonCountyExtended {
     public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_5 = LOCAL_STATUTE_FQN;
     public static FullQualifiedName OFFENSES_ENTITY_TYPE_KEY_6 = SEVERITY_FQN;
     public static String            OFFENSES_ALIAS             = "offenses";
-    public static String            SENTENCES_ENTITY_SET_NAME    = "jciowasentences2";
+    public static String            SENTENCES_ENTITY_SET_NAME    = "jciowasentences";
     public static FullQualifiedName SENTENCES_ENTITY_SET_TYPE    = new FullQualifiedName(
             "jciowa.SentencesType2" );
     public static FullQualifiedName SENTENCES_ENTITY_TYPE_KEY_1  = SEX_OFF_FQN;

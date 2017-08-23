@@ -43,6 +43,9 @@ propertyTypes:
   piiField: false
   analyzer: "METAPHONE"
   properties:
+  - type: "im.PersonNickName"
+    title: "Person Nickname"
+    description: "The nickname or alias of an individual."
   - type: "j.ArrestAgency"
     title: "Arrest Agency"
     description: "An agency which employs the arresting official."
@@ -55,6 +58,9 @@ propertyTypes:
   - type: "nc.PersonSurName"
     title: "Surname"
     description: "A last name or family name of a person."
+  - type: "nc.PersonBirthPlace"
+    title: "Birth Place"
+    description: "The birth place of a person."
 - datatype: "String"
   piiField: false
   analyzer: "STANDARD"
@@ -74,6 +80,9 @@ propertyTypes:
   - type: "nc.MaritalStatus"
     title: "Marital Status"
     description: "The marital status of a subject."
+  - type: "nc.SSN"
+    title: "SSN"
+    description: "The social security number of a subject."
   - type: "j.ArrestSequenceID"
     title: "Arrest Sequence ID"
     description: "A sequential identifier number assigned to the arrest of a subject."
@@ -137,12 +146,21 @@ propertyTypes:
   - type: "justice.ReferralType"
     title: "Referral Type"
     description: "The type of referral from agency to another."
+  - type: "justice.Bail"
+    title: "Bail"
+    description: "Bail Information"
+  - type: "justice.ReleaseComments"
+    title: "Release Comments"
+    description: "Release comments"
   - type: "justice.ReferralAgency"
     title: "Referral Agency"
     description: "The agency that performed the referral."
   - type: "location.city"
     title: "City"
     description: "A city"
+  - type: "location.street"
+    title: "Street"
+    description: "A street address"
   - type: "location.state"
     title: "State"
     description: "A state"
@@ -184,9 +202,12 @@ entityTypes:
   - "nc.PersonEthnicity"
   - "nc.PersonBirthDate"
   - "nc.SubjectIdentification"
+  - "nc.MaritalStatus"
   - "person.age"
+  - "nc.PersonBirthPlace"
   - "justice.xref"
   - "publicsafety.mugshot"
+  - "nc.SSN"
   baseType: null
 - type: "lawenforcement.arrest"
   title: "Arrest"
@@ -251,6 +272,36 @@ entityTypes:
   properties:
   - "justice.ArrestTrackingNumber"
   - "j.CaseNumberText"
+- type: "general.Address"
+  title: "Address"
+  description: "An address"
+  key:
+  - "location.street"
+  - "location.city"
+  - "location.state"
+  - "location.zip"
+  properties:
+  - "location.street"
+  - "location.city"
+  - "location.state"
+  - "location.zip"
+- type: "justice.booking"
+  title: "Booking"
+  description: "A booking"
+  key:
+  - "j.CaseNumberText"
+  properties:
+  - "j.CaseNumberText"
+  - "justice.CaseStatus"
+  - "justice.ReferralDate"
+  - "justice.ReferralType"
+  - "justice.ReferralAgency"
+  - "publicsafety.ReleaseDate"
+  - "justice.ReleaseType"
+  - "justice.ReleaseComments"
+  - "justice.Bail"
+  - "j.ArrestAgency"
+  - "j.OffenseViolatedStatute"
 
 associationTypes:
 - type:
@@ -269,6 +320,21 @@ associationTypes:
   - "lawenforcement.arrest"
   bidirectional: false
 - type:
+    type: "justice.booked"
+    title: "was booked"
+    description: "Links together a person with a booking"
+    key:
+    - "j.CaseNumberText"
+    - "nc.SubjectIdentification"
+    properties:
+    - "j.CaseNumberText"
+    - "nc.SubjectIdentification"
+  src:
+  - "general.person"
+  dst:
+  - "justice.booking"
+  bidirectional: false
+- type:
     type: "general.appearsin"
     title: "Appears In"
     description: "An association where in one entity appears in another entity or event."
@@ -281,6 +347,7 @@ associationTypes:
   - "justice.charge"
   dst:
   - "justice.case"
+  - "justice.booking"
   bidirectional: false
 - type:
     type: "general.assignto"
@@ -307,6 +374,19 @@ associationTypes:
   - "justice.charge"
   dst:
   - "general.person"
+  bidirectional: false
+- type:
+    type: "location.livesat"
+    title: "Lives at"
+    description: "An association describe that location at which an entity lives"
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "general.person"
+  dst:
+  - "general.Address"
   bidirectional: false
 
 entitySets:
@@ -571,3 +651,33 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "general.person"
+  name: "MSOSuspects"
+  title: "Middlesex Suspects"
+  description: "Suspects arrested in Middlesex"
+  contacts:
+  - "support@openlattice.com"
+- type: "general.Address"
+  name: "MSOAddresses"
+  title: "Middlesex Suspect Addresses"
+  description: "Home addresses of arrested Middlesex suspects"
+  contacts:
+  - "support@openlattice.com"
+- type: "justice.booking"
+  name: "MSOBookings"
+  title: "Middlesex Bookings"
+  description: "Bookings of arrested Middlesex suspects"
+  contacts:
+  - "support@openlattice.com"
+- type: "justice.booked"
+  name: "MSOBooked"
+  title: "Appears In Bookings"
+  description: "Appears in booking of arrested Middlesex suspect"
+  contacts:
+  - "support@openlattice.com"
+- type: "location.livesat"
+  name: "MSOLivesAt"
+  title: "Lives At"
+  description: "Address Middlesex Suspect Lives At"
+  contacts:
+  - "support@openlattice.com"
