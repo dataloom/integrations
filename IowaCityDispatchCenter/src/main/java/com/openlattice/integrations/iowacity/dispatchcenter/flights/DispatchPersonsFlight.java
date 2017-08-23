@@ -118,17 +118,21 @@ public class DispatchPersonsFlight {
 
         //        String csvPath = Resources.getResource( "dispatch_persons.csv" ).getPath();
 
+        String sql = "\"(select * from dbo.Dispatch_Persons where Dis_id IN "
+                + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) ) )\"";
 
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "jdbc" )
                 .option( "url", config.getUrl() )
-                .option( "dbtable", "dbo.Dispatch_Persons" )
+                .option( "dbtable", sql )
                 .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
-                .load()
-                .filter( col("timercvd").geq( DateTime.now().minusDays( 2 ) ) )
-                .filter( col("Type").notEqual( "2" ));
+                .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver")
+                .load();
+                payload.createOrReplaceTempView( "Dispatch_Persons" );
+//                .filter( col( "Timercvd" ).geq( DateTime.now().minusDays( 2 ) ) )
+//                .filter( col( "Type" ).notEqual( "2" ) );
 
         return payload;
     }
