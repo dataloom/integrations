@@ -6,7 +6,6 @@ import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
-import com.openlattice.ResourceConfigurationLoader;
 import com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight;
 import com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchPersonsFlight;
 import com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchTypeFlight;
@@ -17,6 +16,8 @@ import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.config.JdbcIntegrationConfig;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.spark.sql.Dataset;
@@ -32,9 +33,9 @@ public class IowaCityDispatchCenter {
 
     private static final Environment environment = Environment.PRODUCTION;
 
-    public static void main( String[] args ) throws InterruptedException {
-        JdbcIntegrationConfig config = ResourceConfigurationLoader
-                .loadConfigurationFromResource( args[ 0 ], JdbcIntegrationConfig.class );
+    public static void main( String[] args ) throws InterruptedException, IOException {
+        JdbcIntegrationConfig config = ObjectMappers.getYamlMapper()
+                .readValue( new File( args[ 0 ] ), JdbcIntegrationConfig.class );
 
         final String jwtToken = MissionControl.getIdToken( config.getOlsUser(), config.getOlsPassword() );
         final SparkSession sparkSession = MissionControl.getSparkSession();
