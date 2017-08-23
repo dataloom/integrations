@@ -63,6 +63,21 @@ dependencies {
     compile fileTree(dir: "lib/", include: "*.jar")
 }
 
+task launcherJar(type: Jar) {
+    appendix = "launcher"
+    doFirst {
+        manifest {
+            attributes "Class-Path": configurations.runtime.files.collect {File file-> file.name }.join(" ")
+        }
+    }
+}
+
+startScripts {
+    dependsOn launcherJar
+    // clear up the classpath because the launcher jar has it.
+    classpath = files(launcherJar.archivePath)
+}
+
 eclipse {
     ext.downloadSources = true
     ext.downloadJavadoc = true
