@@ -13,14 +13,13 @@ import static org.apache.spark.sql.functions.col;
 
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.config.JdbcIntegrationConfig;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.joda.time.DateTime;
 
 public class DispatchTypeFlight {
 
@@ -85,7 +84,7 @@ public class DispatchTypeFlight {
     private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
         //        String csvPath = Resources.getResource( "dispatch_type.csv" ).getPath();
-
+        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "jdbc" )
@@ -94,8 +93,7 @@ public class DispatchTypeFlight {
                 .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
                 .load()
-                .filter( col( "timercvd" )
-                        .geq( java.sql.Date.from( Instant.now().minusSeconds( TimeUnit.DAYS.toSeconds( 2 ) ) ) ) );
+                .filter( col( "timercvd" ).geq( d ) );
 
         return payload;
     }
