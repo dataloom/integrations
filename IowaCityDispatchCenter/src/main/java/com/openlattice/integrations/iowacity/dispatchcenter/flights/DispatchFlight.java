@@ -226,7 +226,7 @@ public class DispatchFlight {
                         .addProperty( ASSIGNED_OFFICER_ID_FQN ).value( row -> getAsUUID( row.getAs( "AssignedOfficerID" ) ) ).ok()
                         .addProperty( PRIORITY_FQN ).value( row -> getAsString( row.getAs( "Priority" ) ) ).ok()
                         .addProperty( CFS_DATETIME_JANET_FQN ).value( row -> getAsDateTime( row.getAs( "CFS_DateTimeJanet" ) ) ).ok()
-                        .addProperty( ALERTED_DATETIME_FQN ).value( row -> getAsString( row.getAs( "AlertedTime" ) ) ).ok()
+                        .addProperty( ALERTED_DATETIME_FQN ).value( row -> getAsDateTime( row.getAs( "AlertedTime" ) ) ).ok()
                         .addProperty( PARENT_DISPATCH_ID_FQN ).value( row -> getAsString( row.getAs( "ParentDis_Id" ) ) ).ok()
                         .addProperty( MEDICAL_ZONE_FQN ).value( row -> getAsString( row.getAs( "Medical_Zone" ) ) ).ok()
                         .addProperty( UPSIZE_TS_FQN ).value( row -> getAsString( row.getAs( "upsize_ts" ) ) ).ok()
