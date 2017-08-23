@@ -9,13 +9,14 @@ import static org.apache.spark.sql.functions.col;
 
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.config.JdbcIntegrationConfig;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,7 +162,8 @@ public class DispatchFlight {
                 .option( "user", config.getDbUser() )
                 .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver" )
                 .load()
-                .filter( col( "CFS_DateTimeJanet" ).geq( DateTime.now().minusDays( 2 ).toDate() ) );
+                .filter( col( "CFS_DateTimeJanet" )
+                        .geq( java.sql.Date.from( Instant.now().minusSeconds( TimeUnit.DAYS.toSeconds( 2 ) ) ) ) );
 
         payload.createOrReplaceTempView( "Dispatch" );
 

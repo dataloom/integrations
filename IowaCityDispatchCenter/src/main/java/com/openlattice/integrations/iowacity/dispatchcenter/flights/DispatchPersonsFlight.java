@@ -7,7 +7,6 @@ import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAs
 import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.DISPATCH_ID_FQN;
 import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.UPSIZE_TS_FQN;
 import static com.openlattice.integrations.iowacity.dispatchcenter.flights.SystemUserBaseFlight.OFFICER_ID_FQN;
-import static org.apache.spark.sql.functions.col;
 
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.config.JdbcIntegrationConfig;
@@ -17,7 +16,8 @@ import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DispatchPersonsFlight {
 
@@ -25,6 +25,8 @@ public class DispatchPersonsFlight {
      * PropertyTypes
      */
 
+    private static final Logger            logger                   = LoggerFactory
+            .getLogger( DispatchPersonsFlight.class );
     public static FullQualifiedName DISPATCH_PERSON_ID_FQN = new FullQualifiedName( "ICDC.DispatchPersonId" );       // Int64
     public static FullQualifiedName DOB_FQN                = new FullQualifiedName( "ICDC.DOB" );                    // Date
     public static FullQualifiedName OSQ_FQN                = new FullQualifiedName( "ICDC.OSQ" );                    // Int16
@@ -62,7 +64,6 @@ public class DispatchPersonsFlight {
     public static FullQualifiedName LIT_FQN                = new FullQualifiedName( "ICDC.LIT" );                    // String
     public static FullQualifiedName LIY_FQN                = new FullQualifiedName( "ICDC.LIY" );                    // String
     public static FullQualifiedName MNI_NUM_FQN            = new FullQualifiedName( "ICDC.MNINumber" );              // String
-    public static FullQualifiedName MVI_NUM_FQN            = new FullQualifiedName( "ICDC.MVINumber" );              // String
 
     /*
      * these columns and their values seem to be references to columns in the other data sets
@@ -103,16 +104,16 @@ public class DispatchPersonsFlight {
     /*
      * EntityTypes
      */
-
-    public static FullQualifiedName DISPATCH_PERSON_ET_FQN = new FullQualifiedName( "ICDC.DispatchPerson" );
+    public static FullQualifiedName MVI_NUM_FQN            = new FullQualifiedName( "ICDC.MVINumber" );              // String
 
     /*
      * EntitySets
      */
-
-    public static FullQualifiedName DISPATCH_PERSON_ES_FQN   = new FullQualifiedName( "ICDC.DispatchPersons" );
-    public static String            DISPATCH_PERSON_ES_ALIAS = DISPATCH_PERSON_ES_FQN.getFullQualifiedNameAsString();
-    public static String            DISPATCH_PERSON_ES_NAME  = "IowaCityDispatchCenter_DispatchPersons";
+    public static FullQualifiedName DISPATCH_PERSON_ET_FQN = new FullQualifiedName( "ICDC.DispatchPerson" );
+    public static        FullQualifiedName DISPATCH_PERSON_ES_FQN   = new FullQualifiedName( "ICDC.DispatchPersons" );
+    public static        String            DISPATCH_PERSON_ES_ALIAS = DISPATCH_PERSON_ES_FQN
+            .getFullQualifiedNameAsString();
+    public static        String            DISPATCH_PERSON_ES_NAME  = "IowaCityDispatchCenter_DispatchPersons";
 
     private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
@@ -120,7 +121,7 @@ public class DispatchPersonsFlight {
 
         String sql = "\"(select * from dbo.Dispatch_Persons where Dis_id IN "
                 + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) ) ) Dispatch_Persons\"";
-
+        logger.info( "SQL Query for persons: {}", sql );
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "jdbc" )
@@ -128,11 +129,11 @@ public class DispatchPersonsFlight {
                 .option( "dbtable", sql )
                 .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
-                .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver")
+                .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver" )
                 .load();
-                payload.createOrReplaceTempView( "Dispatch_Persons" );
-//                .filter( col( "Timercvd" ).geq( DateTime.now().minusDays( 2 ) ) )
-//                .filter( col( "Type" ).notEqual( "2" ) );
+        payload.createOrReplaceTempView( "Dispatch_Persons" );
+        //                .filter( col( "Timercvd" ).geq( DateTime.now().minusDays( 2 ) ) )
+        //                .filter( col( "Type" ).notEqual( "2" ) );
 
         return payload;
     }
