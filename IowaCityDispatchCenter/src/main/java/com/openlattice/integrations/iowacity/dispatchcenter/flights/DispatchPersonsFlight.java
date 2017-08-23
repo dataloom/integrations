@@ -119,7 +119,7 @@ public class DispatchPersonsFlight {
         //        String csvPath = Resources.getResource( "dispatch_persons.csv" ).getPath();
 
         String sql = "\"(select * from dbo.Dispatch_Persons where Dis_id IN "
-                + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) ) )\"";
+                + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) ) ) Dispatch_Persons\"";
 
         Dataset<Row> payload = sparkSession
                 .read()

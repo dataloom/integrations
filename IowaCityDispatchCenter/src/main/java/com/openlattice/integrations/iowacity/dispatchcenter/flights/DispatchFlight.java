@@ -159,9 +159,9 @@ public class DispatchFlight {
                 .option( "dbtable", "dbo.Dispatch" )
                 .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
-                .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver")
+                .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver" )
                 .load()
-                .filter( col( "CFS_DateTimeJanet" ).geq( DateTime.now().minusDays( 2 ) ) );
+                .filter( col( "CFS_DateTimeJanet" ).geq( DateTime.now().minusDays( 2 ).toDate() ) );
 
         payload.createOrReplaceTempView( "Dispatch" );
 

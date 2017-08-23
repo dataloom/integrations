@@ -93,7 +93,7 @@ public class DispatchTypeFlight {
                 .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
                 .load()
-                .filter( col("timercvd").geq( DateTime.now().minusDays( 2 ) ) );
+                .filter( col("timercvd").geq( DateTime.now().minusDays( 2 ).toDate() ) );
 
         return payload;
     }
