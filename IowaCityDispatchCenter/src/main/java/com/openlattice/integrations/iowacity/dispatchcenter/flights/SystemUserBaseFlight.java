@@ -14,8 +14,8 @@ import java.util.Map;
 
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getActive;
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getEmployeeId;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getString;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getUUID;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsUUID;
 
 public class SystemUserBaseFlight {
 
@@ -25,13 +25,13 @@ public class SystemUserBaseFlight {
      * PropertyTypes
      */
 
-    public static FullQualifiedName FIRST_NAME_FQN  = new FullQualifiedName( "ICDC.FirstName" );
-    public static FullQualifiedName LAST_NAME_FQN   = new FullQualifiedName( "ICDC.LastName" );
-    public static FullQualifiedName TITLE_FQN       = new FullQualifiedName( "ICDC.Title" );
-    public static FullQualifiedName EMPLOYEE_ID_FQN = new FullQualifiedName( "ICDC.EmployeeId" );
-    public static FullQualifiedName OFFICER_ID_FQN  = new FullQualifiedName( "ICDC.OfficerId" );
-    public static FullQualifiedName ORI_FQN         = new FullQualifiedName( "ICDC.ORI" );
-    public static FullQualifiedName ACTIVE_FQN      = new FullQualifiedName( "ICDC.Active" );
+    public static FullQualifiedName FIRST_NAME_FQN  = new FullQualifiedName( "ICDC.FirstName" );    // String
+    public static FullQualifiedName LAST_NAME_FQN   = new FullQualifiedName( "ICDC.LastName" );     // String
+    public static FullQualifiedName TITLE_FQN       = new FullQualifiedName( "ICDC.Title" );        // String
+    public static FullQualifiedName EMPLOYEE_ID_FQN = new FullQualifiedName( "ICDC.EmployeeId" );   // String
+    public static FullQualifiedName OFFICER_ID_FQN  = new FullQualifiedName( "ICDC.OfficerId" );    // Guid
+    public static FullQualifiedName ORI_FQN         = new FullQualifiedName( "ICDC.ORI" );          // String
+    public static FullQualifiedName ACTIVE_FQN      = new FullQualifiedName( "ICDC.Active" );       // Boolean
 
     /*
      * EntityTypes
@@ -49,7 +49,7 @@ public class SystemUserBaseFlight {
 
     private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession ) {
 
-        String csvPath = Resources.getResource( "systemuserbase.csv" ).getPath();
+        String csvPath = Resources.getResource( "system_user_base.csv" ).getPath();
 
         Dataset<Row> payload = sparkSession
                 .read()
@@ -72,12 +72,12 @@ public class SystemUserBaseFlight {
                         .to( EMPLOYEES_ES_NAME )
                         .ofType( EMPLOYEE_ET_FQN )
                         .key( EMPLOYEE_ID_FQN, OFFICER_ID_FQN )
-                        .addProperty( FIRST_NAME_FQN ).value( row -> getString( row.getAs( "FirstName" ) ) ).ok()
-                        .addProperty( LAST_NAME_FQN ).value( row -> getString( row.getAs( "LastName" ) ) ).ok()
-                        .addProperty( TITLE_FQN ).value( row -> getString( row.getAs( "Title" ) ) ).ok()
+                        .addProperty( FIRST_NAME_FQN ).value( row -> getAsString( row.getAs( "FirstName" ) ) ).ok()
+                        .addProperty( LAST_NAME_FQN ).value( row -> getAsString( row.getAs( "LastName" ) ) ).ok()
+                        .addProperty( TITLE_FQN ).value( row -> getAsString( row.getAs( "Title" ) ) ).ok()
                         .addProperty( EMPLOYEE_ID_FQN ).value( row -> getEmployeeId( row.getAs( "employeeid" ) ) ).ok()
-                        .addProperty( OFFICER_ID_FQN ).value( row -> getUUID( row.getAs( "officerid" ) ) ).ok()
-                        .addProperty( ORI_FQN ).value( row -> getString( row.getAs( "ori" ) ) ).ok()
+                        .addProperty( OFFICER_ID_FQN ).value( row -> getAsUUID( row.getAs( "officerid" ) ) ).ok()
+                        .addProperty( ORI_FQN ).value( row -> getAsString( row.getAs( "ori" ) ) ).ok()
                         .addProperty( ACTIVE_FQN ).value( row -> getActive( row.getAs( "employeeid" ) ) ).ok()
                         .ok()
                     .ok()
