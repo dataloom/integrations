@@ -1,16 +1,32 @@
 package com.openlattice.integrations.iowacity.dispatchcenter;
 
+import com.google.common.collect.ImmutableList;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class Helpers {
 
-    public static UUID EMPTY_UUID = new UUID( 0L, 0L );
-
     public static String getAsString( Object obj ) {
         if ( obj != null && obj.toString() != null ) {
             return obj.toString().trim();
+        }
+        return null;
+    }
+
+    public static Boolean getAsBoolean( Object obj ) {
+        String str = getAsString( obj );
+        if ( str != null ) {
+            Set<String> trueSet = new HashSet<>( ImmutableList.of( "1", "true", "yes" ) );
+            Set<String> falseSet = new HashSet<>( ImmutableList.of( "0", "false", "no" ) );
+            if ( trueSet.contains( str.toLowerCase() ) ) {
+                return true;
+            } else if ( falseSet.contains( str.toLowerCase() ) ) {
+                return false;
+            }
         }
         return null;
     }
@@ -59,7 +75,7 @@ public class Helpers {
         return employeeId != null && !employeeId.toLowerCase().startsWith( "x_" );
     }
 
-    public static String getDispatchDate( Object obj ) {
+    public static String getAsDate( Object obj ) {
         String dateStr = getAsString( obj );
         if ( dateStr != null ) {
             try {
@@ -73,7 +89,7 @@ public class Helpers {
         return null;
     }
 
-    public static String getDispatchTime( Object obj ) {
+    public static String getAsTime( Object obj ) {
         String timeStr = getAsString( obj );
         if ( timeStr != null ) {
             try {
