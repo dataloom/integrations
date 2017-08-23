@@ -1,22 +1,23 @@
 package com.openlattice.integrations.iowacity.dispatchcenter.flights;
 
-import com.google.common.io.Resources;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsDate;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsDateTime;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsTime;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsUUID;
+import static org.apache.spark.sql.functions.col;
+
 import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.config.JdbcIntegrationConfig;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsDateTime;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsDate;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsTime;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsUUID;
 
 public class DispatchFlight {
 
@@ -147,22 +148,26 @@ public class DispatchFlight {
     public static String            DISPATCHES_ES_ALIAS = DISPATCHES_ES_FQN.getFullQualifiedNameAsString();
     public static String            DISPATCHES_ES_NAME  = "IowaCityDispatchCenter_Dispatches";
 
-    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession ) {
+    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
-        String csvPath = Resources.getResource( "dispatch.csv" ).getPath();
+        //        String csvPath = Resources.getResource( "dispatch.csv" ).getPath();
 
         Dataset<Row> payload = sparkSession
                 .read()
-                .format( "com.databricks.spark.csv" )
-                .option( "header", "true" )
-                .load( csvPath );
+                .format( "jdbc" )
+                .option( "url", config.getUrl() )
+                .option( "dbtable", "dbo.Dispatch" )
+                .option( "password", config.getDbPassword() )
+                .option( "user", config.getDbUser() )
+                .load()
+                .filter( col("timercvd").geq( DateTime.now().minusDays( 2 ) ) );
 
         return payload;
     }
 
-    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession ) {
+    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
-        Dataset<Row> payload = getPayloadFromCsv( sparkSession );
+        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config );
 
         // @formatter:off
         Flight flight = Flight

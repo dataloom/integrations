@@ -6,6 +6,7 @@ import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
+import com.openlattice.ResourceConfigurationLoader;
 import com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight;
 import com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchPersonsFlight;
 import com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchTypeFlight;
@@ -13,8 +14,11 @@ import com.openlattice.integrations.iowacity.dispatchcenter.flights.SystemUserBa
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
+import com.openlattice.shuttle.config.JdbcIntegrationConfig;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -22,18 +26,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class IowaCityDispatchCenter {
 
     private static final Logger logger = LoggerFactory.getLogger( IowaCityDispatchCenter.class );
 
-    private static final Environment environment = Environment.LOCAL;
+    private static final Environment environment = Environment.PRODUCTION;
 
     public static void main( String[] args ) throws InterruptedException {
+        JdbcIntegrationConfig config = ResourceConfigurationLoader
+                .loadConfigurationFromResource( args[ 0 ], JdbcIntegrationConfig.class );
 
-        final String jwtToken = args[ 0 ];
+        final String jwtToken = MissionControl.getIdToken( config.getOlsUser(), config.getOlsPassword() );
         final SparkSession sparkSession = MissionControl.getSparkSession();
 
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
@@ -50,10 +53,10 @@ public class IowaCityDispatchCenter {
             manager.ensureEdmElementsExist( requiredEdmElements );
         }
 
-        Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession );
-        Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight.getFlight( sparkSession );
-        Map<Flight, Dataset<Row>> dispatchTypeFlight = DispatchTypeFlight.getFlight( sparkSession );
-        Map<Flight, Dataset<Row>> dispatchPersonsFlight = DispatchPersonsFlight.getFlight( sparkSession );
+        Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession, config );
+        Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight.getFlight( sparkSession, config );
+        Map<Flight, Dataset<Row>> dispatchTypeFlight = DispatchTypeFlight.getFlight( sparkSession, config );
+        Map<Flight, Dataset<Row>> dispatchPersonsFlight = DispatchPersonsFlight.getFlight( sparkSession, config );
 
         Map<Flight, Dataset<Row>> flights = new HashMap<>();
         flights.putAll( systemUserBaseFlight );

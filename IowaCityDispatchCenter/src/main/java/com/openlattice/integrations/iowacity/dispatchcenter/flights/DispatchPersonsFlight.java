@@ -1,15 +1,5 @@
 package com.openlattice.integrations.iowacity.dispatchcenter.flights;
 
-import com.google.common.io.Resources;
-import com.openlattice.shuttle.Flight;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsBoolean;
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsDate;
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
@@ -17,6 +7,17 @@ import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAs
 import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.DISPATCH_ID_FQN;
 import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.UPSIZE_TS_FQN;
 import static com.openlattice.integrations.iowacity.dispatchcenter.flights.SystemUserBaseFlight.OFFICER_ID_FQN;
+import static org.apache.spark.sql.functions.col;
+
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.config.JdbcIntegrationConfig;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.joda.time.DateTime;
 
 public class DispatchPersonsFlight {
 
@@ -113,22 +114,28 @@ public class DispatchPersonsFlight {
     public static String            DISPATCH_PERSON_ES_ALIAS = DISPATCH_PERSON_ES_FQN.getFullQualifiedNameAsString();
     public static String            DISPATCH_PERSON_ES_NAME  = "IowaCityDispatchCenter_DispatchPersons";
 
-    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession ) {
+    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
-        String csvPath = Resources.getResource( "dispatch_persons.csv" ).getPath();
+        //        String csvPath = Resources.getResource( "dispatch_persons.csv" ).getPath();
+
 
         Dataset<Row> payload = sparkSession
                 .read()
-                .format( "com.databricks.spark.csv" )
-                .option( "header", "true" )
-                .load( csvPath );
+                .format( "jdbc" )
+                .option( "url", config.getUrl() )
+                .option( "dbtable", "dbo.Dispatch_Persons" )
+                .option( "password", config.getDbPassword() )
+                .option( "user", config.getDbUser() )
+                .load()
+                .filter( col("timercvd").geq( DateTime.now().minusDays( 2 ) ) )
+                .filter( col("Type").notEqual( "2" ));
 
         return payload;
     }
 
-    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession ) {
+    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
-        Dataset<Row> payload = getPayloadFromCsv( sparkSession );
+        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config );
 
         // 1. "ICDC.DispatchPersonId" should be something else. what does the "ID" column represent?
         // 2. what format is "ICDC.Height" supposed to be?

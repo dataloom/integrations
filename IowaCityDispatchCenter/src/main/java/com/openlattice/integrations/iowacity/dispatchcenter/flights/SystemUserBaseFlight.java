@@ -1,21 +1,20 @@
 package com.openlattice.integrations.iowacity.dispatchcenter.flights;
 
-import com.google.common.io.Resources;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getActive;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsUUID;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getEmployeeId;
+
 import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.config.JdbcIntegrationConfig;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getActive;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getEmployeeId;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsUUID;
 
 public class SystemUserBaseFlight {
 
@@ -47,22 +46,25 @@ public class SystemUserBaseFlight {
     public static String            EMPLOYEES_ES_ALIAS = EMPLOYEES_ES_FQN.getFullQualifiedNameAsString();
     public static String            EMPLOYEES_ES_NAME  = "IowaCityDispatchCenter_Employees";
 
-    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession ) {
+    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
-        String csvPath = Resources.getResource( "system_user_base.csv" ).getPath();
+        //String csvPath = Resources.getResource( "system_user_base.csv" ).getPath();
 
         Dataset<Row> payload = sparkSession
                 .read()
-                .format( "com.databricks.spark.csv" )
-                .option( "header", "true" )
-                .load( csvPath );
+                .format( "jdbc" )
+                .option( "url", config.getUrl() )
+                .option( "dbtable", "dbo.SystemUserBase" )
+                .option( "password", config.getDbPassword() )
+                .option( "user", config.getDbUser() )
+                .load();
 
         return payload;
     }
 
-    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession ) {
+    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
-        Dataset<Row> payload = getPayloadFromCsv( sparkSession );
+        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config );
 
         // @formatter:off
         Flight flight = Flight

@@ -1,24 +1,25 @@
 package com.openlattice.integrations.iowacity.dispatchcenter.flights;
 
-import com.google.common.io.Resources;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsDateTime;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
+import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsUUID;
+import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.CASE_ID_FQN;
+import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.CASE_NUM_FQN;
+import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.DISPATCH_ID_FQN;
+import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.PRIORITY_FQN;
+import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.TYPE_ID_FQN;
+import static com.openlattice.integrations.iowacity.dispatchcenter.flights.SystemUserBaseFlight.OFFICER_ID_FQN;
+import static org.apache.spark.sql.functions.col;
+
 import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.config.JdbcIntegrationConfig;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsDateTime;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
-import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsUUID;
-import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.DISPATCH_ID_FQN;
-import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.CASE_ID_FQN;
-import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.CASE_NUM_FQN;
-import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.PRIORITY_FQN;
-import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.TYPE_ID_FQN;
-import static com.openlattice.integrations.iowacity.dispatchcenter.flights.SystemUserBaseFlight.OFFICER_ID_FQN;
+import org.joda.time.DateTime;
 
 public class DispatchTypeFlight {
 
@@ -80,22 +81,26 @@ public class DispatchTypeFlight {
     public static String            DISPATCH_TYPES_ES_ALIAS = DISPATCH_TYPES_ES_FQN.getFullQualifiedNameAsString();
     public static String            DISPATCH_TYPES_ES_NAME  = "IowaCityDispatchCenter_DispatchTypes";
 
-    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession ) {
+    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
-        String csvPath = Resources.getResource( "dispatch_type.csv" ).getPath();
+        //        String csvPath = Resources.getResource( "dispatch_type.csv" ).getPath();
 
         Dataset<Row> payload = sparkSession
                 .read()
-                .format( "com.databricks.spark.csv" )
-                .option( "header", "true" )
-                .load( csvPath );
+                .format( "jdbc" )
+                .option( "url", config.getUrl() )
+                .option( "dbtable", "dbo.Dispatch_Type" )
+                .option( "password", config.getDbPassword() )
+                .option( "user", config.getDbUser() )
+                .load()
+                .filter( col("timercvd").geq( DateTime.now().minusDays( 2 ) ) );
 
         return payload;
     }
 
-    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession ) {
+    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
-        Dataset<Row> payload = getPayloadFromCsv( sparkSession );
+        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config );
 
         // 1. what's the difference between "ICDC.OfficerId" and "ICDC.CallForServiceOfficerId"?
         // 2. is "ICDC.Unit" the same as "ICDC.AssignedOfficer"?
