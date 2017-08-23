@@ -1,6 +1,8 @@
 package com.openlattice.integrations.wisconsin.danecounty;
 
+import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
+import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
@@ -30,7 +32,7 @@ public class FitchburgPoliceDept {
 
     private static final Logger                      logger            = LoggerFactory
             .getLogger( VeronaPoliceDept.class );
-    private static final   RetrofitFactory.Environment environment       = RetrofitFactory.Environment.STAGING;
+    private static final   RetrofitFactory.Environment environment       = Environment.STAGING;
     private static final   DateTimeHelper              dtHelper          = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -6 ), "MM/dd/YY HH:mm" );
     private static final   DateTimeHelper              bdHelper          = new DateTimeHelper( DateTimeZone
@@ -76,7 +78,8 @@ public class FitchburgPoliceDept {
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm );
+            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm,
+                    retrofit.create( PermissionsApi.class ) );
             reem.ensureEdmElementsExist( requiredEdmElements );
         }
 

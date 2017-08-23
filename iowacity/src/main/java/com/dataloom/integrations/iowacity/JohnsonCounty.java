@@ -46,8 +46,8 @@ public class JohnsonCounty {
     public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
     public static FullQualifiedName LASTNAME_FQN                 = new FullQualifiedName( "nc.PersonSurName" );
     public static FullQualifiedName ALIAS_FQN                    = new FullQualifiedName( "im.PersonNickName" );
-    public static FullQualifiedName DATE_IN_FQN                  = new FullQualifiedName( "publicsafety.datebooked2" );
-    public static FullQualifiedName DATE_OUT_FQN                 = new FullQualifiedName( "publicsafety.datereleased2" );
+    public static FullQualifiedName DATE_IN_FQN                  = new FullQualifiedName( "publicsafety.datebooked" );
+    public static FullQualifiedName DATE_OUT_FQN                 = new FullQualifiedName( "publicsafety.datereleased" );
     public static FullQualifiedName OFFICER_ID_FQN               = new FullQualifiedName( "publicsafety.officerID" );
     public static FullQualifiedName DOB_FQN                      = new FullQualifiedName( "nc.PersonBirthDate" );
     public static FullQualifiedName AGE_FQN                      = new FullQualifiedName( "general.Age" );

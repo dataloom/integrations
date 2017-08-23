@@ -11,6 +11,13 @@ import com.google.common.collect.ImmutableSet;
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
@@ -21,14 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spark_project.guava.collect.Maps;
 import retrofit2.Retrofit;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author Matthew Tamayo-Rios &lt;matthew@kryptnostic.com&gt;
@@ -110,7 +109,7 @@ public class JohnsonCountyMugshots {
                 .ofType( SUBJECTS_ENTITY_SET_TYPE )
                 .to( SUBJECTS_ENTITY_SET_NAME )
                 .key( SUBJECTS_ENTITY_SET_KEY_1 )
-                                .useCurrentSync()
+                .useCurrentSync()
                 .addProperty( PERSON_XREF_FQN )
                 .value( row -> {
                     final String imageId = row.getAs( "Image_ID" );

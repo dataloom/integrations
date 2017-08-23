@@ -1,6 +1,8 @@
 package com.openlattice.integrations.wisconsin.danecounty;
 
+import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
+import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
@@ -28,13 +30,12 @@ import java.util.Map;
  */
 public class SunPrairiePoliceDept {
     private static final Logger                      logger            = LoggerFactory
-            .getLogger( VeronaPoliceDept.class );
-    private static final RetrofitFactory.Environment environment       = RetrofitFactory.Environment.STAGING;
+            .getLogger( SunPrairiePoliceDept.class );
+    private static final RetrofitFactory.Environment environment       = Environment.STAGING;
     private static final DateTimeHelper              dtHelper          = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -6 ), "MM/dd/YY HH:mm" );
     private static final DateTimeHelper              bdHelper          = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -6 ), "MM/dd/YY" );
-    public static        String                      ENTITY_SET_NAME   = "veronapd_dccjs";
     public static        FullQualifiedName           ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
     public static        FullQualifiedName           FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
     //public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
@@ -75,7 +76,8 @@ public class SunPrairiePoliceDept {
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
         if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm );
+            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm,
+                    retrofit.create( PermissionsApi.class ) );
             reem.ensureEdmElementsExist( requiredEdmElements );
         }
 
