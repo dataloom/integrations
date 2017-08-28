@@ -418,6 +418,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrest"
   name: "SunPrairieArrests"
   title: "Sun Prairie Arrests"
@@ -427,6 +428,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrestedin"
   name: "SunPrairieArrestedIn"
   title: "Sun Prairie Arrested In"
@@ -436,6 +438,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "general.person"
   name: "MiddletonArrestSuspects"
   title: "Middleton Arrest Suspects"
@@ -526,6 +529,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrest"
   name: "MadisonArrests"
   title: "Madison Arrests"
@@ -535,6 +539,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrestedin"
   name: "MadisonArrestedIn"
   title: "Madison Arrested In"
@@ -544,6 +549,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "general.person"
   name: "DCSOArrestSuspects"
   title: "Dane County Sheriff Arrest Suspects"
@@ -553,6 +559,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrest"
   name: "DCSOArrests"
   title: "Dane County Sheriff Arrests"
@@ -562,6 +569,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrestedin"
   name: "DCSOArrestedIn"
   title: "Dane County Sheriff Arrested In"
@@ -571,3 +579,4 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
