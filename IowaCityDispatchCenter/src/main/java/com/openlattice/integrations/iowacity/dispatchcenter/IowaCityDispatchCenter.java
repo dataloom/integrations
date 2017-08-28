@@ -31,7 +31,7 @@ public class IowaCityDispatchCenter {
 
     private static final Logger logger = LoggerFactory.getLogger( IowaCityDispatchCenter.class );
 
-    private static final Environment environment = Environment.PRODUCTION;
+    private static final Environment environment = Environment.STAGING;
 
     public static void main( String[] args ) throws InterruptedException, IOException {
         JdbcIntegrationConfig config = ObjectMappers.getYamlMapper()

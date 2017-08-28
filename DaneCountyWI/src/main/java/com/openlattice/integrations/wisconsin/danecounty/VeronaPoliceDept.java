@@ -12,28 +12,29 @@ import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.shuttle.Flight;
-import com.openlattice.shuttle.FormattedDateTime;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class VeronaPoliceDept {
     private static final Logger            logger            = LoggerFactory.getLogger( VeronaPoliceDept.class );
     private static final Environment       environment       = Environment.STAGING;
+    private static final DateTimeHelper    dtHelper          = new DateTimeHelper( DateTimeZone.forOffsetHours( -6 ),
+            "MM/dd/YY HH:mm" );
+    private static final DateTimeHelper    bdHelper          = new DateTimeHelper( DateTimeZone.forOffsetHours( -6 ),
+            "MM/dd/YY" );
     public static        FullQualifiedName ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
     public static        FullQualifiedName FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
     //public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
@@ -44,8 +45,6 @@ public class VeronaPoliceDept {
     public static        FullQualifiedName DOB_FQN           = new FullQualifiedName( "nc.PersonBirthDate" );
     public static        FullQualifiedName OFFICER_ID_FQN    = new FullQualifiedName( "publicsafety.officerID" );
     public static        FullQualifiedName ARREST_DATE_FQN   = new FullQualifiedName( "publicsafety.arrestdate" );
-    private static final DateTimeHelper dtHelper = new DateTimeHelper( DateTimeZone.forOffsetHours( -6 ), "MM/dd/YY HH:mm");
-    private static final DateTimeHelper bdHelper = new DateTimeHelper( DateTimeZone.forOffsetHours( -6 ), "MM/dd/YY");
 
     public static void main( String[] args ) throws InterruptedException {
         /*
@@ -111,10 +110,10 @@ public class VeronaPoliceDept {
                 .value( VeronaPoliceDept::getArrestSequenceID )
                 .ok()
                 .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
-                .value( row -> dtHelper.parse( row.getAs( "arrestdate" )  ) )
+                .value( row -> dtHelper.parse( row.getAs( "arrestdate" ) ) )
                 .ok()
                 .addProperty( new FullQualifiedName( "publicsafety.OffenseDate" ) )
-                .value( row -> dtHelper.parse(row.getAs( "IncidentDate" ) ) )
+                .value( row -> dtHelper.parse( row.getAs( "IncidentDate" ) ) )
                 .ok()
                 .addProperty( new FullQualifiedName( "j.OffenseQualifierText" ) )
                 .value( row -> row.getAs( "DescriptionofOffense" ) )
@@ -157,7 +156,6 @@ public class VeronaPoliceDept {
 
         shuttle.launch( flights );
     }
-
 
     public static String getArrestSequenceID( Row row ) {
         return row.getAs( "Agency" ) + "-" + row.getAs( "ArrestorCitationNumber" );
