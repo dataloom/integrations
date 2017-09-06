@@ -35,7 +35,6 @@ import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -52,19 +51,16 @@ public class DaneCountySheriffs {
 
     private static final Logger                      logger            = LoggerFactory
             .getLogger( DaneCountySheriffs.class );
-    private static final RetrofitFactory.Environment environment       = Environment.STAGING;
+    private static final RetrofitFactory.Environment environment       = Environment.PRODUCTION;
     private static final DateTimeHelper              dtHelper          = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -6 ), "yyyy-MM-dd HH:mm:ss.SSS" );
     private static final DateTimeHelper              bdHelper          = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -6 ), "yyyy-MM-dd HH:mm:ss.SSS" );
-    public static        String                      ENTITY_SET_NAME   = "veronapd_dccjs";
     public static        FullQualifiedName           ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
     public static        FullQualifiedName           FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
-    //public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
     public static        FullQualifiedName           LASTNAME_FQN      = new FullQualifiedName( "nc.PersonSurName" );
     public static        FullQualifiedName           SEX_FQN           = new FullQualifiedName( "nc.PersonSex" );
     public static        FullQualifiedName           RACE_FQN          = new FullQualifiedName( "nc.PersonRace" );
-    public static        FullQualifiedName           ETHNICITY_FQN     = new FullQualifiedName( "nc.PersonEthnicity" );
     public static        FullQualifiedName           DOB_FQN           = new FullQualifiedName( "nc.PersonBirthDate" );
     public static        FullQualifiedName           OFFICER_ID_FQN    = new FullQualifiedName( "publicsafety.officerID" );
     public static        FullQualifiedName           ARREST_DATE_FQN   = new FullQualifiedName(
@@ -79,6 +75,7 @@ public class DaneCountySheriffs {
          */
         final String path = args[ 0 ];
         final String jwtToken = args[ 1 ];
+
         //final String username = args[ 1 ];
         //final String password = args[ 2 ];
         final SparkSession sparkSession = MissionControl.getSparkSession();
@@ -109,24 +106,22 @@ public class DaneCountySheriffs {
                 .createEntities()
                 .addEntity( "suspect" )
                 .to( "DCSOArrestSuspects" )
-                .ofType( new FullQualifiedName( "general.person" ) )
-                .key( new FullQualifiedName( "nc.SubjectIdentification" ) )
-                .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
-                .value( row -> row.getAs( "first" ) ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonMiddleName" ) )
-                .value( row -> row.getAs( "middle" ) ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
-                .value( row -> row.getAs( "last" ) ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonSex" ) )
-                .value( row -> row.getAs( "sex" ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
-                .value( row -> row.getAs( "race" ) ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonEthnicity" ) )
-                .value( row -> row.getAs( "ethnic" ) ).ok()
+                .ofType( "general.person" )
+                .key( "nc.SubjectIdentification" )
+                .addProperty( "nc.PersonGivenName" )
+                .value( "first" ).ok()
+                .addProperty( "nc.PersonMiddleName" )
+                .value( "middle" ).ok()
+                .addProperty( "nc.PersonSurName" )
+                .value( "last" ).ok()
+                .addProperty( "nc.PersonSex" )
+                .value( "sex" ).ok()
+                .addProperty( "nc.PersonRace" )
+                .value( "race" ).ok()
+                .addProperty("nc.PersonEthnicity" )
+                .value( "ethnic" ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
-                .value( DaneCountySheriffs::safeDOBParse )
-                .ok()
+                .value( DaneCountySheriffs::safeDOBParse ).ok()
                 .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .value( DaneCountySheriffs::getSubjectIdentification ).ok()
                 .ok()
@@ -135,25 +130,20 @@ public class DaneCountySheriffs {
                 .ofType( new FullQualifiedName( "lawenforcement.arrest" ) )
                 .key( new FullQualifiedName( "j.ArrestSequenceID" ) )
                 .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
-                .value( row -> dtHelper.parse( row.getAs( "bookdt" ) ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "publicsafety.ReleaseDate" ) )
-                .value( row -> dtHelper.parse( row.getAs( "bookdt" ) ) )
-                .ok()
+                .value( row -> dtHelper.parse( row.getAs( "bookdt" ) ) ).ok()
+                .addProperty( "publicsafety.ReleaseDate" )
+                .value( row -> dtHelper.parse( row.getAs( "bookdt" ) ) ).ok()
                 .addProperty( new FullQualifiedName( "justice.disposition" ) )
-                .value( row -> row.getAs( "dispos" ) )
-                .ok()
+                .value( "dispos" ).ok()
                 .addProperty( new FullQualifiedName( "justice.EventType" ) )
-                .value( row -> row.getAs( "classif" ) )
-                .ok()
+                .value( "classif" ).ok()
                 .addProperty( new FullQualifiedName( "j.OffenseViolatedStatute" ) )
-                .value( row -> row.getAs( "judstat" ) )
-                .ok()
+                .value( "judstat" ).ok()
                 .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
                 .value( DaneCountySheriffs::getArrestSequenceID )
                 .ok()
                 .addProperty( new FullQualifiedName( "j.ArrestCategory" ) )
-                .value( row -> row.getAs( "arsttyp" ) )
+                .value( "arsttyp" )
                 .ok()
                 .ok()
                 .ok()
@@ -177,6 +167,7 @@ public class DaneCountySheriffs {
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
         Map<Flight, Dataset<Row>> flights = new HashMap<>( 1 );
+
         flights.put( flight, payload );
 
         shuttle.launch( flights );
@@ -191,40 +182,6 @@ public class DaneCountySheriffs {
             return null;
         }
         return bdHelper.parse( dob );
-    }
-
-    public static String safeParse( Row row ) {
-        String date = row.getAs( "Date" );
-        String time = row.getAs( "Time" );
-        if ( StringUtils.endsWith( date, "/10" ) ) {
-            date = "2010";
-        }
-        if ( StringUtils.endsWith( date, "/11" ) ) {
-            date = "2011";
-        }
-        if ( StringUtils.endsWith( date, "/12" ) ) {
-            date = "2012";
-        }
-        if ( StringUtils.endsWith( date, "/13" ) ) {
-            date = "2013";
-        }
-        if ( StringUtils.endsWith( date, "/14" ) ) {
-            date = "2014";
-        }
-        if ( StringUtils.endsWith( date, "/15" ) ) {
-            date = "2015";
-        }
-        if ( StringUtils.endsWith( date, "/16" ) ) {
-            date = "2016";
-
-        }
-        if ( StringUtils.endsWith( date, "/17" ) ) {
-            date = "2017";
-        }
-        if ( date.contains( "#" ) || time.contains( "#" ) ) {
-            return null;
-        }
-        return dtHelper.parse( date + " " + time );
     }
 
     public static String getArrestSequenceID( Row row ) {
