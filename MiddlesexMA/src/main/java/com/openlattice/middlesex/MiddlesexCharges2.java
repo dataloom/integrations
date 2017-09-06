@@ -35,6 +35,8 @@ import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -50,26 +52,16 @@ import retrofit2.Retrofit;
  */
 public class MiddlesexCharges2 {
 
-    private static final Logger                      logger            = LoggerFactory
+    private static final Logger         logger         = LoggerFactory
             .getLogger( MiddlesexCharges2.class );
-    private static final Environment environment       = Environment.STAGING;
-    private static final DateTimeHelper              dtHelper          = new DateTimeHelper( DateTimeZone
+    private static final Environment    environment    = Environment.LOCAL;
+    private static final DateTimeHelper dtHelper       = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -5 ), "MM/dd/yyyy" );
-    private static final DateTimeHelper              bdHelper          = new DateTimeHelper( DateTimeZone
+    private static final DateTimeHelper bdHelper       = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -5 ), "yyyy-MM-dd HH:mm:ss.SSS" );
-    public static        String                      ENTITY_SET_NAME   = "veronapd_dccjs";
-    public static        FullQualifiedName           ARREST_AGENCY_FQN = new FullQualifiedName( "j.ArrestAgency" );
-    public static        FullQualifiedName           FIRSTNAME_FQN     = new FullQualifiedName( "nc.PersonGivenName" );
-    //public static FullQualifiedName MIDDLENAME_FQN               = new FullQualifiedName( "nc.PersonMiddleName" );
-    public static        FullQualifiedName           LASTNAME_FQN      = new FullQualifiedName( "nc.PersonSurName" );
-    public static        FullQualifiedName           SEX_FQN           = new FullQualifiedName( "nc.PersonSex" );
-    public static        FullQualifiedName           RACE_FQN          = new FullQualifiedName( "nc.PersonRace" );
-    public static        FullQualifiedName           ETHNICITY_FQN     = new FullQualifiedName( "nc.PersonEthnicity" );
-    public static        FullQualifiedName           DOB_FQN           = new FullQualifiedName( "nc.PersonBirthDate" );
-    public static        FullQualifiedName           OFFICER_ID_FQN    = new FullQualifiedName( "publicsafety.officerID" );
-    public static        FullQualifiedName           ARREST_DATE_FQN   = new FullQualifiedName(
-            "publicsafety.arrestdate" );
-    static String[] fieldNames;
+    private static final Pattern        nameMatcher    = Pattern.compile( "(.+), (.+) (.*) (.*)" );
+    private static final Pattern        raceMatcher    = Pattern.compile( "(.+) - (.+)" );
+    private static final Pattern        addressMatcher = Pattern.compile( "(.+)\\n(.+)" );
 
     public static void main( String[] args ) throws InterruptedException {
         /*
@@ -109,27 +101,44 @@ public class MiddlesexCharges2 {
                 .createEntities()
                 .addEntity( "suspect" )
                 .useCurrentSync()
-                .to( "MSOSuspects" )
+                .to( "LPDSuspects" )
                 .ofType( new FullQualifiedName( "general.person" ) )
                 .key( new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .value( MiddlesexCharges2::getSubjectIdentification ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
+                .value( MiddlesexCharges2::getFirstName ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonMiddleName" ) )
+                .value( MiddlesexCharges2::getMiddleName ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
+                .value( MiddlesexCharges2::getLastName ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
+                .value( MiddlesexCharges2::getRace ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
+                .value( MiddlesexCharges2::safeDOBParse )
+                .ok()
+                .addProperty( new FullQualifiedName( "nc.PersonSex" ) )
+                .value( MiddlesexCharges2::getSex )
+                .ok()
+                .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
+                .value( MiddlesexCharges2::safeDOBParse )
+                .ok()
                 .ok()
                 .addEntity( "arrest" )
-                .to( "MSOArrest" )
+                .to( "LPDArrest" )
                 .ofType( new FullQualifiedName( "lawenforcement.arrest" ) )
                 .key( new FullQualifiedName( "j.ArrestSequenceID" ) )
-                .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
-                .value( row -> dtHelper.parse( row.getAs( "dt_asg" ) ) )
+                .addProperty("publicsafety.ArrestDate" )
+                .value( row -> dtHelper.parse( row.getAs( "arr_date" ) ) )
                 .ok()
-                .addProperty( new FullQualifiedName( "publicsafety.ReleaseDate" ) )
+                .addProperty( "" )
                 .value( row -> dtHelper.parse( row.getAs( "dt_rel" ) ) )
                 .ok()
                 .addProperty( new FullQualifiedName( "justice.disposition" ) )
                 .value( row -> row.getAs( "rel_com" ) )
                 .ok()
                 .addProperty( new FullQualifiedName( "justice.EventType" ) )
-                .value( row -> row.getAs( "classif" ) )
+                .value( row -> row.getAs( "type_charge" ) )
                 .ok()
                 .addProperty( new FullQualifiedName( "j.OffenseViolatedStatute" ) )
                 .value( row -> row.getAs( "maj_off" ) )
@@ -141,17 +150,54 @@ public class MiddlesexCharges2 {
                 .value( row -> row.getAs( "arsttyp" ) )
                 .ok()
                 .ok()
+                .addEntity( "charge" )
+                .to( "LPDArrest" )
+                .ofType( new FullQualifiedName( "lawenforcement.arrest" ) )
+                .key( new FullQualifiedName( "j.ArrestSequenceID" ) )
+                .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
+                .value( row -> dtHelper.parse( row.getAs( "arr_date" ) ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "publicsafety.ReleaseDate" ) )
+                .value( row -> dtHelper.parse( row.getAs( "dt_rel" ) ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "justice.disposition" ) )
+                .value( row -> row.getAs( "rel_com" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "justice.EventType" ) )
+                .value( row -> row.getAs( "type_charge" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.OffenseViolatedStatute" ) )
+                .value( row -> row.getAs( "maj_off" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
+                .value( MiddlesexCharges2::getArrestSequenceID )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.ArrestCategory" ) )
+                .value( row -> row.getAs( "arsttyp" ) )
+                .ok()
+                .ok()
+                .addEntity( "address" )
+                .to( "MSOAddresses" )
+                .ofType( new FullQualifiedName( "general.address" ) )
+                .key( new FullQualifiedName( "location.street" ),
+                        new FullQualifiedName( "location.city" ),
+                        new FullQualifiedName( "location.state" ),
+                        new FullQualifiedName( "location.zip" ) )
+                .addProperty( new FullQualifiedName( "location.street" ) )
+                .value( MiddlesexCharges2::getIncidentAddress )
+                .ok()
+                .ok()
                 .ok()
                 .createAssociations()
-                .addAssociation( "arrestedin" )
-                .ofType( new FullQualifiedName( "lawenforcement.arrestedin" ) )
-                .to( "DCSOArrestedIn" )
+                .addAssociation( "arrestedat" )
+                .ofType( new FullQualifiedName( "justice.occurredat" ) )
+                .to( "LPDOccurredAt" )
                 .key( new FullQualifiedName( "j.ArrestSequenceID" ),
                         new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .fromEntity( "suspect" )
                 .toEntity( "arrest" )
                 .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
-                .value( MiddlesexCharges2::getSubjectIdentification )
+                .value( MiddlesexCharges2::getArrestSequenceID )
                 .ok()
                 .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
                 .value( MiddlesexCharges2::getArrestSequenceID )
@@ -168,7 +214,7 @@ public class MiddlesexCharges2 {
     }
 
     public static String safeDOBParse( Row row ) {
-        String dob = row.getAs( "dt_ob" );
+        String dob = row.getAs( "DOB" );
         if ( dob == null ) {
             return null;
         }
@@ -178,38 +224,65 @@ public class MiddlesexCharges2 {
         return bdHelper.parse( dob );
     }
 
-    public static String safeParse( Row row ) {
-        String date = row.getAs( "Date" );
-        String time = row.getAs( "Time" );
-        if ( StringUtils.endsWith( date, "/10" ) ) {
-            date = "2010";
-        }
-        if ( StringUtils.endsWith( date, "/11" ) ) {
-            date = "2011";
-        }
-        if ( StringUtils.endsWith( date, "/12" ) ) {
-            date = "2012";
-        }
-        if ( StringUtils.endsWith( date, "/13" ) ) {
-            date = "2013";
-        }
-        if ( StringUtils.endsWith( date, "/14" ) ) {
-            date = "2014";
-        }
-        if ( StringUtils.endsWith( date, "/15" ) ) {
-            date = "2015";
-        }
-        if ( StringUtils.endsWith( date, "/16" ) ) {
-            date = "2016";
+    public static String getSex( Row row ) {
 
+        Matcher m = raceMatcher.matcher( row.getAs( "sex_race" ) );
+        if ( m.matches() ) {
+            return m.group( 1 );
         }
-        if ( StringUtils.endsWith( date, "/17" ) ) {
-            date = "2017";
+        return null;
+    }
+
+    public static String getRace( Row row ) {
+        Matcher m = raceMatcher.matcher( row.getAs( "sex_race" ) );
+        if ( m.matches() ) {
+            return m.group( 2 );
         }
-        if ( date.contains( "#" ) || time.contains( "#" ) ) {
-            return null;
+        return null;
+    }
+
+    public static String getFirstName( Row row ) {
+        String name = row.getAs( "Name" );
+        Matcher m = nameMatcher.matcher( name );
+        if ( m.matches() ) {
+            return nameMatcher.matcher( name ).group( 2 );
         }
-        return dtHelper.parse( date + " " + time );
+        return null;
+    }
+
+    public static String getMiddleName( Row row ) {
+        String name = row.getAs( "Name" );
+        Matcher m = nameMatcher.matcher( name );
+        if ( m.matches() ) {
+            return m.group( 3 ) + "  " + m.group( 4 );
+        }
+        return null;
+    }
+
+    public static String getLastName( Row row ) {
+        String name = row.getAs( "Name" );
+        Matcher m = nameMatcher.matcher( name );
+        if ( m.matches() ) {
+            return nameMatcher.matcher( name ).group( 1 );
+        }
+        return null;
+    }
+
+    public static String getArrestAddress( Row row ) {
+        Matcher m = addressMatcher.matcher( row.getAs( "arresst_incident_addresses" ) );
+        if ( m.matches() ) {
+            return m.group( 1 );
+        }
+        return null;
+    }
+
+    public static String getIncidentAddress( Row row ) {
+        Matcher m = addressMatcher.matcher( row.getAs( "arresst_incident_addresses" ) );
+        if ( m.matches() ) {
+            return m.group( 2 );
+        }
+        return null;
+
     }
 
     public static String getArrestSequenceID( Row row ) {
@@ -217,6 +290,6 @@ public class MiddlesexCharges2 {
     }
 
     public static String getSubjectIdentification( Row row ) {
-        return row.getAs( "insno_a" ).toString().trim();
+        return "LPD-" + row.getAs( "bookingnum" );
     }
 }

@@ -179,6 +179,15 @@ propertyTypes:
   - type: "justice.xref"
     title: "XREF"
     description: "Cross-reference Identifier"
+  - type: "justice.address"
+    title: "Address String"
+    description: "Address of an event"
+  - type: "justice.Location"
+    title: "Location String"
+    description: "Location of an event"
+  - type: "location.id"
+    title: "Location Id"
+    description: "The id of a location"
 
 entityTypes:
 - type: "justice.agency"
@@ -230,6 +239,7 @@ entityTypes:
   - "justice.weapons"
   - "justice.disposition"
   - "justice.EventType"
+  - "justice.address"
   baseType: null
 - type: "justice.charge"
   title: "Charge"
@@ -285,6 +295,19 @@ entityTypes:
   - "location.city"
   - "location.state"
   - "location.zip"
+- type: "middlesex.Address"
+  title: "Address"
+  description: "An address"
+  key:
+  - "
+  - "location.city"
+  - "location.state"
+  - "location.zip"
+  properties:
+  - "location.street"
+  - "location.city"
+  - "location.state"
+  - "location.zip"
 - type: "justice.booking"
   title: "Booking"
   description: "A booking"
@@ -310,6 +333,21 @@ associationTypes:
     description: "Links together a person with an event they were arrested in."
     key:
     - "j.ArrestSequenceID"
+    - "nc.SubjectIdentification"
+    properties:
+    - "j.ArrestSequenceID"
+    - "nc.SubjectIdentification"
+  src:
+  - "general.person"
+  dst:
+  - "lawenforcement.arrest"
+  bidirectional: false
+- type:
+    type: "justice.occurredat"
+    title: "Occurred At"
+    description: "Links together a event with a location where it occurred."
+    key:
+    - "location.id"
     - "nc.SubjectIdentification"
     properties:
     - "j.ArrestSequenceID"
@@ -657,27 +695,37 @@ entitySets:
   description: "Suspects arrested in Middlesex"
   contacts:
   - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
 - type: "general.Address"
   name: "MSOAddresses"
   title: "Middlesex Suspect Addresses"
   description: "Home addresses of arrested Middlesex suspects"
   contacts:
   - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
 - type: "justice.booking"
   name: "MSOBookings"
   title: "Middlesex Bookings"
   description: "Bookings of arrested Middlesex suspects"
   contacts:
   - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
 - type: "justice.booked"
   name: "MSOBooked"
   title: "Appears In Bookings"
   description: "Appears in booking of arrested Middlesex suspect"
   contacts:
   - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
 - type: "location.livesat"
   name: "MSOLivesAt"
   title: "Lives At"
   description: "Address Middlesex Suspect Lives At"
   contacts:
   - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"

@@ -55,8 +55,8 @@ public class SystemUserBaseFlight {
                 .format( "jdbc" )
                 .option( "url", config.getUrl() )
                 .option( "dbtable", "dbo.SystemUserBase" )
-                .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
+                .option( "password", config.getDbPassword() )
                 .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver")
                 .load();
 
