@@ -1,5 +1,6 @@
 package com.openlattice.integrations.iowacity.dispatchcenter;
 
+import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
@@ -45,12 +46,12 @@ public class IowaCityDispatchCenter {
 
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edmApi = retrofit.create( EdmApi.class );
-
+        PermissionsApi permissionApi = permissionApi = retrofit.create( PermissionsApi.class );
         RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
                 .loadConfiguration( RequiredEdmElements.class );
 
         if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi );
+            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
             manager.ensureEdmElementsExist( requiredEdmElements );
         }
 

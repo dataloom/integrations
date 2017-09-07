@@ -13,6 +13,102 @@ propertyTypes:
   - type: "person.age"
     title: "Age"
     description: "The age of a person"
+  - type: "nc.PersonHeightMeasure"
+    title: "Person Height Measure"
+    description: "A measurement of the height of a person."
+  - type: "nc.PersonWeightMeasure"
+    title: "Person Weight Measure"
+    description: "A measurement of the weight of a person."
+- datatype: "Int32"
+  piiField: false
+  analyzer: "STANDARD"
+  properties:
+    - type: "publicsafety.TotalTime"
+      title: "Total Time"
+      description: "Total time"
+    - type: "scr.TreatAsAdultIndicator"
+      title: "Adult Juv Waive"
+      description: "Juvenile individual should be treated as an adult in this specific enforcement encounter."
+    - type: "publicsafety.SSA"
+      title: "SSA"
+      description: "SSA"
+    - type: "publicsafety.DISSubmit"
+      title: "DIS Submit"
+      description: "DIS Submit"
+    - type: "publicsafety.include"
+      title: "Include"
+      description: "Include"
+    - type: "publicsafety.Concurrent"
+      title: "Concurrent Sentence"
+      description: "Concurrent sentence"
+    - type: "publicsafety.BondMet"
+      title: "Bond Met"
+      description: "Bond met"
+    - type: "j.SentenceRegisterSexOffenderIndicator"
+      title: "Sex Offender"
+      description: "Sex offender"
+    - type: "publicsafety.TimeServedDays"
+      title: "Time Served: Days"
+      description: "Time served: days"
+    - type: "publicsafety.TimeServedHours"
+      title: "Time Served: Hours"
+      description: "Time served: hours"
+    - type: "publicsafety.TimeServedMinutes"
+      title: "Time Served: Minutes"
+      description: "Time served: minutes"
+    - type: "publicsafety.SentenceTermDays"
+      title: "Sentence Term: Days"
+      description: "Sentence term: days"
+    - type: "publicsafety.SentenceTermHours"
+      title: "Sentence Term: Hours"
+      description: "Sentence term: hours"
+    - type: "publicsafety.GoodTimeDays"
+      title: "Good Time: Days"
+      description: "Good time: days"
+    - type: "publicsafety.GoodTimeHours"
+      title: "Good Time: Hours"
+      description: "Good time: hours"
+    - type: "publicsafety.GoodTimeMinutes"
+      title: "Good Time: Minutes"
+      description: "Good time: minutes"
+    - type: "publicsafety.GoodTimePCT"
+      title: "Good Time PCT"
+      description: "Good time PCT"
+    - type: "j.SentenceModificationProbationIndicator"
+      title: "Probation"
+      description: "Probation"
+- datatype: "Int64"
+  piiField: false
+  analyzer: "STANDARD"
+  properties:
+    - type: "publicsafety.ConsecWith"
+      title: "Consecutive Sentence"
+      description: "Consecutive sentence"
+    - type: "publicsafety.NoCounts"
+      title: "No Counts"
+      description: "No counts"
+- datatype: "Double"
+  piiField: false
+  analyzer: "STANDARD"
+  properties:
+  - type: "publicsafety.CurrencyAmount"
+    title: "Currency Amount"
+    description: "Amount in currency siezed at time of booking."
+  - type: "publicsafety.ChangeAmount"
+    title: "Change Amount"
+    description: "Amount in change siezed at time of booking."
+  - type: "publicsafety.ChecksAmount"
+    title: "Checks Amount"
+    description: "Amount in checks siezed at time of booking."
+  - type: "publicsafety.Balance"
+    title: "Balance"
+    description: "Balance"
+  - type: "publicsafety.PortableBreathTest"
+    title: "Portable Breath Test"
+    description: "Portable breath test."
+  - type: "j.IntoxicationLevelText"
+    title: "Intoxication Level"
+    description: "Intoxication level."
 - datatype: "Boolean"
   piiField: false
   analyzer: "STANDARD"
@@ -39,28 +135,72 @@ propertyTypes:
   - type: "justice.ReferralDate"
     title: "Referral Date"
     description: "The date when a charge was referred to the courts"
+  - type: "justice.ReportedDate"
+    title: "ReportedDate Date"
+    description: "The date when a charge was reported to law enforcement"
+  - type: "publicsafety.datebooked"
+    title: "Date Booked"
+    description: "Date subject was booked."
+  - type: "publicsafety.datereleased"
+    title: "Date Released"
+    description: "Date subject was released."
+  - type: "j.IncarcerationProjectedReleaseDate"
+    title: "Projected Release Date"
+    description: "A date a subject is anticipated to complete service of final sentence, automatically or manually calculated, based on current sentence information."
+  - type: "j.BailHearingDate"
+    title: "Bond Court Datetime"
+    description: "A date and time of a court hearing to determine the bail to be set."
+  - type: "publicsafety.SSAConviction"
+    title: "SSA Conviction Date"
+    description: "SSA conviction date"
+  - type: "publicsafety.OffenseStartDate"
+    title: "Offense Charge Start Date"
+    description: "Offense charge start date."
+  - type: "publicsafety.OffenseEndDate"
+    title: "Offense Charge End Date"
+    description: "Offense charge end date."
+  - type: "publicsafety.OffenseReleaseDate"
+    title: "Offense Charge Release Date"
+    description: "Offense charge release date"
+  - type: "publicsafety.AlternateStartDate"
+    title: "Alternate Start Date"
+    description: "Alternate offense charge start date."
+  - type: "j.RegisteredOffenderEntryDate"
+    title: "Entry Date"
+    description: "Entry date"
 - datatype: "String"
   piiField: false
   analyzer: "METAPHONE"
   properties:
-  - type: "im.PersonNickName"
-    title: "Person Nickname"
-    description: "The nickname or alias of an individual."
   - type: "j.ArrestAgency"
     title: "Arrest Agency"
     description: "An agency which employs the arresting official."
+- datatype: "String"
+  piiField: true
+  analyzer: "METAPHONE"
+  properties:
   - type: "nc.PersonGivenName"
     title: "Given Name"
     description: "A first name of a person."
   - type: "nc.PersonMiddleName"
     title: "Middle Name"
-    description: "A first name of a person."
+    description: "A middle name of a person."
   - type: "nc.PersonSurName"
     title: "Surname"
     description: "A last name or family name of a person."
   - type: "nc.PersonBirthPlace"
     title: "Birth Place"
     description: "The birth place of a person."
+  - type: "im.PersonNickName"
+    title: "Person Nickname"
+    description: "A nickname or street name of a person."
+- datatype: "String"
+  piiField: true
+  analyzer: "STANDARD"
+  properties:
+    - type: "nc.SSN"
+      title: "SSN"
+      description: "The social security number of a subject."
 - datatype: "String"
   piiField: false
   analyzer: "STANDARD"
@@ -77,12 +217,15 @@ propertyTypes:
   - type: "nc.SubjectIdentification"
     title: "Subject Identification"
     description: "An assigned identification that identifies a subject."
+  - type: "nc.PersonHairColorText"
+    title: "Person Hair Color"
+    description: "The hair color of a person."
+  - type: "nc.PersonEyeColorText"
+    title: "Person Eye Color"
+    description: "The eye color of a person."
   - type: "nc.MaritalStatus"
     title: "Marital Status"
     description: "The marital status of a subject."
-  - type: "nc.SSN"
-    title: "SSN"
-    description: "The social security number of a subject."
   - type: "j.ArrestSequenceID"
     title: "Arrest Sequence ID"
     description: "A sequential identifier number assigned to the arrest of a subject."
@@ -158,9 +301,6 @@ propertyTypes:
   - type: "location.city"
     title: "City"
     description: "A city"
-  - type: "location.street"
-    title: "Street"
-    description: "A street address"
   - type: "location.state"
     title: "State"
     description: "A state"
@@ -179,11 +319,134 @@ propertyTypes:
   - type: "justice.xref"
     title: "XREF"
     description: "Cross-reference Identifier"
+  - type: "publicsafety.JailID"
+    title: "Jail ID"
+    description: "Identifier for a jail."
+  - type: "publicsafety.ActualNumber"
+    title: "Actual Number"
+    description: "Actual number"
+  - type: "publicsafety.officerID"
+    title: "Officer ID"
+    description: "Identifier for an officer."
+  - type: "j.BookingRelease"
+    title: "How Released"
+    description: "A release of a subject from booking or from booking detention."
+  - type: "intel.SubjectCautionInformationDescriptionText"
+    title: "Caution"
+    description: "A description of cautions about a person's potential for dangerous behavior when contacted."
+  - type: "j.ReleaseToFacility"
+    title: "Released to Facility"
+    description: "An institution from which the subject is to be released."
+  - type: "j.Remark"
+    title: "Remark"
+    description: "An informal comment or observation"
+  - type: "j.CommittedToAuthorityText"
+    title: "Committed to Authority"
+    description: "An authority to which a person is remanded into custody as part of a judgment."
+  - type: "publicsafety.TimeFrame"
+    title: "Time Frame"
+    description: "Time frame"
+  - type: "publicsafety.HeldAt"
+    title: "Held At"
+    description: "Authority subject is held at."
+  - type: "publicsafety.JuvHoldAuth"
+    title: "Juv Hold Auth"
+    description: "Juv Hold Auth"
+  - type: "j.BailingPerson"
+    title: "Person Post Bail"
+    description: "A person who posted bond for another person."
+  - type: "j.BookingTelephoneCall"
+    title: "Call Attorney"
+    description: "True if subject called attorney."
+  - type: "publicsafety.SSAStatus"
+    title: "SSA Status"
+    description: "SSA Status"
+  - type: "publicsafety.ORI"
+    title: "ORI"
+    description: "ORI"
+  - type: "publicsafety.Status"
+    title: "Status"
+    description: "Status"
+  - type: "publicsafety.SIDSt"
+    title: "SID St"
+    description: "SID St"
+  - type: "publicsafety.SIDNo"
+    title: "SID No"
+    description: "SID No"
+  - type: "scr.DetentionReleaseReasonCategoryCodeType"
+    title: "Reason Code"
+    description: "A kind of detention release reason."
+  - type: "j.EnforcementOfficialUnit"
+    title: "Agency"
+    description: "An enforcement unit to which an enforcement officer is assigned."
+  - type: "publicsafety.CustodyID"
+    title: "Custody ID"
+    description: "Custody ID"
+  - type: "publicsafety.ReleaseNotes"
+    title: "Release Notes"
+    description: "Release notes."
+  - type: "publicsafety.ArrestID"
+    title: "Arrest ID"
+    description: "Arrest ID"
+  - type: "nc.SystemUserName"
+    title: "Release Officer Username"
+    description: "Release officer username."
+  - type: "j.EnforcementOfficialCategoryText"
+    title: "Officer Category"
+    description: "A type of enforcement official."
+  - type: "j.CourtEventCase"
+    title: "Court Case ID"
+    description: "Court case ID"
+  - type: "j.ArrestCharge"
+    title: "Arrest Charge"
+    description: "Arrest charge"
+  - type: "j.BailBondAmount"
+    title: "Bond Amount"
+    description: "Bond amount"
+  - type: "j.ChargeNarrative"
+    title: "Notes"
+    description: "Charge narrative"
+  - type: "publicsafety.ChargeAgency"
+    title: "Charging Agency"
+    description: "Charging agency"
+  - type: "j.ChargeNCICText"
+    title: "NCIC"
+    description: "NCIC Charge Text"
+  - type: "j.ChargeSequenceID"
+    title: "Charge ID"
+    description: "Charge ID"
+  - type: "publicsafety.ReasonHeld"
+    title: "Reason Held"
+    description: "Reason held"
+  - type: "j.ArrestWarrant"
+    title: "Warrant Number"
+    description: "Warrant number"
+  - type: "publicsafety.OffenseViolatedStateStatute"
+    title: "State Statute"
+    description: "State statute violated."
+  - type: "publicsafety.OffenseViolatedLocalStatute"
+    title: "Local Statute"
+    description: "Local statute violated."
+  - type: "location.city"
+    title: "City"
+    description: "A city"
+  - type: "location.street"
+    title: "Street"
+    description: "A street address"
+  - type: "location.state"
+    title: "State"
+    description: "A state"
+  - type: "location.zip"
+    title: "Zip"
+    description: "A zip"
   - type: "justice.address"
     title: "Address String"
     description: "Address of an event"
-  - type: "justice.Location"
+  - type: "location.name"
     title: "Location String"
+    description: "Location of an event"
+  - type: "location.address"
+    title: "Unparsed location address"
     description: "Location of an event"
   - type: "location.id"
     title: "Location Id"
@@ -206,17 +469,22 @@ entityTypes:
   - "nc.PersonGivenName"
   - "nc.PersonMiddleName"
   - "nc.PersonSurName"
+  - "im.PersonNickName"
   - "nc.PersonSex"
   - "nc.PersonRace"
   - "nc.PersonEthnicity"
   - "nc.PersonBirthDate"
+  - "nc.PersonHeightMeasure"
+  - "nc.PersonWeightMeasure"
+  - "nc.PersonHairColorText"
+  - "nc.PersonEyeColorText"
   - "nc.SubjectIdentification"
   - "nc.MaritalStatus"
-  - "person.age"
   - "nc.PersonBirthPlace"
+  - "person.age"
   - "justice.xref"
-  - "publicsafety.mugshot"
   - "nc.SSN"
+  - "publicsafety.mugshot"
   baseType: null
 - type: "lawenforcement.arrest"
   title: "Arrest"
@@ -224,8 +492,8 @@ entityTypes:
   key:
   - "j.ArrestSequenceID"
   properties:
-  - "j.CaseNumberText"
   - "j.ArrestSequenceID"
+  - "j.CaseNumberText"
   - "publicsafety.ArrestDate"
   - "publicsafety.ReleaseDate"
   - "publicsafety.OffenseDate"
@@ -239,7 +507,7 @@ entityTypes:
   - "justice.weapons"
   - "justice.disposition"
   - "justice.EventType"
-  - "justice.address"
+  - "location.address"
   baseType: null
 - type: "justice.charge"
   title: "Charge"
@@ -274,6 +542,7 @@ entityTypes:
   - "justice.courtcasenumber"
   - "justice.courtcasetype"
   - "justice.dacasenumber"
+  baseType: null
 - type: "danecountywi.dacase"
   title: "Case"
   description: "A case"
@@ -282,32 +551,156 @@ entityTypes:
   properties:
   - "justice.ArrestTrackingNumber"
   - "j.CaseNumberText"
+  baseType: null
+- type: "justice.JailBooking"
+  title: "Jail Booking"
+  description: "A jail booking"
+  key:
+    - "publicsafety.JailID"
+  properties:
+    - "publicsafety.ActualNumber"
+    - "j.ArrestSequenceID"
+    - "publicsafety.datebooked"
+    - "publicsafety.datereleased"
+    - "j.BookingRelease"
+    - "j.IncarcerationProjectedReleaseDate"
+    - "j.ArrestAgency"
+    - "scr.DetentionReleaseReasonCategoryCodeType"
+    - "publicsafety.ArrestDate"
+    - "publicsafety.CustodyID"
+    - "justice.xref"
+    - "publicsafety.JailID"
+  baseType: null
+- type: "justice.JailRecord"
+  title: "Jail Record"
+  description: "A jail record"
+  key:
+     - "justice.xref"
+  properties:
+    - "intel.SubjectCautionInformationDescriptionText"
+    - "publicsafety.CurrencyAmount"
+    - "publicsafety.ChangeAmount"
+    - "publicsafety.ChecksAmount"
+    - "j.BookingTelephoneCall"
+    - "j.ReleaseToFacility"
+    - "j.Remark"
+    - "j.CommittedToAuthorityText"
+    - "publicsafety.TimeFrame"
+    - "publicsafety.TotalTime"
+    - "publicsafety.HeldAt"
+    - "scr.TreatAsAdultIndicator"
+    - "publicsafety.JuvHoldAuth"
+    - "j.BailingPerson"
+    - "publicsafety.include"
+    - "publicsafety.ReleaseNotes"
+    - "publicsafety.Balance"
+    - "publicsafety.ArrestID"
+    - "justice.xref"
+  baseType: null
+- type: "j.EnforcementOfficial"
+  title: "Officer"
+  description: "An officer"
+  key:
+    - "justice.xref"
+  properties:
+    - "publicsafety.officerID"
+    - "nc.PersonGivenName"
+    - "nc.PersonSurName"
+    - "j.EnforcementOfficialCategoryText"
+    - "j.EnforcementOfficialUnit"
+    - "nc.SystemUserName"
+    - "justice.xref"
+  baseType: null
+- type: "justice.ChargeDetails"
+  title: "Charge Details"
+  description: "Details of a charge"
+  key:
+    - "j.ChargeSequenceID"
+  properties:
+    - "j.ChargeSequenceID"
+    - "j.OffenseQualifierText"
+    - "j.OffenseViolatedStatute"
+    - "justice.ReportedDate"
+    - "publicsafety.OffenseStartDate"
+    - "publicsafety.OffenseEndDate"
+    - "publicsafety.OffenseReleaseDate"
+    - "j.CourtEventCase"
+    - "j.ArrestCharge"
+    - "publicsafety.include"
+    - "publicsafety.BondMet"
+    - "j.BailBondAmount"
+    - "j.ChargeNarrative"
+    - "publicsafety.ChargeAgency"
+    - "publicsafety.AlternateStartDate"
+    - "j.ChargeNCICText"
+  baseType: null
+- type: "justice.Offense"
+  title: "Offense"
+  description: "An offense"
+  key:
+    - "publicsafety.OffenseDate"
+    - "publicsafety.ReasonHeld"
+    - "j.ArrestWarrant"
+    - "publicsafety.OffenseViolatedStateStatute"
+    - "publicsafety.OffenseViolatedLocalStatute"
+    - "justice.severity"
+  properties:
+    - "publicsafety.OffenseDate"
+    - "publicsafety.ReasonHeld"
+    - "j.ArrestWarrant"
+    - "publicsafety.OffenseViolatedStateStatute"
+    - "publicsafety.OffenseViolatedLocalStatute"
+    - "justice.severity"
+  baseType: null
+- type: "justice.Sentence"
+  title: "Sentence"
+  description: "A sentence"
+  key:
+    - "publicsafety.Concurrent"
+    - "j.SentenceRegisterSexOffenderIndicator"
+    - "publicsafety.TimeServedDays"
+    - "publicsafety.TimeServedHours"
+    - "publicsafety.TimeServedMinutes"
+    - "publicsafety.ConsecWith"
+    - "publicsafety.NoCounts"
+    - "publicsafety.SentenceTermDays"
+    - "publicsafety.SentenceTermHours"
+    - "publicsafety.GoodTimeDays"
+    - "publicsafety.GoodTimeHours"
+    - "publicsafety.GoodTimeMinutes"
+    - "publicsafety.GoodTimePCT"
+    - "j.RegisteredOffenderEntryDate"
+    - "j.SentenceModificationProbationIndicator"
+  properties:
+    - "publicsafety.Concurrent"
+    - "j.SentenceRegisterSexOffenderIndicator"
+    - "publicsafety.TimeServedDays"
+    - "publicsafety.TimeServedHours"
+    - "publicsafety.TimeServedMinutes"
+    - "publicsafety.ConsecWith"
+    - "publicsafety.NoCounts"
+    - "publicsafety.SentenceTermDays"
+    - "publicsafety.SentenceTermHours"
+    - "publicsafety.GoodTimeDays"
+    - "publicsafety.GoodTimeHours"
+    - "publicsafety.GoodTimeMinutes"
+    - "publicsafety.GoodTimePCT"
+    - "j.RegisteredOffenderEntryDate"
+    - "j.SentenceModificationProbationIndicator"
+  baseType: null
 - type: "general.Address"
   title: "Address"
   description: "An address"
   key:
-  - "location.street"
-  - "location.city"
-  - "location.state"
-  - "location.zip"
+  - "location.id"
   properties:
+  - "location.address"
+  - "location.id"
   - "location.street"
   - "location.city"
   - "location.state"
   - "location.zip"
-- type: "middlesex.Address"
-  title: "Address"
-  description: "An address"
-  key:
-  - "
-  - "location.city"
-  - "location.state"
-  - "location.zip"
-  properties:
-  - "location.street"
-  - "location.city"
-  - "location.state"
-  - "location.zip"
+  - "location.name"
 - type: "justice.booking"
   title: "Booking"
   description: "A booking"
@@ -343,6 +736,122 @@ associationTypes:
   - "lawenforcement.arrest"
   bidirectional: false
 - type:
+    type: "general.appearsin"
+    title: "Appears In"
+    description: "An association where in one entity appears in another entity or event."
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "general.person"
+  - "justice.charge"
+  - "justice.ChargeDetails"
+  dst:
+  - "justice.case"
+  - "justice.JailBooking"
+  - "justice.booking"
+  bidirectional: false
+- type:
+    type: "general.assignto"
+    title: "Assign To"
+    description: "An association which describes that one entity was assigned to another"
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "justice.case"
+  dst:
+  - "general.person"
+  bidirectional: false
+- type:
+    type: "justice.chargedwith"
+    title: "Charged With"
+    description: "An association which describes that one entity was assigned to another"
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "justice.charge"
+  dst:
+  - "general.person"
+  bidirectional: false
+- type:
+    type: "justice.detailsof"
+    title: "Details Of"
+    description: "An association which describes that one entity provides details of another"
+    key:
+      - "general.stringid"
+    properties:
+      - "general.stringid"
+  src:
+  - "justice.JailRecord"
+  dst:
+  - "justice.JailBooking"
+- type:
+    type: "justice.bookedin"
+    title: "Booked In"
+    description: "An association which describes that one entity was booked in another"
+    key:
+      - "general.stringid"
+    properties:
+      - "general.stringid"
+  src:
+  - "general.person"
+  dst:
+  - "justice.JailBooking"
+- type:
+    type: "justice.interactedwith"
+    title: "Interacted With"
+    description: "An association which describes that one entity interacted with another"
+    key:
+      - "general.stringid"
+    properties:
+      - "general.stringid"
+  src:
+  - "general.person"
+  dst:
+  - "j.EnforcementOfficial"
+- type:
+    type: "justice.resultsin"
+    title: "Results In"
+    description: "An association which describes that one entity results in another"
+    key:
+      - "general.stringid"
+    properties:
+      - "general.stringid"
+  src:
+  - "justice.Offense"
+  dst:
+  - "justice.ChargeDetails"
+- type:
+    type: "justice.leadsto"
+    title: "Leads To"
+    description: "An association which describes that one entity leads to another"
+    key:
+      - "general.stringid"
+    properties:
+      - "general.stringid"
+  src:
+  - "justice.ChargeDetails"
+  dst:
+  - "justice.Sentence"
+- type:
+    type: "location.livesat"
+    title: "Lives at"
+    description: "An association describe that location at which an entity lives"
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "general.person"
+  dst:
+  - "general.Address"
+  bidirectional: false
+- type:
     type: "justice.occurredat"
     title: "Occurred At"
     description: "Links together a event with a location where it occurred."
@@ -371,60 +880,6 @@ associationTypes:
   - "general.person"
   dst:
   - "justice.booking"
-  bidirectional: false
-- type:
-    type: "general.appearsin"
-    title: "Appears In"
-    description: "An association where in one entity appears in another entity or event."
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "general.person"
-  - "justice.charge"
-  dst:
-  - "justice.case"
-  - "justice.booking"
-  bidirectional: false
-- type:
-    type: "general.assignto"
-    title: "Assign To"
-    description: "An association describe that one entity was assigned to another"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "justice.case"
-  dst:
-  - "general.person"
-  bidirectional: false
-- type:
-    type: "justice.chargedwith"
-    title: "Charged With"
-    description: "An association describe that one entity was assigned to another"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "justice.charge"
-  dst:
-  - "general.person"
-  bidirectional: false
-- type:
-    type: "location.livesat"
-    title: "Lives at"
-    description: "An association describe that location at which an entity lives"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "general.person"
-  dst:
-  - "general.Address"
   bidirectional: false
 
 entitySets:
@@ -536,6 +991,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrest"
   name: "SunPrairieArrests"
   title: "Sun Prairie Arrests"
@@ -545,6 +1001,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrestedin"
   name: "SunPrairieArrestedIn"
   title: "Sun Prairie Arrested In"
@@ -554,6 +1011,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "general.person"
   name: "MiddletonArrestSuspects"
   title: "Middleton Arrest Suspects"
@@ -644,6 +1102,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrest"
   name: "MadisonArrests"
   title: "Madison Arrests"
@@ -653,6 +1112,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrestedin"
   name: "MadisonArrestedIn"
   title: "Madison Arrested In"
@@ -662,6 +1122,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "general.person"
   name: "DCSOArrestSuspects"
   title: "Dane County Sheriff Arrest Suspects"
@@ -671,6 +1132,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrest"
   name: "DCSOArrests"
   title: "Dane County Sheriff Arrests"
@@ -680,12 +1142,128 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
 - type: "lawenforcement.arrestedin"
   name: "DCSOArrestedIn"
   title: "Dane County Sheriff Arrested In"
   description: "Arrest In links for the Dane County Sheriffs"
   contacts:
   - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
+- type: "lawenforcement.arrestedin"
+  name: "DCSOArrestedIn"
+  title: "Dane County Sheriff Arrested In"
+  description: "Arrest In links for the Dane County Sheriffs"
+  contacts:
+  - "Reyes.Noemi@countyofdane.com"
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+  - google-oauth2|102104413260640737260
+- type: "general.person"
+  name: "jcsubjects"
+  title: "JC Iowa Jail Subjects"
+  description: "Johnson County Iowa Jail Subjects"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.JailBooking"
+  name: "jcjailbookings"
+  title: "JC Iowa Jail Bookings"
+  description: "Johnson County Iowa Jail Bookings"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "j.EnforcementOfficial"
+  name: "jcofficers"
+  title: "JC Iowa Officers"
+  description: "Johnson County Iowa Officers"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.JailRecord"
+  name: "jcjailrecords"
+  title: "JC Iowa Jail Records"
+  description: "Johnson County Iowa Jail Records"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.bookedin"
+  name: "jcwasbookedin"
+  title: "JC Booked In"
+  description: "Booked in links for Johhnson County"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.detailsof"
+  name: "jcdetailsof"
+  title: "JC Details Of"
+  description: "Details of links for Johnson County"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.interactedwith"
+  name: "jcinteractedwith"
+  title: "JC Interacted With"
+  description: "Interacted with links for Johnson County"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.ChargeDetails"
+  name: "jciowacharges"
+  title: "JC Iowa Charges"
+  description: "Johnson County Iowa Charges"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.Sentence"
+  name: "jciowasentences"
+  title: "JC Iowa Sentences"
+  description: "Johnson County Iowa Sentences"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.Offense"
+  name: "jciowaoffenses"
+  title: "JC Iowa Offenses"
+  description: "Johnson County Iowa Offenses"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.leadsto"
+  name: "jcleadsto"
+  title: "JC Leads To"
+  description: "Leads to links for Johnson County"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "justice.resultsin"
+  name: "jcresultsin"
+  title: "JC Results In"
+  description: "Results in links for Johnson County"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - auth0|58c2d01b3c9c2b7caff49ce3
+- type: "general.appearsin"
+  name: "jcappearsin"
+  title: "JC Appears In"
+  description: "Appears in links for Johnson County"
+  contacts:
   - "support@openlattice.com"
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3

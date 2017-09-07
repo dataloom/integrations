@@ -31,18 +31,17 @@ import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.dates.DateTimeHelper;
+import com.openlattice.shuttle.dates.TimeZones;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.lang.StringUtils;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
@@ -55,13 +54,14 @@ public class MiddlesexCharges2 {
     private static final Logger         logger         = LoggerFactory
             .getLogger( MiddlesexCharges2.class );
     private static final Environment    environment    = Environment.LOCAL;
-    private static final DateTimeHelper dtHelper       = new DateTimeHelper( DateTimeZone
-            .forOffsetHours( -5 ), "MM/dd/yyyy" );
-    private static final DateTimeHelper bdHelper       = new DateTimeHelper( DateTimeZone
-            .forOffsetHours( -5 ), "yyyy-MM-dd HH:mm:ss.SSS" );
+    private static final DateTimeHelper dtHelper       = new DateTimeHelper( TimeZones.America_NewYork,
+            "MM/dd/yyyy HH:mm" );
+    private static final DateTimeHelper bdHelper       = new DateTimeHelper( TimeZones.America_NewYork,
+            "yyyy-MM-dd HH:mm:ss.SSS" );
     private static final Pattern        nameMatcher    = Pattern.compile( "(.+), (.+) (.*) (.*)" );
     private static final Pattern        raceMatcher    = Pattern.compile( "(.+) - (.+)" );
     private static final Pattern        addressMatcher = Pattern.compile( "(.+)\\n(.+)" );
+    private static final Pattern        chargeMatcher  = Pattern.compile( "(.+) - (.+) (.+)" );
 
     public static void main( String[] args ) throws InterruptedException {
         /*
@@ -128,54 +128,23 @@ public class MiddlesexCharges2 {
                 .to( "LPDArrest" )
                 .ofType( new FullQualifiedName( "lawenforcement.arrest" ) )
                 .key( new FullQualifiedName( "j.ArrestSequenceID" ) )
-                .addProperty("publicsafety.ArrestDate" )
-                .value( row -> dtHelper.parse( row.getAs( "arr_date" ) ) )
-                .ok()
-                .addProperty( "" )
-                .value( row -> dtHelper.parse( row.getAs( "dt_rel" ) ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "justice.disposition" ) )
-                .value( row -> row.getAs( "rel_com" ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "justice.EventType" ) )
-                .value( row -> row.getAs( "type_charge" ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "j.OffenseViolatedStatute" ) )
-                .value( row -> row.getAs( "maj_off" ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
-                .value( MiddlesexCharges2::getArrestSequenceID )
-                .ok()
-                .addProperty( new FullQualifiedName( "j.ArrestCategory" ) )
-                .value( row -> row.getAs( "arsttyp" ) )
-                .ok()
-                .ok()
-                .addEntity( "charge" )
-                .to( "LPDArrest" )
-                .ofType( new FullQualifiedName( "lawenforcement.arrest" ) )
-                .key( new FullQualifiedName( "j.ArrestSequenceID" ) )
                 .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
-                .value( row -> dtHelper.parse( row.getAs( "arr_date" ) ) )
+                .value( row -> dtHelper.parse( row.getAs( "arr_date" ) + " " + row.getAs( "Time" ) ) )
                 .ok()
-                .addProperty( new FullQualifiedName( "publicsafety.ReleaseDate" ) )
-                .value( row -> dtHelper.parse( row.getAs( "dt_rel" ) ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "justice.disposition" ) )
-                .value( row -> row.getAs( "rel_com" ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "justice.EventType" ) )
-                .value( row -> row.getAs( "type_charge" ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "j.OffenseViolatedStatute" ) )
-                .value( row -> row.getAs( "maj_off" ) )
-                .ok()
-                .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
-                .value( MiddlesexCharges2::getArrestSequenceID )
-                .ok()
-                .addProperty( new FullQualifiedName( "j.ArrestCategory" ) )
-                .value( row -> row.getAs( "arsttyp" ) )
-                .ok()
-                .ok()
+                .addProperty( "j.CaseNumberText", "Case Number" )
+                .addProperty( "j.ArrestCategory", "type_charge" )
+                .addProperty( "j.ArrestSequenceID" ).value( MiddlesexCharges2::getArrestSequenceID ).ok()
+                .endEntity()
+                .addEntity( "charge" )
+                .to( "LPDCharge" )
+                .ofType( new FullQualifiedName( "justice.ChargeDetails" ) )
+                .key( new FullQualifiedName( "j.ChargeSequenceID" ) )
+                .addProperty( "j.ChargeSequenceId", "Case Number" )
+                .addProperty( "j.OffenseViolatedStatute" )
+                .value( MiddlesexCharges2::getOffenseViolatedStatute ).ok()
+                .addProperty( "j.OffenseViolatedStatute" )
+                .value( MiddlesexCharges2::getOffenseViolatedStatute ).ok()
+                .endEntity()
                 .addEntity( "address" )
                 .to( "MSOAddresses" )
                 .ofType( new FullQualifiedName( "general.address" ) )
@@ -204,6 +173,42 @@ public class MiddlesexCharges2 {
                 .ok()
                 .ok()
                 .ok()
+                .done();
+
+        Flight charges = Flight.newFlight()
+                .createEntities()
+                .addEntity( "charge" )
+                .to( "LPDCharge" )
+                .ofType( new FullQualifiedName( "justice.ChargeDetails" ) )
+                .key( new FullQualifiedName( "j.ChargeSequenceID" ) )
+                .addProperty( "j.ChargeSequenceId", "Case # Off. Seq." )
+                .addProperty( "justice.ReportedDate" )
+                .value( MiddlesexCharges2::getChargeReportedDate ).ok()
+                .addProperty( "justice.OffenseStartDate" )
+                .value( MiddlesexCharges2::getOffenseStartDate ).ok()
+                .addProperty( "justice.OffenseEndDate" )
+                .value( MiddlesexCharges2::getOffenseEndDate ).ok()
+                .apdP
+                .addProperty( new FullQualifiedName( "publicsafety.ReleaseDate" ) )
+                .value( row -> dtHelper.parse( row.getAs( "dt_rel" ) ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "justice.disposition" ) )
+                .value( row -> row.getAs( "rel_com" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "justice.EventType" ) )
+                .value( row -> row.getAs( "type_charge" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.OffenseViolatedStatute" ) )
+                .value( row -> row.getAs( "maj_off" ) )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.ArrestSequenceID" ) )
+                .value( MiddlesexCharges2::getArrestSequenceID )
+                .ok()
+                .addProperty( new FullQualifiedName( "j.ArrestCategory" ) )
+                .value( row -> row.getAs( "arsttyp" ) )
+                .ok()
+                .endEntity()
+                .endEntities()
                 .done();
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
@@ -269,7 +274,7 @@ public class MiddlesexCharges2 {
     }
 
     public static String getArrestAddress( Row row ) {
-        Matcher m = addressMatcher.matcher( row.getAs( "arresst_incident_addresses" ) );
+        Matcher m = addressMatcher.matcher( row.getAs( "arrest_incident_addresses" ) );
         if ( m.matches() ) {
             return m.group( 1 );
         }
@@ -277,12 +282,43 @@ public class MiddlesexCharges2 {
     }
 
     public static String getIncidentAddress( Row row ) {
-        Matcher m = addressMatcher.matcher( row.getAs( "arresst_incident_addresses" ) );
+        Matcher m = addressMatcher.matcher( row.getAs( "arrest_incident_addresses" ) );
         if ( m.matches() ) {
             return m.group( 2 );
         }
         return null;
 
+    }
+
+    public static String getOffenseViolatedStatute( Row row ) {
+        Matcher m = addressMatcher.matcher( row.getAs( "Charge" ) );
+        if ( m.matches() ) {
+            return m.group( 2 );
+        }
+        return null;
+    }
+
+    public static String getOffenseQualifierText( Row row ) {
+        Matcher m = addressMatcher.matcher( row.getAs( "Charge" ) );
+        if ( m.matches() ) {
+            return m.group( 3 );
+        }
+        return null;
+    }
+
+    public static String getChargeReportedDate( Row row ) {
+        String reportedDate = row.getAs( "Rpt. Date Rpt. Time Rpt. Day" ) + " " + row.getString( 11 );
+        return dtHelper.parse( reportedDate );
+    }
+
+    public static String getOffenseStartDate( Row row ) {
+        String reportedDate = row.getAs( "From Date From Time From Day" ) + " " + row.getString( 12 );
+        return dtHelper.parse( reportedDate );
+    }
+
+    public static String getOffenseEndDate( Row row ) {
+        String reportedDate = row.getAs( "To Date To Time To Day" ) + " " + row.getString( 13 );
+        return dtHelper.parse( reportedDate );
     }
 
     public static String getArrestSequenceID( Row row ) {
