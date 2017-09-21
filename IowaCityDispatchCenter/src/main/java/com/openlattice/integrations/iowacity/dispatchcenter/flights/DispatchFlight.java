@@ -152,7 +152,7 @@ public class DispatchFlight {
 
         //        String csvPath = Resources.getResource( "dispatch.csv" ).getPath();
         java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
-        String query = "(select * from dbo.Dispatch CFS_DateTimeJanet IS NOT NULL AND where CFS_DateTimeJanet >= '" + d.toString() +"') Dispatch";
+        String query = "(select * from dbo.Dispatch where CFS_DateTimeJanet >= '" + d.toString() +"') Dispatch";
 
         Dataset<Row> payload = sparkSession
                 .read()
