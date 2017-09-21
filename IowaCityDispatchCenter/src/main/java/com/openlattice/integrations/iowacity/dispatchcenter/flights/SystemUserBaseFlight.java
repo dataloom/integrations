@@ -80,7 +80,7 @@ public class SystemUserBaseFlight {
                         .addProperty( TITLE_FQN ).value( row -> getAsString( row.getAs( "Title" ) ) ).ok()
                         .addProperty( EMPLOYEE_ID_FQN ).value( row -> getEmployeeId( row.getAs( "EmployeeId" ) ) ).ok()
                         .addProperty( OFFICER_ID_FQN ).value( row -> getAsUUID( row.getAs( "OfficerId" ) ) ).ok()
-                        .addProperty( ORI_FQN ).value( row -> getAsString( row.getAs( "ORI  " ) ) ).ok()
+                        .addProperty( ORI_FQN ).value( row -> getAsString( row.getAs( "ORI" ) ) ).ok()
                         .addProperty( ACTIVE_FQN ).value( row -> getActive( row.getAs( "EmployeeId" ) ) ).ok()
                         .ok()
                     .ok()
