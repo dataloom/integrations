@@ -54,7 +54,7 @@ sourceSets {
 jar {
     doFirst {
         manifest {
-            attributes "Class-Path": configurations.runtime.files*.collect { File file -> file.name }.join(" ")
+            attributes "Class-Path": configurations.runtime.files.collect { it.getName() }.join(" ")
         }
     }
 }
