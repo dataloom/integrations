@@ -85,7 +85,7 @@ public class DispatchTypeFlight {
 
         //        String csvPath = Resources.getResource( "dispatch_type.csv" ).getPath();
         java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
-        String query = "select * from dbo.Dispatch_Type where timercvd >-= '" + d.toString() +"'";
+        String query = "(select * from dbo.Dispatch_Type where timercvd >-= '" + d.toString() +"') Dispatch_Type";
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "jdbc" )
