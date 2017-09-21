@@ -152,16 +152,17 @@ public class DispatchFlight {
 
         //        String csvPath = Resources.getResource( "dispatch.csv" ).getPath();
         java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
+        String query = "select * from dbo.Dispatch where CFS_DateTimeJanet >= '" + d.toString() +"'";
+
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "jdbc" )
                 .option( "url", config.getUrl() )
-                .option( "dbtable", "dbo.Dispatch" )
+                .option( "dbtable", query )
                 .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
                 .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver" )
-                .load()
-                .filter( col( "CFS_DateTimeJanet" ).geq( d ) );
+                .load();
 
         //payload.createOrReplaceTempView( "Dispatch" );
 

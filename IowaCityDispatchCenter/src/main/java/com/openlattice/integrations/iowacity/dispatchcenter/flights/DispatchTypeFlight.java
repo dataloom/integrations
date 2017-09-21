@@ -85,15 +85,15 @@ public class DispatchTypeFlight {
 
         //        String csvPath = Resources.getResource( "dispatch_type.csv" ).getPath();
         java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
+        String query = "select * from dbo.Dispatch_Type where timercvd >-= '" + d.toString() +"'";
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "jdbc" )
                 .option( "url", config.getUrl() )
-                .option( "dbtable", "dbo.Dispatch_Type" )
+                .option( "dbtable", query )
                 .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
-                .load()
-                .filter( col( "timercvd" ).geq( d ) );
+                .load();
 
         return payload;
     }

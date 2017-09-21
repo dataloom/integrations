@@ -439,6 +439,9 @@ propertyTypes:
   - type: "location.address"
     title: "Unparsed location address"
     description: "Location of an event"
+  - type: "visit.reason"
+    title: "Visit reason"
+    description: "Visit reason"
 
 entityTypes:
 - type: "justice.agency"
@@ -707,6 +710,18 @@ entityTypes:
   - "justice.Bail"
   - "j.ArrestAgency"
   - "j.OffenseViolatedStatute"
+- type: "patient.visit"
+  title: "Patient Visit"
+  description: "A patient visit"
+  key:
+  - "general.stringid"
+  properties:
+  - "general.stringid"
+  - "mock.reason"
+  - "mock.symptoms"
+  - "mock.drugpresent"
+  - "mock.temp"
+  baseType: null
 
 associationTypes:
 - type:
@@ -1269,6 +1284,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.Address"
   name: "MSOAddresses"
   title: "Middlesex Suspect Addresses"
@@ -1277,6 +1293,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
 - type: "justice.booking"
   name: "MSOBookings"
   title: "Middlesex Bookings"
@@ -1293,6 +1310,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
 - type: "location.livesat"
   name: "MSOLivesAt"
   title: "Lives At"
@@ -1301,6 +1319,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.person"
   name: "LPDArrestSuspects"
   title: "Lowell PD Arrested Suspects"
@@ -1309,6 +1328,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
 - type: "lawenforcement.arrest"
   name: "LPDArrest"
   title: "Lowell PD Arrests"
@@ -1317,12 +1337,14 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
 - type: "justice.ChargeDetails"
   name: "LPDCharge"
   title: "Lowell PD Charges"
   description: "Lowell PD Charge Information"
   contacts:
   - "support@openlattice.com"
+  - "auth0|588a2038aa03fb78b0e52307"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
 - type: "justice.occurredat"
@@ -1333,6 +1355,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
 - type: "justice.chargedwith"
   name: "LPDChargedWith"
   title: "LPD Charged with"
@@ -1341,6 +1364,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.appearsin"
   name: "LPDChargeAppearsIn"
   title: "LPD Charges Appears In"
@@ -1349,6 +1373,7 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
 - type: "lawenforcement.arrestedin"
   name: "LPDArrestedIn"
   title: "LPD Arrested In"
@@ -1357,3 +1382,28 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.person"
+  name: "MockSuspects"
+  title: "Mock Arrested Suspects"
+  description: "Mock Arrested Suspects"
+  contacts:
+  - "support@openlattice.com"
+- type: "lawenforcement.arrest"
+  name: "MockArrests"
+  title: "Mock Arrests"
+  description: "Mock Arrests"
+  contacts:
+  - "support@openlattice.com"
+- type: "patient.visit"
+  name: "MockVisit"
+  title: "Mock Visits"
+  description: "Mock Visits"
+  contacts:
+  - "support@openlattice.com"
+- type: "lawenforcement.arrestedin"
+  name: "MockSuspectArrestedIn"
+  title: "Mock Arrested In"
+  description: "Represents all arrests in"
+  contacts:
+  - "support@openlattice.com"
