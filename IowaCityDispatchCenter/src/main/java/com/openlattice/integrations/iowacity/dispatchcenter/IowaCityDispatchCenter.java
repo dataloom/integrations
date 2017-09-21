@@ -35,12 +35,12 @@ public class IowaCityDispatchCenter {
     private static final Environment environment = Environment.STAGING;
 
     public static void main( String[] args ) throws InterruptedException, IOException {
-        JdbcIntegrationConfig config = //ObjectMappers.getYamlMapper()
-                //.readValue( new File( args[ 0 ] ), JdbcIntegrationConfig.class );
-        new JdbcIntegrationConfig( "","", "", "","" );
-        final String jwtToken = "";//MissionControl.getIdToken( config.getOlsUser(), config.getOlsPassword() );
+        JdbcIntegrationConfig config = ObjectMappers.getYamlMapper()
+                .readValue( new File( args[ 0 ] ), JdbcIntegrationConfig.class );
+
+        final String jwtToken = MissionControl.getIdToken( config.getOlsUser(), config.getOlsPassword() );
         final SparkSession sparkSession = MissionControl.getSparkSession();
-/*
+
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
         FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
 
@@ -55,16 +55,16 @@ public class IowaCityDispatchCenter {
             manager.ensureEdmElementsExist( requiredEdmElements );
         }
 
-        Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession, config ); */
+        Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession, config );
         Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight.getFlight( sparkSession, config );
         Map<Flight, Dataset<Row>> dispatchTypeFlight = DispatchTypeFlight.getFlight( sparkSession, config );
-        //Map<Flight, Dataset<Row>> dispatchPersonsFlight = DispatchPersonsFlight.getFlight( sparkSession, config );
+        Map<Flight, Dataset<Row>> dispatchPersonsFlight = DispatchPersonsFlight.getFlight( sparkSession, config );
 
         Map<Flight, Dataset<Row>> flights = new HashMap<>();
-        //flights.putAll( systemUserBaseFlight );
+        flights.putAll( systemUserBaseFlight );
         flights.putAll( dispatchFlight );
         flights.putAll( dispatchTypeFlight );
-        //flights.putAll( dispatchPersonsFlight );
+        flights.putAll( dispatchPersonsFlight );
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
         shuttle.launch( flights );
