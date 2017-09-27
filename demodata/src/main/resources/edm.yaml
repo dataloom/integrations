@@ -3,20 +3,20 @@ propertyTypes:
   piiField: false
   analyzer: "STANDARD"
   properties:
-  - type: "person.MugShot"
+  - type: "publicsafety.MugShot"
     title: "Mugshot"
     description: "A person's mugshot"
 - datatype: "Int32"
   piiField: true
   analyzer: "STANDARD"
   properties:
-  - type: "person.AgeAtEvent"
+  - type: "person.age"
     title: "Age"
     description: "The age of a person at booking"
-  - type: "person.HeightMeasureAtEvent"
+  - type: "nc.PersonHeightMeasure"
     title: "Height Measure"
     description: "A measurement of the height of a person at booking"
-  - type: "person.WeightMeasureAtEvent"
+  - type: "nc.PersonWeightMeasure"
     title: "Weight Measure"
     description: "A measurement of the weight of a person at booking"
 - datatype: "Int32"
@@ -93,7 +93,7 @@ propertyTypes:
   piiField: false
   analyzer: "STANDARD"
   properties:
-  - type: "date.BirthDate"
+  - type: "nc.PersonBirthDate"
     title: "Person Birth Date"
     description: "Date a person was born."
   - type: "date.IncidentDate"
@@ -161,19 +161,19 @@ propertyTypes:
   piiField: true
   analyzer: "METAPHONE"
   properties:
-  - type: "person.GivenName"
+  - type: "nc.PersonGivenName"
     title: "Given Name"
     description: "A first name of a person."
-  - type: "person.MiddleName"
+  - type: "nc.PersonMiddleName"
     title: "Middle Name"
     description: "A middle name of a person."
-  - type: "person.SurName"
+  - type: "nc.PersonSurName"
     title: "Surname"
     description: "A last name or family name of a person."
   - type: "place.BirthPlace"
     title: "Birth Place"
     description: "The birth place of a person."
-  - type: "person.AliasName"
+  - type: "im.PersonNickName"
     title: "Alias Name"
     description: "A alias name or street name of a person."
 - datatype: "String"
@@ -634,8 +634,11 @@ associationTypes:
     - "general.StringID"
   src:
   - "general.Person"
+  - "general.Officer"
   dst:
   - "general.Incident"
+  - "general.BookingRecords"
+  - "general.Case"
   bidirectional: false
 - type:
     type: "general.ChargedWith"
@@ -652,6 +655,58 @@ associationTypes:
   dst:
   - "general.Charge"
   bidirectional: false
+- type:
+    type: "justice.ArrestedBy"
+    title: "Arrested By"
+    description: "Links together an officer with the act of conducting an arrest"
+    key:
+    - "general.StringID"
+    properties:
+    - "general.StringID"
+  src:
+  - "general.Person"
+  dst:
+  - "general.Officer"
+  bidirectional: false
+- type:
+    type: "justice.SearchedBy"
+    title: "Searched By"
+    description: "Links together an officer with someone they are searching"
+    key:
+    - "general.StringID"
+    properties:
+    - "general.StringID"
+  src:
+  - "general.Person"
+  dst:
+  - "general.Officer"
+  bidirectional: false
+- type:
+    type: "justice.TransportedBy"
+    title: "Transported By"
+    description: "Links together an officer with someone they are transporting"
+    key:
+    - "general.StringID"
+    properties:
+    - "general.StringID"
+  src:
+  - "general.Person"
+  dst:
+  - "general.Officer"
+  bidirectional: false
+- type:
+    type: "justice.ReleasedBy"
+    title: "Released By"
+    description: "Links together an officer with someone they are releasing"
+    key:
+    - "general.StringID"
+    properties:
+    - "general.StringID"
+  src:
+  - "general.Person"
+  dst:
+  - "general.Officer"
+  bidirectional: false
 entitySets:
 - type: "general.Person"
   name: "DemoSuspects"
@@ -665,7 +720,7 @@ entitySets:
 - type: "general.Incident"
   name: "DemoIncidents"
   title: "DemoIncidents"
-  description: "Demo Data Fake Incidents"
+  description: "Demo Data Incidents"
   contacts:
   - "support@openlattice.com"
   owners:
@@ -744,20 +799,47 @@ entitySets:
   - "auth0|59a985a557d70e1088c0c425"
   - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.Officer"
-  name: "DemoArOfficers"
-  title: "DemoArOfficers"
-  description: "Any County Arresting Officers"
+  name: "DemoOfficers"
+  title: "DemoOfficers"
+  description: "Any County and Anytown Officers"
   contacts:
   - "support@openlattice.com"
-- type: "general.Officer"
-  name: "DemoTrOfficers"
-  title: "DemoTrOfficers"
-  description: "Any County Transporting Officers"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "justice.ArrestedBy"
+  name: "Demo Arrested By"
+  title: "Demo Arrested By"
+  description: "Any County and Anytown Officers conducting arrests"
   contacts:
   - "support@openlattice.com"
-- type: "general.Officer"
-  name: "DemoRelOfficers"
-  title: "DemoRelOfficers"
-  description: "Any County Releasing Officers"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "justice.SearchedBy"
+  name: "Demo Searched By"
+  title: "Demo Searched By"
+  description: "Any County and Anytown Officers conducting searches"
   contacts:
   - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "justice.TransportedBy"
+  name: "Demo Transported By"
+  title: "Demo Transported By"
+  description: "Any County and Anytown Officers transporting suspects"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "justice.ReleasedBy"
+  name: "Demo Released By"
+  title: "Demo Released By"
+  description: "Any County and Anytown Officers releasing suspects"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"

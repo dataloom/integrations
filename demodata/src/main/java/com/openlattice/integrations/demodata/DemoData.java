@@ -115,22 +115,22 @@ public class DemoData {
         Flight flight = Flight
                 .newFlight()
                     .createEntities()
-                        .addEntity("ArrOfficer" )
+                        .addEntity("ArrOfficer" )   //variable name within flight. Doesn't have to match anything in edm.yaml
                             //.key("general.SubjectIdentification")
                             //.ofType("general.Officer")    //type of entity set belonging to
-                            .to("DemoArOfficers")         //name of entity set belonging to
+                            .to("DemoOfficers")         //name of entity set belonging to
                             .addProperty("person.OfficerBadgeIdentification", "ArrestingOfficerBadgeID" )
                             .addProperty("person.SurName", "ArrOfficerLastName" )  //shortcut if returning strings
                             .addProperty("person.GivenName", "ArrOfficerFirstName")
                             .endEntity()
                         .addEntity("TrOfficer")
-                            .to("DemoTrOfficers")
+                            .to("DemoOfficers")
                             .addProperty("person.OfficerBadgeIdentification", "TranspOfficerBadgeID")
                             .addProperty("person.SurName", "TranspOfficerLastName")
                             .addProperty("person.GivenName", "TranspOfficerFirstName")
                             .endEntity()
                         .addEntity("RelOfficer")
-                            .to("DemoRelOfficers")
+                            .to("DemoOfficers")
                             .addProperty("person.OfficerBadgeIdentification", "ReleaseOfficerBadgeID" )
                             .addProperty("person.GivenName", "RelOfficerFirstName")
                             .addProperty("person.SurName", "RelOfficerLastName")
@@ -226,6 +226,24 @@ public class DemoData {
                             .addProperty("general.SubjectIdentification", "SubjectIdentification")
                             .addProperty("general.StringID", "CaseID")
                             .endAssociation()
+                    .addAssociation("Demo Arrested By")
+                            .to("Demo Arrested By")       //name of entity set belonging to
+                            .fromEntity("Person")
+                            .toEntity("ArrOfficer")
+                            .addProperty("general.StringID", "ArrestingOfficerBadgeID")
+                            .endAssociation()
+//                    .addAssociation("Demo Released By")
+//                            .to("Demo Released By")       //name of entity set belonging to
+//                            .fromEntity("Person")
+//                            .toEntity("RelOfficer")
+//                            .addProperty("general.StringID", "ReleaseOfficerBadgeID")
+//                            .endAssociation()
+//                    .addAssociation("Demo Transported By")
+//                            .to("Demo Transported By")       //name of entity set belonging to
+//                            .fromEntity("Person")
+//                            .toEntity("TrOfficer")
+//                            .addProperty("general.StringID", "TranspOfficerBadgeID")
+//                            .endAssociation()
                         .endAssociations()
                         .done();
 
