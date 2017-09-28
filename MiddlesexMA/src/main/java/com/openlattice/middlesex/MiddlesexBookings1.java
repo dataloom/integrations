@@ -52,7 +52,7 @@ public class MiddlesexBookings1 {
 
     private static final Logger                      logger      = LoggerFactory
             .getLogger( MiddlesexBookings1.class );
-    private static final RetrofitFactory.Environment environment = Environment.STAGING;
+    private static final RetrofitFactory.Environment environment = Environment.LOCAL;
     private static final DateTimeHelper              dtHelper    = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -5 ), "MM/dd/yyyy" );
     private static final DateTimeHelper              bdHelper    = new DateTimeHelper( DateTimeZone

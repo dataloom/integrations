@@ -20,6 +20,8 @@
 
 package com.openlattice.middlesex;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
@@ -27,6 +29,7 @@ import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableSet;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
@@ -35,10 +38,14 @@ import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.dates.TimeZones;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -54,7 +61,7 @@ public class MiddlesexCharges2 {
 
     private static final Logger         logger         = LoggerFactory
             .getLogger( MiddlesexCharges2.class );
-    private static final Environment    environment    = Environment.STAGING;
+    private static final Environment    environment    = Environment.LOCAL;
     private static final DateTimeHelper dtHelper       = new DateTimeHelper( TimeZones.America_NewYork,
             "yyyy/MM/dd HH:mm" );
     private static final DateTimeHelper bdHelper       = new DateTimeHelper( TimeZones.America_NewYork,
@@ -120,6 +127,8 @@ public class MiddlesexCharges2 {
                 .value( MiddlesexCharges2::getMiddleName ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
                 .value( MiddlesexCharges2::getLastName ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonNameSuffixText" ) )
+                .value( MiddlesexCharges2::getSuffixes ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
                 .value( MiddlesexCharges2::getRace ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
@@ -241,9 +250,9 @@ public class MiddlesexCharges2 {
                 .endEntities().done();
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
-        Map<Flight, Dataset<Row>> flights = new HashMap<>( 2 );
+        Map<Flight, Dataset<Row>> flights = new LinkedHashMap<>( 2 );
         flights.put( flight, payload );
-        //flights.put( charges, chargeData );
+        flights.put( charges, chargeData );
 
         shuttle.launch( flights );
     }
@@ -281,17 +290,69 @@ public class MiddlesexCharges2 {
         return null;
     }
 
+    static class PersonName {
+        String first;
+        String last;
+        String middle;
+        Set<String> suffixes;
+    }
+
+    //Double spaces below are important and specific to MA.
+    static Set<String> suffixes = ImmutableSet.<String>builder()
+            .add( " JR.", " SR.", " JR", " SR", " IV", " V", " VI", " III", " II", " I" )
+            .add( "  JR.", "  SR.", "  JR", "  SR", "  IV", "  V", "  VI", "  III", "  II", "  I" )
+            .build();
+    public static PersonName splitName( String name ) {
+        PersonName p = new PersonName();
+
+        p.suffixes = new HashSet<>();
+        for( String suffix : suffixes ) {
+            if( name.contains( suffix ) ) {
+                p.suffixes.add( suffix.trim() );
+                name = name.replace( suffix, "");
+            }
+        }
+
+        String[] pieces = StringUtils.split( name, ',');
+
+        checkState( pieces.length >= 2 , "Must have at least two pieces");
+
+        p.last = pieces[ 0 ].replace( "  ", " " ).trim();
+
+        String[] remaining = StringUtils.split( pieces[1], ' ' );
+        p.first = remaining[ 0 ];
+        if( remaining.length > 1 ) {
+            p.middle = StringUtils.join(Arrays.copyOfRange(remaining, 1, remaining.length));
+        }
+        return p;
+    }
+
+    public static Set<String> getSuffixes( Row row ) {
+        String name = row.getAs( "Name" );
+        if ( name == null ) {
+            return null;
+        }
+        PersonName p = splitName( name );
+        logger.info( "Parsed suffixes {} -> {}", name, p.suffixes );
+        return p.suffixes;
+    }
+
     public static String getFirstName( Row row ) {
         String name = row.getAs( "Name" );
         if ( name == null ) {
             return null;
         }
-        Matcher m = nameMatcher.matcher( name );
-        if ( m.matches() ) {
-            logger.info("Parsed first {} into: {}", name , m.group(2));
-            return m.group( 2 );
-        }
-        return null;
+        PersonName p = splitName( name );
+        logger.info("Parsed first {} -> {}", name, p.first);
+        return p.first;
+//        Matcher m = nameMatcher.matcher( name );
+//        if ( m.matches() ) {
+//            logger.info( "Parsed first {} into: {}", name, m.group( 2 ) );
+//            return m.group( 2 );
+//        } else {
+//            logger.info( "Unable to parse name: {}", name );
+//        }
+//        return null;
     }
 
     public static String getMiddleName( Row row ) {
@@ -299,11 +360,18 @@ public class MiddlesexCharges2 {
         if ( name == null ) {
             return null;
         }
-        Matcher m = nameMatcher.matcher( name );
-        if ( m.matches() ) {
-            return m.group( 3 ) + "  " + m.group( 4 );
-        }
-        return null;
+        PersonName p = splitName( name );
+        logger.info("Parsed middle {} -> {}", name, p.middle);
+        return p.middle;
+//        Matcher m = nameMatcher.matcher( name );
+//        if ( m.matches() ) {
+//            String middle = m.group( 3 ) + "  " + m.group( 4 );
+//            logger.info( "Parsed middle {} into: {}", name, middle );
+//            return middle;
+//        } else {
+//            logger.info( "Unable to parse name: {}", name );
+//        }
+//        return null;
     }
 
     public static String getLastName( Row row ) {
@@ -311,18 +379,23 @@ public class MiddlesexCharges2 {
         if ( name == null ) {
             return null;
         }
-        Matcher m;
-        try {
-            m = nameMatcher.matcher( name );
-        } catch ( Exception e ) {
-            logger.error( "Unable to match: {}", name, e );
-            return null;
-        }
-        if ( m.matches() ) {
-            logger.info("Parsed first {} into: {}", name , m.group(1));
-            return m.group( 1 );
-        }
-        return null;
+        PersonName p = splitName( name );
+        logger.info("Parsed last {} -> {}", name, p.last);
+        return p.last;
+//        Matcher m;
+//        try {
+//            m = nameMatcher.matcher( name );
+//        } catch ( Exception e ) {
+//            logger.error( "Unable to match: {}", name, e );
+//            return null;
+//        }
+//        if ( m.matches() ) {
+//            logger.info( "Parsed last {} into: {}", name, m.group( 1 ) );
+//            return m.group( 1 );
+//        } else {
+//            logger.info( "Unable to parse name: {}", name );
+//        }
+//        return null;
     }
 
     public static String getArrestAddress( Row row ) {
