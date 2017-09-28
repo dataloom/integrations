@@ -165,6 +165,15 @@ propertyTypes:
   - type: "date.MedicalAssessmentDate"
     title: "Medical Assessment Date"
     description: "Medical Assessment Date"
+  - type: "date.UpcomingVisit"
+    title: "Upcoming Visit"
+    description: "Upcoming Visit"
+  - type: "date.PreviousVisit"
+    title: "Previous Visits"
+    description: "Previous Visits"
+  - type: "date.MissedAppointment"
+    title: "Missed Appointment"
+    description: "Missed Appointment"
 - datatype: "String"
   piiField: false
   analyzer: "METAPHONE"
@@ -295,7 +304,7 @@ propertyTypes:
   - type: "place.TransportingAgency"
     title: "Transporting Agency"
     description: "Transporting Agency"
-  - type: "place.EmployedByAgency"
+  - type: "person.SpecialtyType"
     title: "Employed By Agency"
     description: "Employed By Agency"
   - type: "general.IncidentSequenceID"
@@ -436,6 +445,12 @@ propertyTypes:
   - type: "event.ReleaseNotes"
     title: "Release Notes"
     description: "Release notes"
+  - type: "event.MissedAppointmentCount"
+    title: "Missed Appointment Count"
+    description: "Missed Appointment Count"
+  - type: "event.AppointmentType"
+    title: "Appointment Type"
+    description: "Appointment Type"
   - type: "event.Condition"
     title: "Medical Condition"
     description: "Medical Condition"
@@ -664,7 +679,7 @@ entityTypes:
   - "person.MiddleName"
   - "person.SurName"
   - "person.OfficerBadgeIdentification"
-  - "place.EmployedByAgency"
+  - "person.SpecialtyType"
   baseType: null
 - type: "general.Incident"
   title: "Incident"
@@ -820,7 +835,7 @@ entityTypes:
   - "person.SurName"
   - "person.NationalProviderNumber"
   - "person.ProviderName"
-  - "place.EmployedByAgency"
+  - "person.SpecialtyType"
   baseType: null
 - type: "general.Patient"
   title: "Patient"
@@ -843,6 +858,18 @@ entityTypes:
   - "person.Allergy"
   - "person.HomeLess"
   baseType: null
+- type: "general.Appointment"
+  title: "Appointment"
+  description: "Appointment"
+  key:
+  - "general.StringID"
+  properties:
+  - "general.StringID"
+  - "date.UpcomingVisit"
+  - "date.PreviousVisit"
+  - "date.MissedAppointment"
+  - "event.MissedAppointmentCount"
+  - "event.AppointmentType"
 - type: "general.MedicalCondition"
   title: "Medical Condition"
   description: "Medical Condition"
@@ -968,6 +995,7 @@ associationTypes:
   - "general.Incident"
   - "general.AdmissionRecord"
   - "general.MedicalAssessment"
+  - "general.Appointment"
   bidirectional: false
 - type:
     type: "general.ChargedWith"
@@ -1102,6 +1130,24 @@ entitySets:
   name: "VisitedIn"
   title: "Visited In"
   description: "Visited In"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.person"
+  name: "Providers"
+  title: "Providers"
+  description: "Providers"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.Appointment"
+  name: "Appointments"
+  title: "Appointments"
+  description: "Appointments"
   contacts:
   - "support@openlattice.com"
   owners:

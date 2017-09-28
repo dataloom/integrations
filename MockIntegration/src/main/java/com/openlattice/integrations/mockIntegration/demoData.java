@@ -89,8 +89,7 @@ public class demoData {
                 .addProperty("nc.PersonSex", "Sex")
                 .addProperty("nc.PersonRace", "Race")
                 .addProperty("nc.PersonEthnicity", "Ethnicity")
-                .addProperty("nc.PersonBirthDate")
-                .value(demoData::safeDOBParse).ok()
+                .addProperty("nc.PersonBirthDate", "BirthDate")
                 .endEntity()
                 .addEntity("Incidents")
                 .to("Incidents")
@@ -186,8 +185,27 @@ public class demoData {
             .addProperty("nc.PersonSex", "Sex")
             .addProperty("nc.PersonRace", "Race")
             .addProperty("nc.PersonEthnicity", "Ethnicity")
-            .addProperty("nc.PersonBirthDate")
-            .value(demoData::safeDOBParse).ok()
+            .addProperty("nc.PersonBirthDate", "BirthDate")
+            .endEntity()
+            .addEntity("Providers")
+            .to("Providers")
+            .ofType("general.person")
+            .key("nc.SubjectIdentification")
+            .addProperty("nc.SubjectIdentification")
+            .value(demoData::getSubjectIdentification).ok()
+            .addProperty("nc.PersonGivenName", "providerFNames")
+            .addProperty("nc.PersonSurName", "providerLNames")
+            .endEntity()
+            .addEntity("Appointments")
+            .to("Appointments")
+            .ofType("general.Appointment")
+            .key("general.StringID")
+            .addProperty("general.StringID", "id")
+            .addProperty("date.UpcomingVisit", "upcomingAppt")
+            .addProperty("date.MissedAppointment", "missedAppt")
+            .addProperty("date.MissedAppointment", "missedApptFirst")
+            .addProperty("event.MissedAppointmentCount", "NumMissedAppt")
+            .addProperty("event.AppointmentType", "ApptTypes")
             .endEntity()
             .addEntity("AdmissionRecords")
             .to("AdmissionRecords")
@@ -229,7 +247,7 @@ public class demoData {
             .addAssociation("AppearsIn")
             .ofType("general.AppearsIn").to("AppearsIn")
             .fromEntity("Patients")
-            .toEntity("AdmissionRecords")
+            .toEntity("Appointments")
             .key("nc.SubjectIdentification", "general.StringID")
             .addProperty("nc.SubjectIdentification")
             .value(demoData::getSubjectIdentification)
@@ -285,47 +303,38 @@ public class demoData {
 
     public static String safeArrestDateParse(Row row) {
         String arrestDate = row.getAs("ArrestDate");
-        return bdHelper.parse(arrestDate);
+        return dtHelper.parse(arrestDate);
     }
 
 
     public static String safeOffenseDateParse(Row row) {
         String OffDate = row.getAs("IncidentDate");
-        return bdHelper.parse(OffDate);
+        return dtHelper.parse(OffDate);
     }
 
     public static String safeERDParse(Row row) {
         String expReleaseDate = row.getAs("Exp_Release_Date");
-        return bdHelper.parse(expReleaseDate);
+        return dtHelper.parse(expReleaseDate);
     }
 
     public static String safeReleaseDateParse(Row row) {
         String releaseDate = row.getAs("ReleaseDate");
-        return bdHelper.parse(releaseDate);
-    }
-
-    public static String safeEntryDateParse(Row row) {
-        String entryDate = row.getAs("EntryDate");
-        return bdHelper.parse(entryDate);
-    }
-
-    public static String safeSentenceStartDateParse(Row row) {
-        String startDate = row.getAs("Start_Date");
-        return bdHelper.parse(startDate);
+        return dtHelper.parse(releaseDate);
     }
 
     public static String safeLastUsedParse(Row row) {
         String LastUsed = row.getAs("LastUsed");
-        return bdHelper.parse(LastUsed);
+        return dtHelper.parse(LastUsed);
     }
 
     public static String safeAdmissionDateParse(Row row) {
         String visitDate = row.getAs("visitDate");
-        return bdHelper.parse(visitDate);
+        return dtHelper.parse(visitDate);
     }
 
     public static String getAssessmentSequenceID(Row row) {
 
         return "ASSESSMENT-" + row.getAs("id");
     }
+
 }
