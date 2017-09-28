@@ -98,7 +98,7 @@ public class DemoData {
 
     private static Dataset<Row> getPayloadFromCsv(final SparkSession sparkSession ) {
 
-        String csvPath = Resources.getResource( "megatable9-26.csv" ).getPath();
+        String csvPath = Resources.getResource( "DemoJustice9-28.csv" ).getPath();
 
         Dataset<Row> payload = sparkSession
                 .read()
