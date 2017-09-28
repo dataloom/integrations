@@ -10,7 +10,7 @@ propertyTypes:
   piiField: true
   analyzer: "STANDARD"
   properties:
-  - type: "person.age"
+  - type: "person.AgeAtEvent"
     title: "Age"
     description: "The age of a person at booking"
   - type: "nc.PersonHeightMeasure"
@@ -527,7 +527,7 @@ entityTypes:
   - "date.BookingDate"
   - "date.ArrestDate"
   - "date.ExpectedReleaseDateFromCustody"
-  - "person.age"
+  - "person.AgeAtEvent"
   - "nc.PersonHairColorText"
   - "nc.PersonWeightMeasure"
   - "nc.PersonHeightMeasure"

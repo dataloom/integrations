@@ -179,7 +179,7 @@ public class DemoData {
                     .addEntity("Booking Records")
                             .to("DemoBookingRecords")
                             .addProperty("general.StringID", "BookingID")
-                            .addProperty("person.age", "AgeAtBooking")
+                            .addProperty("person.AgeAtEvent", "AgeAtBooking")
                             .addProperty("person.ReleaseOfficer", "ReleaseOfficerBadgeID")
                             .endEntity()
                     .addEntity("Case")
