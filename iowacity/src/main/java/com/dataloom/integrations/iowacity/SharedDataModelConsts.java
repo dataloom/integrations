@@ -102,55 +102,55 @@ public class SharedDataModelConsts {
     public static String CONSEC_WITH_FQN              = "publicsafety.ConsecWith";
 
     // ENTITY TYPES / ENTITY SETS
-    public static String SUBJECTS_NAME                = "jcsubjects";
+    public static String SUBJECTS_NAME                = "jcsubjectsnew";
     public static String SUBJECTS_TYPE                = "general.person";
     public static String SUBJECTS_ALIAS               = "subjects";
 
-    public static String BOOKINGS_NAME                = "jcjailbookings";
+    public static String BOOKINGS_NAME                = "jcjailbookingsnew";
     public static String BOOKINGS_TYPE                = "justice.JailBooking";
     public static String BOOKINGS_ALIAS               = "bookings";
 
-    public static String JAIL_RECORDS_NAME            = "jcjailrecords";
+    public static String JAIL_RECORDS_NAME            = "jcjailrecordsnew";
     public static String JAIL_RECORDS_TYPE            = "justice.JailRecord";
     public static String JAIL_RECORDS_ALIAS           = "jailrecords";
 
-    public static String OFFICERS_NAME                = "jcofficers";
+    public static String OFFICERS_NAME                = "jcofficersnew";
     public static String OFFICERS_TYPE                = "j.EnforcementOfficial";
     public static String OFFICERS_ALIAS               = "officers";
 
-    public static String CHARGE_DETAILS_NAME          = "jciowacharges";
+    public static String CHARGE_DETAILS_NAME          = "jciowachargesnew";
     public static String CHARGE_DETAILS_TYPE          = "justice.ChargeDetails";
     public static String CHARGE_DETAILS_ALIAS         = "charges";
 
-    public static String OFFENSES_NAME                = "jciowaoffenses";
+    public static String OFFENSES_NAME                = "jciowaoffensesnew";
     public static String OFFENSES_TYPE                = "justice.Offense";
     public static String OFFENSES_ALIAS               = "offenses";
 
-    public static String SENTENCES_NAME               = "jciowasentences";
+    public static String SENTENCES_NAME               = "jciowasentencesnew";
     public static String SENTENCES_TYPE               = "justice.Sentence";
     public static String SENTENCES_ALIAS              = "sentences";
 
     // ASSOCIATION TYPES / ASSOCIATION ENTITY SETS
-    public static String BOOKED_IN_NAME               = "jcwasbookedin";
+    public static String BOOKED_IN_NAME               = "jcwasbookedinnew";
     public static String BOOKED_IN_TYPE               = "justice.bookedin";
     public static String BOOKED_IN_ALIAS              = "personwasbookedin";
 
-    public static String DETAILS_OF_NAME              = "jcdetailsof";
+    public static String DETAILS_OF_NAME              = "jcdetailsofnew";
     public static String DETAILS_OF_TYPE              = "justice.detailsof";
     public static String DETAILS_OF_ALIAS             = "detailsof";
 
-    public static String INTERACTED_WITH_NAME         = "jcinteractedwith";
+    public static String INTERACTED_WITH_NAME         = "jcinteractedwithnew";
     public static String INTERACTED_WITH_TYPE         = "justice.interactedwith";
 
-    public static String APPEARS_IN_NAME              = "jcappearsin";
+    public static String APPEARS_IN_NAME              = "jcappearsinnew";
     public static String APPEARS_IN_TYPE              = "general.appearsin";
     public static String APPEARS_IN_ALIAS             = "appearsin";
 
-    public static String RESULTS_IN_NAME              = "jcresultsin";
+    public static String RESULTS_IN_NAME              = "jcresultsinnew";
     public static String RESULTS_IN_TYPE              = "justice.resultsin";
     public static String RESULTS_IN_ALIAS             = "resultsin";
 
-    public static String LEADS_TO_NAME                = "jcleadsto";
+    public static String LEADS_TO_NAME                = "jcleadstonew";
     public static String LEADS_TO_TYPE                = "justice.leadsto";
     public static String LEADS_TO_ALIAS               = "leadsto";
 

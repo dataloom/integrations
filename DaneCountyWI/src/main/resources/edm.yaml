@@ -1084,7 +1084,7 @@ entitySets:
   - auth0|58c2d01b3c9c2b7caff49ce3
   - google-oauth2|102104413260640737260
 - type: "general.person"
-  name: "jcsubjects"
+  name: "jcsubjectsnew"
   title: "JC Iowa Jail Subjects"
   description: "Johnson County Iowa Jail Subjects"
   contacts:
@@ -1092,7 +1092,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.JailBooking"
-  name: "jcjailbookings"
+  name: "jcjailbookingsnew"
   title: "JC Iowa Jail Bookings"
   description: "Johnson County Iowa Jail Bookings"
   contacts:
@@ -1100,7 +1100,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "j.EnforcementOfficial"
-  name: "jcofficers"
+  name: "jcofficersnew"
   title: "JC Iowa Officers"
   description: "Johnson County Iowa Officers"
   contacts:
@@ -1108,7 +1108,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.JailRecord"
-  name: "jcjailrecords"
+  name: "jcjailrecordsnew"
   title: "JC Iowa Jail Records"
   description: "Johnson County Iowa Jail Records"
   contacts:
@@ -1116,7 +1116,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.bookedin"
-  name: "jcwasbookedin"
+  name: "jcwasbookedinnew"
   title: "JC Booked In"
   description: "Booked in links for Johhnson County"
   contacts:
@@ -1124,7 +1124,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.detailsof"
-  name: "jcdetailsof"
+  name: "jcdetailsofnew"
   title: "JC Details Of"
   description: "Details of links for Johnson County"
   contacts:
@@ -1132,7 +1132,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.interactedwith"
-  name: "jcinteractedwith"
+  name: "jcinteractedwithnew"
   title: "JC Interacted With"
   description: "Interacted with links for Johnson County"
   contacts:
@@ -1140,7 +1140,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.ChargeDetails"
-  name: "jciowacharges"
+  name: "jciowachargesnew"
   title: "JC Iowa Charges"
   description: "Johnson County Iowa Charges"
   contacts:
@@ -1148,7 +1148,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.Sentence"
-  name: "jciowasentences"
+  name: "jciowasentencesnew"
   title: "JC Iowa Sentences"
   description: "Johnson County Iowa Sentences"
   contacts:
@@ -1156,7 +1156,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.Offense"
-  name: "jciowaoffenses"
+  name: "jciowaoffensesnew"
   title: "JC Iowa Offenses"
   description: "Johnson County Iowa Offenses"
   contacts:
@@ -1164,7 +1164,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.leadsto"
-  name: "jcleadsto"
+  name: "jcleadstonew"
   title: "JC Leads To"
   description: "Leads to links for Johnson County"
   contacts:
@@ -1172,7 +1172,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "justice.resultsin"
-  name: "jcresultsin"
+  name: "jcresultsinnew"
   title: "JC Results In"
   description: "Results in links for Johnson County"
   contacts:
@@ -1180,7 +1180,7 @@ entitySets:
   owners:
   - auth0|58c2d01b3c9c2b7caff49ce3
 - type: "general.appearsin"
-  name: "jcappearsin"
+  name: "jcappearsinnew"
   title: "JC Appears In"
   description: "Appears in links for Johnson County"
   contacts:
