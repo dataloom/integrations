@@ -43,7 +43,7 @@ public class Helpers {
                 return UUID.fromString( officerId );
             } catch ( Exception e ) {
                 logger.error( "Unable to parse officer id {} as UUID.", officerId );
-                logger.trace( "Exception is: {}", e );
+                logger.debug( "Exception is: {}", e );
                 return null;
             }
         }
@@ -59,7 +59,7 @@ public class Helpers {
                 //                return ( new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss" ) ).format( date );
             } catch ( Exception e ) {
                 logger.error( "Unable to parse time {}.", timeStr );
-                logger.trace( "Exception is: {}", e );
+                logger.debug( "Exception is: {}", e );
                 return null;
             }
         }
@@ -90,7 +90,7 @@ public class Helpers {
                 return ( new SimpleDateFormat( "yyyy-MM-dd" ) ).format( date );
             } catch ( Exception e ) {
                 logger.error( "Unable to parse time {}.", dateStr );
-                logger.trace( "Exception is: {}", e );
+                logger.debug( "Exception is: {}", e );
                 return null;
             }
         }
@@ -105,7 +105,7 @@ public class Helpers {
                 return ( new SimpleDateFormat( "HH:mm:ss" ) ).format( date );
             } catch ( Exception e ) {
                 logger.error( "Unable to parse time {}.", timeStr );
-                logger.trace( "Exception is: {}", e );
+                logger.debug( "Exception is: {}", e );
                 return null;
             }
         }
