@@ -19,7 +19,7 @@ import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -61,7 +61,8 @@ public class IowaCityDispatchCenter {
         int dispatchPersonStart = 0, dispatchPersonStep = 20000, dispatchPersonEnd = 2583339;
 
         Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession, config );
-        Map<Flight, Dataset<Row>> flights = new HashMap<>();
+        Map<Flight, Dataset<Row>> flights = new LinkedHashMap<>(
+                ( dispatchFlightEnd + dispatchTypeFlightEnd + dispatchPersonEnd +1 ) / 20000 );
         flights.putAll( systemUserBaseFlight );
         Shuttle shuttle = new Shuttle( environment, jwtToken );
 
