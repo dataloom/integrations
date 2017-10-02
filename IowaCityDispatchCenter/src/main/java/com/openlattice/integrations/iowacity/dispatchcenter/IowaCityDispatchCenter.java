@@ -56,9 +56,9 @@ public class IowaCityDispatchCenter {
             manager.ensureEdmElementsExist( requiredEdmElements );
         }
 
-        int dispatchFlightStart = 0, dispatchFlightStep = 10000, dispatchFlightEnd = 3277890;
-        int dispatchTypeFlightStart = 0, dispatchTypeFlightStep = 10000, dispatchTypeFlightEnd = 3810310;
-        int dispatchPersonStart = 0, dispatchPersonStep = 10000, dispatchPersonEnd = 2583339;
+        int dispatchFlightStart = 0, dispatchFlightStep = 20000, dispatchFlightEnd = 3277890;
+        int dispatchTypeFlightStart = 0, dispatchTypeFlightStep = 20000, dispatchTypeFlightEnd = 3810310;
+        int dispatchPersonStart = 0, dispatchPersonStep = 20000, dispatchPersonEnd = 2583339;
 
         Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession, config );
         Map<Flight, Dataset<Row>> flights = new HashMap<>();
