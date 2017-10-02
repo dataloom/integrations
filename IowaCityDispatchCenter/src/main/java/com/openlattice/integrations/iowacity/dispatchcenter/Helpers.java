@@ -1,14 +1,19 @@
 package com.openlattice.integrations.iowacity.dispatchcenter;
 
 import com.google.common.collect.ImmutableList;
-
+import com.openlattice.shuttle.dates.DateTimeHelper;
+import com.openlattice.shuttle.dates.TimeZones;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Helpers {
+    static         DateTimeHelper helper = new DateTimeHelper( TimeZones.America_Chicago, "yyyy-MM-dd HH:mm:ss" );
+    private static Logger         logger = LoggerFactory.getLogger( Helpers.class );
 
     public static String getAsString( Object obj ) {
         if ( obj != null && obj.toString() != null ) {
@@ -37,8 +42,8 @@ public class Helpers {
             try {
                 return UUID.fromString( officerId );
             } catch ( Exception e ) {
-                e.printStackTrace();
-                // TODO: what do we do if the officer ID is not a valid UUID?
+                logger.error( "Unable to parse officer id {} as UUID.", officerId );
+                logger.trace( "Exception is: {}", e );
                 return null;
             }
         }
@@ -49,12 +54,14 @@ public class Helpers {
         String timeStr = getAsString( obj );
         if ( timeStr != null ) {
             try {
-                Date date = ( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) ).parse( timeStr );
-                return ( new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss" ) ).format( date );
+                return helper.parse( timeStr );
+                //                Date date = ( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) ).parse( timeStr );
+                //                return ( new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss" ) ).format( date );
             } catch ( Exception e ) {
-                e.printStackTrace();
+                logger.error( "Unable to parse time {}.", timeStr );
+                logger.trace( "Exception is: {}", e );
+                return null;
             }
-            return timeStr;
         }
         return null;
     }
@@ -79,12 +86,13 @@ public class Helpers {
         String dateStr = getAsString( obj );
         if ( dateStr != null ) {
             try {
-                Date date = ( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) ).parse( dateStr );
+                Date date = helper.parseDT( dateStr ).toDate();
                 return ( new SimpleDateFormat( "yyyy-MM-dd" ) ).format( date );
             } catch ( Exception e ) {
-                e.printStackTrace();
+                logger.error( "Unable to parse time {}.", dateStr );
+                logger.trace( "Exception is: {}", e );
+                return null;
             }
-            return dateStr;
         }
         return null;
     }
@@ -93,12 +101,13 @@ public class Helpers {
         String timeStr = getAsString( obj );
         if ( timeStr != null ) {
             try {
-                Date date = ( new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ) ).parse( timeStr );
+                Date date = helper.parseDT( timeStr ).toDate();
                 return ( new SimpleDateFormat( "HH:mm:ss" ) ).format( date );
             } catch ( Exception e ) {
-                e.printStackTrace();
+                logger.error( "Unable to parse time {}.", timeStr );
+                logger.trace( "Exception is: {}", e );
+                return null;
             }
-            return timeStr;
         }
         return null;
     }
