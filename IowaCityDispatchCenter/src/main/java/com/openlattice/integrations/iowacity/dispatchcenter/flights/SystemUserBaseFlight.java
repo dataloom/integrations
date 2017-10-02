@@ -68,7 +68,7 @@ public class SystemUserBaseFlight {
 
         // @formatter:off
         Flight flight = Flight
-            .newFlight()
+            .newFlight("System DB")
                 .createEntities()
                     .addEntity( EMPLOYEES_ES_ALIAS )
                     .useCurrentSync()
