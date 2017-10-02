@@ -71,7 +71,7 @@ public class IowaCityDispatchCenter {
                 dispatchFlightStart += dispatchFlightStep ) {
             logger.info( "Starting registration: integration of dispatch ids {} -> {} ",
                     dispatchFlightStart,
-                    dispatchFlightStart + dispatchPersonStep );
+                    dispatchFlightStart + dispatchFlightStep );
             Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight
                     .getFlight( sparkSession, config, dispatchFlightStart, dispatchFlightStart + dispatchFlightStep );
             flights.putAll( dispatchFlight );
