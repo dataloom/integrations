@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Helpers {
-    static         DateTimeHelper helper = new DateTimeHelper( TimeZones.America_Chicago, "yyyy-MM-dd HH:mm:ss" );
+    static         DateTimeHelper helper = new DateTimeHelper( TimeZones.America_Chicago, "yyyy-MM-dd HH:mm:ss","yyyy-MM-dd HH:mm:ss.SSS" );
     private static Logger         logger = LoggerFactory.getLogger( Helpers.class );
 
     public static String getAsString( Object obj ) {
