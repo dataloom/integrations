@@ -56,7 +56,7 @@ public class IowaCityDispatchCenter {
             manager.ensureEdmElementsExist( requiredEdmElements );
         }
 
-        int dispatchFlightStart = 0, dipatchFlightStep = 10000, dispatchFlightEnd = 3277890;
+        int dispatchFlightStart = 0, dispatchFlightStep = 10000, dispatchFlightEnd = 3277890;
         int dispatchTypeFlightStart = 0, dispatchTypeFlightStep = 10000, dispatchTypeFlightEnd = 3810310;
         int dispatchPersonStart = 0, dispatchPersonStep = 10000, dispatchPersonEnd = 2583339;
 
@@ -67,12 +67,12 @@ public class IowaCityDispatchCenter {
 
         for ( dispatchFlightStart = 0;
                 dispatchFlightStart < dispatchFlightEnd;
-                dispatchFlightStart += dipatchFlightStep ) {
+                dispatchFlightStart += dispatchFlightStep ) {
             logger.info( "Starting registration: integration of dispatch ids {} -> {} ",
                     dispatchFlightStart,
                     dispatchFlightStart + dispatchPersonStep );
             Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight
-                    .getFlight( sparkSession, config, dispatchFlightStart, dispatchFlightStart + dipatchFlightStep );
+                    .getFlight( sparkSession, config, dispatchFlightStart, dispatchFlightStart + dispatchFlightStep );
             flights.putAll( dispatchFlight );
 
             logger.info( "Finishing registration: integration of dispatch ids {} -> {} ",

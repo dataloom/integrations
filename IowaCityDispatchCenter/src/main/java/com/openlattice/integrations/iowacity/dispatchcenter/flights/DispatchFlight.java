@@ -157,7 +157,7 @@ public class DispatchFlight {
         //        String query = "(select * from dbo.Dispatch where CFS_DateTimeJanet >= '" + d.toString() +"') Dispatch";
 
         String query =
-                "(select * from dbo.Dispatch where Dis_ID> " + Integer.toString( start ) + " AND Dis_ID<" + Integer
+                "(select * from dbo.Dispatch where Dis_ID>= " + Integer.toString( start ) + " AND Dis_ID<" + Integer
                         .toString( end ) + ") Dispatch";
 
         Dataset<Row> payload = sparkSession

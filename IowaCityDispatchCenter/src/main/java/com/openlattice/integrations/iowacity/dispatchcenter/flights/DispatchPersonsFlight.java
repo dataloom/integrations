@@ -127,7 +127,7 @@ public class DispatchPersonsFlight {
         //                + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) ) ) Dispatch_Persons";
 
         String sql =
-                "(select * from dbo.Dispatch_Persons where ID >" + Integer.toString( start ) + " AND ID <= "
+                "(select * from dbo.Dispatch_Persons where ID >=" + Integer.toString( start ) + " AND ID < "
                         + Integer.toString( end ) + "  ) Dispatch_Persons";
 
         logger.info( "SQL Query for persons: {}", sql );
