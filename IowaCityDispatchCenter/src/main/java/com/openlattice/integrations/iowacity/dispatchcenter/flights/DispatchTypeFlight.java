@@ -84,7 +84,7 @@ public class DispatchTypeFlight {
     private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
         //        String csvPath = Resources.getResource( "dispatch_type.csv" ).getPath();
-        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
+        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 90 ).toDate().getTime() );
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "jdbc" )
@@ -113,6 +113,7 @@ public class DispatchTypeFlight {
                         .to( DISPATCH_TYPES_ES_NAME )
                         .ofType( DISPATCH_TYPE_ET_FQN )
                         .key( DISPATCH_TYPE_ID_FQN, DISPATCH_ID_FQN )
+                        .useCurrentSync()
                         .addProperty( DISPATCH_TYPE_ID_FQN ).value( row -> getAsString( row.getAs( "Dispatch_Type_ID" ) ) ).ok()
                         .addProperty( DISPATCH_ID_FQN ).value( row -> getAsString( row.getAs( "Dis_ID" ) ) ).ok()
                         .addProperty( DISPATCH_DATETIME_FQN ).value( row -> getAsDateTime( row.getAs( "TimeDisp" ) ) ).ok()

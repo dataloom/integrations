@@ -57,7 +57,7 @@ public class SystemUserBaseFlight {
                 .option( "dbtable", "dbo.SystemUserBase" )
                 .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
-                .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver")
+                .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver" )
                 .load();
 
         return payload;
@@ -72,6 +72,7 @@ public class SystemUserBaseFlight {
             .newFlight()
                 .createEntities()
                     .addEntity( EMPLOYEES_ES_ALIAS )
+                    .useCurrentSync()
                         .to( EMPLOYEES_ES_NAME )
                         .ofType( EMPLOYEE_ET_FQN )
                         .key( EMPLOYEE_ID_FQN, OFFICER_ID_FQN )
