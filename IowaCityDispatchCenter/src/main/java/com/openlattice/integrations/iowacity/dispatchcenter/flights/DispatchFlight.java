@@ -5,7 +5,6 @@ import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAs
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsString;
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsTime;
 import static com.openlattice.integrations.iowacity.dispatchcenter.Helpers.getAsUUID;
-import static org.apache.spark.sql.functions.col;
 
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.config.JdbcIntegrationConfig;
@@ -15,7 +14,6 @@ import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,11 +146,19 @@ public class DispatchFlight {
     public static String            DISPATCHES_ES_ALIAS = DISPATCHES_ES_FQN.getFullQualifiedNameAsString();
     public static String            DISPATCHES_ES_NAME  = "IowaCityDispatchCenter_Dispatches";
 
-    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
+    private static Dataset<Row> getPayloadFromCsv(
+            final SparkSession sparkSession,
+            JdbcIntegrationConfig config,
+            int start,
+            int end ) {
 
         //        String csvPath = Resources.getResource( "dispatch.csv" ).getPath();
-        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 90 ).toDate().getTime() );
-        String query = "(select * from dbo.Dispatch where CFS_DateTimeJanet >= '" + d.toString() +"') Dispatch";
+        //        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
+        //        String query = "(select * from dbo.Dispatch where CFS_DateTimeJanet >= '" + d.toString() +"') Dispatch";
+
+        String query =
+                "(select * from dbo.Dispatch where Dis_ID> " + Integer.toString( start ) + " AND Dis_ID<" + Integer
+                        .toString( end ) + ") Dispatch";
 
         Dataset<Row> payload = sparkSession
                 .read()
@@ -169,9 +175,9 @@ public class DispatchFlight {
         return payload;
     }
 
-    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
+    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession, JdbcIntegrationConfig config, int start, int end ) {
 
-        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config );
+        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config,start, end );
 
         // @formatter:off
         Flight flight = Flight

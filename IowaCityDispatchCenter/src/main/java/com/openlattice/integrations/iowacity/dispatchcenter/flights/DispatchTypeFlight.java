@@ -9,7 +9,6 @@ import static com.openlattice.integrations.iowacity.dispatchcenter.flights.Dispa
 import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.PRIORITY_FQN;
 import static com.openlattice.integrations.iowacity.dispatchcenter.flights.DispatchFlight.TYPE_ID_FQN;
 import static com.openlattice.integrations.iowacity.dispatchcenter.flights.SystemUserBaseFlight.OFFICER_ID_FQN;
-import static org.apache.spark.sql.functions.col;
 
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.config.JdbcIntegrationConfig;
@@ -81,11 +80,19 @@ public class DispatchTypeFlight {
     public static String            DISPATCH_TYPES_ES_ALIAS = DISPATCH_TYPES_ES_FQN.getFullQualifiedNameAsString();
     public static String            DISPATCH_TYPES_ES_NAME  = "IowaCityDispatchCenter_DispatchTypes";
 
-    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
+    private static Dataset<Row> getPayloadFromCsv(
+            final SparkSession sparkSession,
+            JdbcIntegrationConfig config,
+            int start,
+            int end ) {
 
         //        String csvPath = Resources.getResource( "dispatch_type.csv" ).getPath();
-        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 90 ).toDate().getTime() );
-        String query = "(select * from dbo.Dispatch_Type where timercvd >= '" + d.toString() +"') Dispatch_Type";
+        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
+        //        String query = "(select * from dbo.Dispatch_Type where timercvd >= '" + d.toString() +"') Dispatch_Type";
+        String query = "(select * from dbo.Dispatch_Type where Dispatch_Type_ID >" + Integer.toString( start )
+                + " AND Dispatch_Type_ID <= "
+                + Integer.toString( end ) + ") Dispatch_Type";
+
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "jdbc" )
@@ -98,9 +105,13 @@ public class DispatchTypeFlight {
         return payload;
     }
 
-    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
+    public static Map<Flight, Dataset<Row>> getFlight(
+            final SparkSession sparkSession,
+            JdbcIntegrationConfig config,
+            int start,
+            int end ) {
 
-        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config );
+        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config, start, end );
 
         // 1. what's the difference between "ICDC.OfficerId" and "ICDC.CallForServiceOfficerId"?
         // 2. is "ICDC.Unit" the same as "ICDC.AssignedOfficer"?

@@ -115,12 +115,21 @@ public class DispatchPersonsFlight {
             .getFullQualifiedNameAsString();
     public static String            DISPATCH_PERSON_ES_NAME  = "IowaCityDispatchCenter_DispatchPersons";
 
-    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
+    private static Dataset<Row> getPayloadFromCsv(
+            final SparkSession sparkSession,
+            JdbcIntegrationConfig config,
+            int start,
+            int end ) {
 
         //        String csvPath = Resources.getResource( "dispatch_persons.csv" ).getPath();
 
-        String sql = "(select * from dbo.Dispatch_Persons where Dis_id IN "
-                + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -90, GETDATE()) ) ) Dispatch_Persons";
+        //        String sql = "(select * from dbo.Dispatch_Persons where Dis_id IN "
+        //                + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) ) ) Dispatch_Persons";
+
+        String sql =
+                "(select * from dbo.Dispatch_Persons where ID >" + Integer.toString( start ) + " AND ID <= "
+                        + Integer.toString( end ) + "  ) Dispatch_Persons";
+
         logger.info( "SQL Query for persons: {}", sql );
         Dataset<Row> payload = sparkSession
                 .read()
@@ -138,9 +147,13 @@ public class DispatchPersonsFlight {
         return payload;
     }
 
-    public static Map<Flight, Dataset<Row>> getFlight( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
+    public static Map<Flight, Dataset<Row>> getFlight(
+            final SparkSession sparkSession,
+            JdbcIntegrationConfig config,
+            int start,
+            int end ) {
 
-        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config );
+        Dataset<Row> payload = getPayloadFromCsv( sparkSession, config, start, end );
 
         // 1. "ICDC.DispatchPersonId" should be something else. what does the "ID" column represent?
         // 2. what format is "ICDC.Height" supposed to be?

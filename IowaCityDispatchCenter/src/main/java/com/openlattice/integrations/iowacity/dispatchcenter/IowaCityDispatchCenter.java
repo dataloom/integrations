@@ -56,18 +56,65 @@ public class IowaCityDispatchCenter {
             manager.ensureEdmElementsExist( requiredEdmElements );
         }
 
+        int dispatchFlightStart = 0, dipatchFlightStep = 10000, dispatchFlightEnd = 3277890;
+        int dispatchTypeFlightStart = 0, dispatchTypeFlightStep = 10000, dispatchTypeFlightEnd = 3810310;
+        int dispatchPersonStart = 0, dispatchPersonStep = 10000, dispatchPersonEnd = 2583339;
+
         Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession, config );
-        Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight.getFlight( sparkSession, config );
-        Map<Flight, Dataset<Row>> dispatchTypeFlight = DispatchTypeFlight.getFlight( sparkSession, config );
-        Map<Flight, Dataset<Row>> dispatchPersonsFlight = DispatchPersonsFlight.getFlight( sparkSession, config );
-
-        Map<Flight, Dataset<Row>> flights = new HashMap<>();
-        flights.putAll( systemUserBaseFlight );
-        flights.putAll( dispatchFlight );
-        flights.putAll( dispatchTypeFlight );
-        flights.putAll( dispatchPersonsFlight );
-
+        Map<Flight, Dataset<Row>> initflights = new HashMap<>();
+        initflights.putAll( systemUserBaseFlight );
         Shuttle shuttle = new Shuttle( environment, jwtToken );
-        shuttle.launch( flights );
+
+        for ( dispatchFlightStart = 0;
+                dispatchFlightStart < dispatchFlightEnd;
+                dispatchFlightStart += dipatchFlightStep ) {
+            logger.info( "Starting integration of dispatch ids {} -> {} ",
+                    dispatchFlightStart,
+                    dispatchFlightStart + dispatchPersonStep );
+            Map<Flight, Dataset<Row>> flights = new HashMap<>();
+            Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight
+                    .getFlight( sparkSession, config, dispatchFlightStart, dispatchFlightStart + dipatchFlightStep );
+            flights.putAll( dispatchFlight );
+
+            shuttle.launch( flights );
+            logger.info( "Finishing integration of dispatch ids {} -> {} ",
+                    dispatchFlightStart,
+                    dispatchFlightStart + dispatchPersonStep );
+        }
+
+        for ( dispatchTypeFlightStart = 0;
+                dispatchTypeFlightStart < dispatchTypeFlightEnd;
+                dispatchTypeFlightStart += dispatchTypeFlightStep ) {
+            logger.info( "Starting integration of dispatch type ids {} -> {} ",
+                    dispatchTypeFlightStart,
+                    dispatchTypeFlightStart + dispatchTypeFlightStep );
+            Map<Flight, Dataset<Row>> flights = new HashMap<>();
+            Map<Flight, Dataset<Row>> dispatchTypeFlight = DispatchTypeFlight.getFlight( sparkSession,
+                    config,
+                    dispatchTypeFlightStart,
+                    dispatchTypeFlightStart + dispatchTypeFlightStep );
+            flights.putAll( dispatchTypeFlight );
+            logger.info( "Finishing integration of dispatch type ids {} -> {} ",
+                    dispatchTypeFlightStart,
+                    dispatchTypeFlightStart + dispatchTypeFlightStep );
+        }
+
+        for ( dispatchPersonStart = 0;
+                dispatchPersonStart < dispatchPersonEnd;
+                dispatchPersonStart += dispatchPersonStep ) {
+            logger.info( "Starting integration of dispatch person ids {} -> {} ",
+                    dispatchPersonStart,
+                    dispatchPersonStart + dispatchPersonStep );
+            Map<Flight, Dataset<Row>> flights = new HashMap<>();
+            Map<Flight, Dataset<Row>> dispatchPersonsFlight = DispatchPersonsFlight
+                    .getFlight( sparkSession, config, dispatchPersonStart, dispatchPersonStart + dispatchPersonStep );
+            flights.putAll( dispatchPersonsFlight );
+            shuttle.launch( flights );
+
+            logger.info( "Finishing integration of dispatch person ids {} -> {} ",
+                    dispatchPersonStart,
+                    dispatchPersonStart + dispatchPersonStep );
+        }
+
     }
 }
