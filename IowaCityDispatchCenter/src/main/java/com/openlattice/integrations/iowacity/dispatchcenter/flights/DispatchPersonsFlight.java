@@ -162,7 +162,7 @@ public class DispatchPersonsFlight {
 
         // @formatter:off
         Flight flight = Flight
-            .newFlight()
+            .newFlight("Dispatch Persons " + start + " -> " + end )
                 .createEntities()
                     .addEntity( DISPATCH_PERSON_ES_ALIAS )
                         .to( DISPATCH_PERSON_ES_NAME )

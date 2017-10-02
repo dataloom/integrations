@@ -118,7 +118,7 @@ public class DispatchTypeFlight {
 
         // @formatter:off
         Flight flight = Flight
-            .newFlight()
+            .newFlight("Dispatch Flight " + start + " -> " + end )
                 .createEntities()
                     .addEntity( DISPATCH_TYPES_ES_ALIAS )
                         .to( DISPATCH_TYPES_ES_NAME )
