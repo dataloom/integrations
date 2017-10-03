@@ -1211,6 +1211,8 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"
 - type: "general.Address"
   name: "MSOAddresses"
@@ -1219,14 +1221,18 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"
-- type: "justice.JailBooking"
+- type: "justice.booking"
   name: "MSOBookings"
   title: "Middlesex Bookings"
   description: "Bookings of arrested Middlesex suspects"
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"
 - type: "justice.bookedin"
   name: "MSOBooked"
@@ -1235,6 +1241,8 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"
 - type: "location.livesat"
   name: "MSOLivesAt"
@@ -1243,4 +1251,6 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"
