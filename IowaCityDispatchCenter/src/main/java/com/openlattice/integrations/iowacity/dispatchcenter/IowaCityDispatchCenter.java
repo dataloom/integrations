@@ -38,9 +38,18 @@ public class IowaCityDispatchCenter {
         properties.setProperty( "user", "itjecc" );
         properties.setProperty( "password", config.getOlsPassword() );
 
-        dispatch.write().option( "batchsize", 20000 ).jdbc( jdbcUrl, "dispatch", properties );
-        dispatch_person.write().option( "batchsize", 20000 ).jdbc( jdbcUrl, "dispatch_person", properties );
-        dispatch_type.write().option( "batchsize", 20000 ).jdbc( jdbcUrl, "dispatch_type", properties );
+        dispatch.write()
+                .option( "batchsize", 20000 )
+                .option( "driver", "org.postgresql.Driver" )
+                .jdbc( jdbcUrl, "dispatch", properties );
+        dispatch_person.write()
+                .option( "batchsize", 20000 )
+                .option( "driver", "org.postgresql.Driver" )
+                .jdbc( jdbcUrl, "dispatch_person", properties );
+        dispatch_type.write()
+                .option( "batchsize", 20000 )
+                .option( "driver", "org.postgresql.Driver" )
+                .jdbc( jdbcUrl, "dispatch_type", properties );
 
         //
         //        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
