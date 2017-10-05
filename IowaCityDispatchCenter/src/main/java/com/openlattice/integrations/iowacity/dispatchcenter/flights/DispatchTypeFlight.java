@@ -102,7 +102,7 @@ public class DispatchTypeFlight {
         java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
         //        String query = "(select * from dbo.Dispatch_Type where timercvd >= '" + d.toString() +"') Dispatch_Type";
 
-        String query = "(select Dispatch_Type_ID,\n"
+        String query = "(select TOP 1000 Dispatch_Type_ID,\n"
                 + "                Dis_ID,\n"
                 + "                TimeDisp,\n"
                 + "                Case_ID,\n"
@@ -117,7 +117,7 @@ public class DispatchTypeFlight {
                 + "                Disposition,\n"
                 + "                TripNumber,\n"
                 + "                Type_ID,\n"
-                + "                OfficerID from dbo.Dispatch_Type LIMIT 1000 ) Dispatch_Type";
+                + "                OfficerID from dbo.Dispatch_Type ) Dispatch_Type";
 
         Dataset<Row> payload = sparkSession
                 .read()

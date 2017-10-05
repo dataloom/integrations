@@ -172,7 +172,7 @@ public class DispatchFlight {
         //        String csvPath = Resources.getResource( "dispatch.csv" ).getPath();
         //        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
         //        String query = "(select * from dbo.Dispatch where CFS_DateTimeJanet >= '" + d.toString() +"') Dispatch";
-        String query = "(select   Dis_ID,\n"
+        String query = "(select TOP 1000  Dis_ID,\n"
                 + "                Dis_No,\n"
                 + "                Dis_Date,\n"
                 + "                DIS_TIME,\n"
@@ -229,7 +229,7 @@ public class DispatchFlight {
                 + "                AlertedTime,\n"
                 + "                ParentDis_Id,\n"
                 + "                Medical_Zone,\n"
-                + "                upsize_ts from dbo.Dispatch LIMIT 1000) Dispatch";
+                + "                upsize_ts from dbo.Dispatch ) Dispatch";
 
 
         Dataset<Row> payload = sparkSession
