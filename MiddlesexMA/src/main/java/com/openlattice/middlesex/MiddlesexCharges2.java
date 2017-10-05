@@ -62,7 +62,7 @@ public class MiddlesexCharges2 {
 
     private static final Logger         logger         = LoggerFactory
             .getLogger( MiddlesexCharges2.class );
-    private static final Environment    environment    = Environment.LOCAL;
+    private static final Environment    environment    = Environment.STAGING;
     private static final DateTimeHelper dtHelper       = new DateTimeHelper( TimeZones.America_NewYork,
             "yyyy/MM/dd HH:mm" );
     private static final DateTimeHelper bdHelper       = new DateTimeHelper( TimeZones.America_NewYork,
