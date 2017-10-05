@@ -117,7 +117,7 @@ public class DispatchTypeFlight {
                 + "                Disposition,\n"
                 + "                TripNumber,\n"
                 + "                Type_ID,\n"
-                + "                OfficerID from dbo.Dispatch_Type ) Dispatch_Type";
+                + "                OfficerID from dbo.Dispatch_Type LIMIT 1000 ) Dispatch_Type";
 
         Dataset<Row> payload = sparkSession
                 .read()

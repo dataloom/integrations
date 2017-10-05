@@ -229,7 +229,7 @@ public class DispatchFlight {
                 + "                AlertedTime,\n"
                 + "                ParentDis_Id,\n"
                 + "                Medical_Zone,\n"
-                + "                upsize_ts from dbo.Dispatch ) Dispatch";
+                + "                upsize_ts from dbo.Dispatch LIMIT 1000) Dispatch";
 
 
         Dataset<Row> payload = sparkSession

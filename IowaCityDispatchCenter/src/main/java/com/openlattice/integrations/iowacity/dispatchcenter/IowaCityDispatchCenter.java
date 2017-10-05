@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Properties;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +42,17 @@ public class IowaCityDispatchCenter {
         dispatch.write()
                 .option( "batchsize", 20000 )
                 .option( "driver", "org.postgresql.Driver" )
+                .mode( SaveMode.Overwrite)
                 .jdbc( jdbcUrl, "dispatch", properties );
         dispatch_person.write()
                 .option( "batchsize", 20000 )
                 .option( "driver", "org.postgresql.Driver" )
+                .mode(SaveMode.Overwrite)
                 .jdbc( jdbcUrl, "dispatch_person", properties );
         dispatch_type.write()
                 .option( "batchsize", 20000 )
                 .option( "driver", "org.postgresql.Driver" )
+                .mode(SaveMode.Overwrite)
                 .jdbc( jdbcUrl, "dispatch_type", properties );
 
         //
