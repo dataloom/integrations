@@ -139,7 +139,7 @@ public class DispatchPersonsFlight {
 
 
         String sql =
-                "(select TOP 1000 ID,\n"
+                "(select ID,\n"
                         + "                Dis_ID,\n"
                         + "                OfficerID,\n"
                         + "                DOB,\n"
