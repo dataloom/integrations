@@ -115,7 +115,92 @@ public class DispatchPersonsFlight {
             .getFullQualifiedNameAsString();
     public static String            DISPATCH_PERSON_ES_NAME  = "IowaCityDispatchCenter_DispatchPersons";
 
-    private static Dataset<Row> getPayloadFromCsv(
+    public static String getAllQuery() {
+        return "select * from dbo.Dispatch_Persons";
+    }
+
+    public static String getAllIdsQuery() {
+        return "select ID from dbo.Dispatch_Persons";
+    }
+
+    public static String getIdQuery( long id ) {
+        return getAllQuery() + " where ID = " + Long.toString( id );
+    }
+
+    public static Dataset<Row> getPayloadFromCsv(
+            final SparkSession sparkSession,
+            JdbcIntegrationConfig config
+           ) {
+
+        //        String csvPath = Resources.getResource( "dispatch_persons.csv" ).getPath();
+
+        //        String sql = "(select * from dbo.Dispatch_Persons where Dis_id IN "
+        //                + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) ) ) Dispatch_Persons";
+
+
+        String sql =
+                "(select ID,\n"
+                        + "                Dis_ID,\n"
+                        + "                OfficerID,\n"
+                        + "                DOB,\n"
+                        + "                OSQ,\n"
+                        + "                OName,\n"
+                        + "                OAddress,\n"
+                        + "                OAddress_Apt,\n"
+                        + "                OCity,\n"
+                        + "                OState,\n"
+                        + "                OZip,\n"
+                        + "                OPhone,\n"
+                        + "                OSex,\n"
+                        + "                ORace,\n"
+                        + "                Type,\n"
+                        + "                MAKE,\n"
+                        + "                MODEL,\n"
+                        + "                VehYear,\n"
+                        + "                VIN,\n"
+                        + "                Color,\n"
+                        + "                Style,\n"
+                        + "                LIC,\n"
+                        + "                LIS,\n"
+                        + "                NCIC,\n"
+                        + "                CellPhone,\n"
+                        + "                CallForServicePersonId,\n"
+                        + "                BadgeNumber,\n"
+                        + "                Age,\n"
+                        + "                Height,\n"
+                        + "                Weight,\n"
+                        + "                Eyes,\n"
+                        + "                Hair,\n"
+                        + "                Ethnicity,\n"
+                        + "                Additional,\n"
+                        + "                TransferVehicle,\n"
+                        + "                Juv,\n"
+                        + "                LIT,\n"
+                        + "                LIY,\n"
+                        + "                MNI_No,\n"
+                        + "                MVI_NO,\n"
+                        + "                upsize_ts from dbo.Dispatch_Persons ) Dispatch_Persons";
+
+        logger.info( "SQL Query for persons: {}", sql );
+        Dataset<Row> payload = sparkSession
+                .read()
+                .format( "jdbc" )
+                .option( "url", config.getUrl() )
+                .option( "dbtable", sql )
+                .option( "password", config.getDbPassword() )
+                .option( "user", config.getDbUser() )
+                .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver" )
+                .option( "fetchSize", 20000 )
+                .load();
+        payload.createOrReplaceTempView( "Dispatch_Persons" );
+        //                .filter( col( "Timercvd" ).geq( DateTime.now().minusDays( 2 ) ) )
+        //                .filter( col( "Type" ).notEqual( "2" ) );
+
+        return payload;
+    }
+
+
+    public static Dataset<Row> getPayloadFromCsv(
             final SparkSession sparkSession,
             JdbcIntegrationConfig config,
             int start,

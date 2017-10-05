@@ -146,7 +146,109 @@ public class DispatchFlight {
     public static String            DISPATCHES_ES_ALIAS = DISPATCHES_ES_FQN.getFullQualifiedNameAsString();
     public static String            DISPATCHES_ES_NAME  = "IowaCityDispatchCenter_Dispatches";
 
-    private static Dataset<Row> getPayloadFromCsv(
+    public static String getAllQuery() {
+        return "select * from dbo.Dispatch";
+    }
+
+    public static String getAllIdsQuery() {
+        return "select Dis_ID from dbo.Dispatch";
+    }
+
+    public static String getIdQuery( long id ) {
+        return getAllQuery() + " where Dis_ID = " + Long.toString( id );
+    }
+
+    public static String getQuery(int start, int end) {
+        return
+                "(select * from dbo.Dispatch where Dis_ID>= " + Integer.toString( start ) + " AND Dis_ID<" + Integer
+                        .toString( end ) + ") Dispatch";
+    }
+
+    public static Dataset<Row> getPayloadFromCsv(
+            final SparkSession sparkSession,
+            JdbcIntegrationConfig config
+          ) {
+
+        //        String csvPath = Resources.getResource( "dispatch.csv" ).getPath();
+        //        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
+        //        String query = "(select * from dbo.Dispatch where CFS_DateTimeJanet >= '" + d.toString() +"') Dispatch";
+        String query = "(select   Dis_ID,\n"
+                + "                Dis_No,\n"
+                + "                Dis_Date,\n"
+                + "                DIS_TIME,\n"
+                + "                Dis_Case,\n"
+                + "                Dis_Zone,\n"
+                + "                Dis_ORI,\n"
+                + "                Case_ID,\n"
+                + "                Case_Number,\n"
+                + "                Operator,\n"
+                + "                HowReported,\n"
+                + "                LName,\n"
+                + "                LAddress,\n"
+                + "                LAddress_Apt,\n"
+                + "                LCity,\n"
+                + "                LState,\n"
+                + "                LZip,\n"
+                + "                LPhone,\n"
+                + "                CallNumber_911,\n"
+                + "                ClearedBy,\n"
+                + "                ClearedBy2,\n"
+                + "                Location,\n"
+                + "                TransferIR,\n"
+                + "                NAddress,\n"
+                + "                NCity,\n"
+                + "                NState,\n"
+                + "                NZip,\n"
+                + "                NPhone,\n"
+                + "                NCellPhone,\n"
+                + "                ASSIGNED_OFFICER,\n"
+                + "                TYPE_ID,\n"
+                + "                TYPE_CLASS,\n"
+                + "                MBI_No_Loc,\n"
+                + "                PROQA,\n"
+                + "                PROQA_LEVEL,\n"
+                + "                PROQA_TYPE,\n"
+                + "                Mobile_Status,\n"
+                + "                Latitude,\n"
+                + "                Longitude,\n"
+                + "                ZONE_ID,\n"
+                + "                SubZone,\n"
+                + "                NoSubZoneOK,\n"
+                + "                ESN,\n"
+                + "                FireDispatchLevel,\n"
+                + "                CFS_Fire,\n"
+                + "                CFS_EMS,\n"
+                + "                CFS_LEA,\n"
+                + "                IncidentMasterAddressID,\n"
+                + "                FireDistrict,\n"
+                + "                LinkedLEA,\n"
+                + "                CallForServiceID,\n"
+                + "                AssignedOfficerID,\n"
+                + "                Priority,\n"
+                + "                CFS_DateTimeJanet,\n"
+                + "                AlertedTime,\n"
+                + "                ParentDis_Id,\n"
+                + "                Medical_Zone,\n"
+                + "                upsize_ts from dbo.Dispatch ) Dispatch";
+
+
+        Dataset<Row> payload = sparkSession
+                .read()
+                .format( "jdbc" )
+                .option( "url", config.getUrl() )
+                .option( "dbtable", query )
+                .option( "password", config.getDbPassword() )
+                .option( "user", config.getDbUser() )
+                .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver" )
+                .option( "fetchSize", 20000 )
+                .load();
+
+        //payload.createOrReplaceTempView( "Dispatch" );
+
+        return payload;
+    }
+
+    public static Dataset<Row> getPayloadFromCsv(
             final SparkSession sparkSession,
             JdbcIntegrationConfig config,
             int start,
@@ -155,10 +257,8 @@ public class DispatchFlight {
         //        String csvPath = Resources.getResource( "dispatch.csv" ).getPath();
         //        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
         //        String query = "(select * from dbo.Dispatch where CFS_DateTimeJanet >= '" + d.toString() +"') Dispatch";
+        String query = getQuery(start, end);
 
-        String query =
-                "(select * from dbo.Dispatch where Dis_ID>= " + Integer.toString( start ) + " AND Dis_ID<" + Integer
-                        .toString( end ) + ") Dispatch";
 
         Dataset<Row> payload = sparkSession
                 .read()

@@ -46,7 +46,7 @@ public class SystemUserBaseFlight {
     public static String            EMPLOYEES_ES_ALIAS = EMPLOYEES_ES_FQN.getFullQualifiedNameAsString();
     public static String            EMPLOYEES_ES_NAME  = "IowaCityDispatchCenter_Employees";
 
-    private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
+    public static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
         //String csvPath = Resources.getResource( "system_user_base.csv" ).getPath();
 

@@ -80,7 +80,60 @@ public class DispatchTypeFlight {
     public static String            DISPATCH_TYPES_ES_ALIAS = DISPATCH_TYPES_ES_FQN.getFullQualifiedNameAsString();
     public static String            DISPATCH_TYPES_ES_NAME  = "IowaCityDispatchCenter_DispatchTypes";
 
-    private static Dataset<Row> getPayloadFromCsv(
+
+    public static String getAllQuery() {
+        return "select * from dbo.Dispatch_Type";
+    }
+
+
+    public static String getAllIdsQuery() {
+        return "select Dispatch_Type_ID from dbo.Dispatch_Persons";
+    }
+
+    public static String getIdQuery( long id ) {
+        return getAllQuery() + " where Dispatch_Type_ID = " + Long.toString( id );
+    }
+
+    public static Dataset<Row> getPayloadFromCsv(
+            final SparkSession sparkSession,
+            JdbcIntegrationConfig config ) {
+
+        //        String csvPath = Resources.getResource( "dispatch_type.csv" ).getPath();
+        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
+        //        String query = "(select * from dbo.Dispatch_Type where timercvd >= '" + d.toString() +"') Dispatch_Type";
+
+        String query = "(select Dispatch_Type_ID,\n"
+                + "                Dis_ID,\n"
+                + "                TimeDisp,\n"
+                + "                Case_ID,\n"
+                + "                Case_Num,\n"
+                + "                Timercvd,\n"
+                + "                TimeComp,\n"
+                + "                TimeArr,\n"
+                + "                TimeEnroute,\n"
+                + "                Unit,\n"
+                + "                Type_Priority,\n"
+                + "                CallForServiceOfficerId,\n"
+                + "                Disposition,\n"
+                + "                TripNumber,\n"
+                + "                Type_ID,\n"
+                + "                OfficerID from dbo.Dispatch_Type ) Dispatch_Type";
+
+        Dataset<Row> payload = sparkSession
+                .read()
+                .format( "jdbc" )
+                .option( "url", config.getUrl() )
+                .option( "dbtable", query )
+                .option( "password", config.getDbPassword() )
+                .option( "user", config.getDbUser() )
+                .option( "fetchSize", 20000 )
+                .load();
+
+        return payload;
+    }
+
+
+    public static Dataset<Row> getPayloadFromCsv(
             final SparkSession sparkSession,
             JdbcIntegrationConfig config,
             int start,
