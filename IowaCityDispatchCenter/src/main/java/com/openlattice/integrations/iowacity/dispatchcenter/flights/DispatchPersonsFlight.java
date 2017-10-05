@@ -179,7 +179,7 @@ public class DispatchPersonsFlight {
                         + "                LIY,\n"
                         + "                MNI_No,\n"
                         + "                MVI_NO,\n"
-                        + "                upsize_ts from dbo.Dispatch_Persons LIMIT 1000 ) Dispatch_Persons";
+                        + "                upsize_ts from dbo.Dispatch_Persons ) Dispatch_Persons";
 
         logger.info( "SQL Query for persons: {}", sql );
         Dataset<Row> payload = sparkSession
