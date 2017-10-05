@@ -65,162 +65,162 @@ public class IowaCityDispatchCenter2 {
     private static final ObjectMapper mapper      = new ObjectMapper();
 
     public static void main( String[] args ) throws InterruptedException, IOException, SQLException {
-        JdbcIntegrationConfig config = ObjectMappers.getYamlMapper()
-                .readValue( new File( args[ 0 ] ), JdbcIntegrationConfig.class );
-        HikariConfig iowadbconfig = new HikariConfig();
-        iowadbconfig.setJdbcUrl( config.getUrl() );
-        iowadbconfig.setMaximumPoolSize( 2 );
-
-        HikariDataSource iowadb = new HikariDataSource( iowadbconfig );
-
-        HikariConfig oldbconfig = new HikariConfig();
-        oldbconfig.setJdbcUrl(
-                "jdbc:postgresql://wonderwoman.openlattice.com:30001/johnsoncounty_iowa?ssl=true&sslmode=require" );
-        oldbconfig.setUsername( "itjecc" );
-        oldbconfig.setPassword( config.getOlsPassword() );
-        oldbconfig.setMaximumPoolSize( 100 );
-
-        HikariDataSource oldb = new HikariDataSource( oldbconfig );
-
-        Progress progress = mapper.readValue( new File( "progress.json" ), Progress.class );
-
-        if ( progress == null ) {
-            progress = new Progress();
-        }
-
-        Connection iowaConn = iowadb.getConnection();
-        Connection olsConn = oldb.getConnection();
-
-        ResultSet allIds = iowaConn.createStatement().executeQuery( DispatchFlight.getAllIdsQuery() );
-
-        while ( allIds.next() ) {
-            long id = allIds.getLong( "Dis_ID" );
-            if ( !progress.dispatchIds.contains( id ) ) {
-                PreparedStatement p = iowaConn.prepareStatement( DispatchFlight.getIdQuery( id ) );
-//                PreparedStatement insertRow = olsConn.prepareStatement();
-                p.setLong(1, id);
-                ResultSet row = p.executeQuery();
-                if( row.next() ) {
-                    //Write row to DB.
-
-
-                }
-                progress.dispatchIds.add( id );
-            }
-        }
-
-        ResultSet allPersonIds = iowaConn.createStatement().executeQuery( DispatchPersonsFlight.getAllIdsQuery() );
-
-        while(allPersonIds.next()) {
-            long id = allPersonIds.getLong("ID");
-            if( !progress.dispatchPersonIds.contains( id )) {
-                PreparedStatement p = iowaConn.prepareStatement( DispatchPersonsFlight.getIdQuery( id ) );
-                p.setLong(1, id);
-                ResultSet row = p.executeQuery();
-                if( row.next() ) {
-                    //Write rows to OLS DB.
-
-                }
-                progress.dispatchPersonIds.add( id );
-            }
-
-        }
-
-
-        ResultSet allTypeIds = iowaConn.createStatement().executeQuery( DispatchTypeFlight.getAllIdsQuery() );
-
-        while(allTypeIds.next()) {
-            long id = allTypeIds.getLong("ID");
-            if( !progress.dispatchTypeIds.contains( id )) {
-                PreparedStatement p = iowaConn.prepareStatement( DispatchTypeFlight.getIdQuery( id ) );
-                p.setLong(1, id);
-                ResultSet row = p.executeQuery();
-                if( row.next() ) {
-                    //Write rows to OLS DB.
-
-                }
-                progress.dispatchTypeIds.add( id );
-            }
-        }
-
-
-
-        final String jwtToken = MissionControl.getIdToken( config.getOlsUser(), config.getOlsPassword() );
-        final SparkSession sparkSession = MissionControl.getSparkSession();
-
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
-
-        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
-        EdmApi edmApi = retrofit.create( EdmApi.class );
-        PermissionsApi permissionsApi = retrofit.create( PermissionsApi.class );
-
-        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
-                .loadConfiguration( RequiredEdmElements.class );
-
-        if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionsApi );
-            manager.ensureEdmElementsExist( requiredEdmElements );
-        }
-
-        int dispatchFlightStart = 0, dispatchFlightStep = 20000, dispatchFlightEnd = 3277890;
-        int dispatchTypeFlightStart = 0, dispatchTypeFlightStep = 20000, dispatchTypeFlightEnd = 3810310;
-        int dispatchPersonStart = 0, dispatchPersonStep = 20000, dispatchPersonEnd = 2583339;
-
-        Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession, config );
-        Map<Flight, Dataset<Row>> flights = new LinkedHashMap<>(
-                ( dispatchFlightEnd + dispatchTypeFlightEnd + dispatchPersonEnd + 1 ) / 20000 );
-        flights.putAll( systemUserBaseFlight );
-        Shuttle shuttle = new Shuttle( environment, jwtToken );
-
-        for ( dispatchFlightStart = 0;
-                dispatchFlightStart < dispatchFlightEnd;
-                dispatchFlightStart += dispatchFlightStep ) {
-            logger.info( "Starting registration: integration of dispatch ids {} -> {} ",
-                    dispatchFlightStart,
-                    dispatchFlightStart + dispatchFlightStep );
-            Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight
-                    .getFlight( sparkSession, config, dispatchFlightStart, dispatchFlightStart + dispatchFlightStep );
-            flights.putAll( dispatchFlight );
-
-            logger.info( "Finishing registration: integration of dispatch ids {} -> {} ",
-                    dispatchFlightStart,
-                    dispatchFlightStart + dispatchPersonStep );
-        }
-
-        for ( dispatchTypeFlightStart = 0;
-                dispatchTypeFlightStart < dispatchTypeFlightEnd;
-                dispatchTypeFlightStart += dispatchTypeFlightStep ) {
-            logger.info( "Starting registration: integration of dispatch type ids {} -> {} ",
-                    dispatchTypeFlightStart,
-                    dispatchTypeFlightStart + dispatchTypeFlightStep );
-            Map<Flight, Dataset<Row>> dispatchTypeFlight = DispatchTypeFlight.getFlight( sparkSession,
-                    config,
-                    dispatchTypeFlightStart,
-                    dispatchTypeFlightStart + dispatchTypeFlightStep );
-            flights.putAll( dispatchTypeFlight );
-            logger.info( "Finishing registration: integration of dispatch type ids {} -> {} ",
-                    dispatchTypeFlightStart,
-                    dispatchTypeFlightStart + dispatchTypeFlightStep );
-        }
-
-        for ( dispatchPersonStart = 0;
-                dispatchPersonStart < dispatchPersonEnd;
-                dispatchPersonStart += dispatchPersonStep ) {
-            logger.info( "Starting registration: integration of dispatch person ids {} -> {} ",
-                    dispatchPersonStart,
-                    dispatchPersonStart + dispatchPersonStep );
-            Map<Flight, Dataset<Row>> dispatchPersonsFlight = DispatchPersonsFlight
-                    .getFlight( sparkSession, config, dispatchPersonStart, dispatchPersonStart + dispatchPersonStep );
-            flights.putAll( dispatchPersonsFlight );
-            shuttle.launch( flights );
-
-            logger.info( "Finishing registration: integration of dispatch person ids {} -> {} ",
-                    dispatchPersonStart,
-                    dispatchPersonStart + dispatchPersonStep );
-        }
-
-        shuttle.launch( flights );
+//        JdbcIntegrationConfig config = ObjectMappers.getYamlMapper()
+//                .readValue( new File( args[ 0 ] ), JdbcIntegrationConfig.class );
+//        HikariConfig iowadbconfig = new HikariConfig();
+//        iowadbconfig.setJdbcUrl( config.getUrl() );
+//        iowadbconfig.setMaximumPoolSize( 2 );
+//
+//        HikariDataSource iowadb = new HikariDataSource( iowadbconfig );
+//
+//        HikariConfig oldbconfig = new HikariConfig();
+//        oldbconfig.setJdbcUrl(
+//                "jdbc:postgresql://wonderwoman.openlattice.com:30001/johnsoncounty_iowa?ssl=true&sslmode=require" );
+//        oldbconfig.setUsername( "itjecc" );
+//        oldbconfig.setPassword( config.getOlsPassword() );
+//        oldbconfig.setMaximumPoolSize( 100 );
+//
+//        HikariDataSource oldb = new HikariDataSource( oldbconfig );
+//
+//        Progress progress = mapper.readValue( new File( "progress.json" ), Progress.class );
+//
+//        if ( progress == null ) {
+//            progress = new Progress();
+//        }
+//
+//        Connection iowaConn = iowadb.getConnection();
+//        Connection olsConn = oldb.getConnection();
+//
+//        ResultSet allIds = iowaConn.createStatement().executeQuery( DispatchFlight.getAllIdsQuery() );
+//
+//        while ( allIds.next() ) {
+//            long id = allIds.getLong( "Dis_ID" );
+//            if ( !progress.dispatchIds.contains( id ) ) {
+//                PreparedStatement p = iowaConn.prepareStatement( DispatchFlight.getIdQuery( id ) );
+////                PreparedStatement insertRow = olsConn.prepareStatement();
+//                p.setLong(1, id);
+//                ResultSet row = p.executeQuery();
+//                if( row.next() ) {
+//                    //Write row to DB.
+//
+//
+//                }
+//                progress.dispatchIds.add( id );
+//            }
+//        }
+//
+//        ResultSet allPersonIds = iowaConn.createStatement().executeQuery( DispatchPersonsFlight.getAllIdsQuery() );
+//
+//        while(allPersonIds.next()) {
+//            long id = allPersonIds.getLong("ID");
+//            if( !progress.dispatchPersonIds.contains( id )) {
+//                PreparedStatement p = iowaConn.prepareStatement( DispatchPersonsFlight.getIdQuery( id ) );
+//                p.setLong(1, id);
+//                ResultSet row = p.executeQuery();
+//                if( row.next() ) {
+//                    //Write rows to OLS DB.
+//
+//                }
+//                progress.dispatchPersonIds.add( id );
+//            }
+//
+//        }
+//
+//
+//        ResultSet allTypeIds = iowaConn.createStatement().executeQuery( DispatchTypeFlight.getAllIdsQuery() );
+//
+//        while(allTypeIds.next()) {
+//            long id = allTypeIds.getLong("ID");
+//            if( !progress.dispatchTypeIds.contains( id )) {
+//                PreparedStatement p = iowaConn.prepareStatement( DispatchTypeFlight.getIdQuery( id ) );
+//                p.setLong(1, id);
+//                ResultSet row = p.executeQuery();
+//                if( row.next() ) {
+//                    //Write rows to OLS DB.
+//
+//                }
+//                progress.dispatchTypeIds.add( id );
+//            }
+//        }
+//
+//
+//
+//        final String jwtToken = MissionControl.getIdToken( config.getOlsUser(), config.getOlsPassword() );
+//        final SparkSession sparkSession = MissionControl.getSparkSession();
+//
+//        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+//        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
+//
+//        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
+//        EdmApi edmApi = retrofit.create( EdmApi.class );
+//        PermissionsApi permissionsApi = retrofit.create( PermissionsApi.class );
+//
+//        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
+//                .loadConfiguration( RequiredEdmElements.class );
+//
+//        if ( requiredEdmElements != null ) {
+//            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionsApi );
+//            manager.ensureEdmElementsExist( requiredEdmElements );
+//        }
+//
+//        int dispatchFlightStart = 0, dispatchFlightStep = 20000, dispatchFlightEnd = 3277890;
+//        int dispatchTypeFlightStart = 0, dispatchTypeFlightStep = 20000, dispatchTypeFlightEnd = 3810310;
+//        int dispatchPersonStart = 0, dispatchPersonStep = 20000, dispatchPersonEnd = 2583339;
+//
+//        Map<Flight, Dataset<Row>> systemUserBaseFlight = SystemUserBaseFlight.getFlight( sparkSession, config );
+//        Map<Flight, Dataset<Row>> flights = new LinkedHashMap<>(
+//                ( dispatchFlightEnd + dispatchTypeFlightEnd + dispatchPersonEnd + 1 ) / 20000 );
+//        flights.putAll( systemUserBaseFlight );
+//        Shuttle shuttle = new Shuttle( environment, jwtToken );
+//
+//        for ( dispatchFlightStart = 0;
+//                dispatchFlightStart < dispatchFlightEnd;
+//                dispatchFlightStart += dispatchFlightStep ) {
+//            logger.info( "Starting registration: integration of dispatch ids {} -> {} ",
+//                    dispatchFlightStart,
+//                    dispatchFlightStart + dispatchFlightStep );
+//            Map<Flight, Dataset<Row>> dispatchFlight = DispatchFlight
+//                    .getFlight( sparkSession, config, dispatchFlightStart, dispatchFlightStart + dispatchFlightStep );
+//            flights.putAll( dispatchFlight );
+//
+//            logger.info( "Finishing registration: integration of dispatch ids {} -> {} ",
+//                    dispatchFlightStart,
+//                    dispatchFlightStart + dispatchPersonStep );
+//        }
+//
+//        for ( dispatchTypeFlightStart = 0;
+//                dispatchTypeFlightStart < dispatchTypeFlightEnd;
+//                dispatchTypeFlightStart += dispatchTypeFlightStep ) {
+//            logger.info( "Starting registration: integration of dispatch type ids {} -> {} ",
+//                    dispatchTypeFlightStart,
+//                    dispatchTypeFlightStart + dispatchTypeFlightStep );
+//            Map<Flight, Dataset<Row>> dispatchTypeFlight = DispatchTypeFlight.getFlight( sparkSession,
+//                    config,
+//                    dispatchTypeFlightStart,
+//                    dispatchTypeFlightStart + dispatchTypeFlightStep );
+//            flights.putAll( dispatchTypeFlight );
+//            logger.info( "Finishing registration: integration of dispatch type ids {} -> {} ",
+//                    dispatchTypeFlightStart,
+//                    dispatchTypeFlightStart + dispatchTypeFlightStep );
+//        }
+//
+//        for ( dispatchPersonStart = 0;
+//                dispatchPersonStart < dispatchPersonEnd;
+//                dispatchPersonStart += dispatchPersonStep ) {
+//            logger.info( "Starting registration: integration of dispatch person ids {} -> {} ",
+//                    dispatchPersonStart,
+//                    dispatchPersonStart + dispatchPersonStep );
+//            Map<Flight, Dataset<Row>> dispatchPersonsFlight = DispatchPersonsFlight
+//                    .getFlight( sparkSession, config, dispatchPersonStart, dispatchPersonStart + dispatchPersonStep );
+//            flights.putAll( dispatchPersonsFlight );
+//            shuttle.launch( flights );
+//
+//            logger.info( "Finishing registration: integration of dispatch person ids {} -> {} ",
+//                    dispatchPersonStart,
+//                    dispatchPersonStart + dispatchPersonStep );
+//        }
+//
+//        shuttle.launch( flights );
 
     }
 
