@@ -318,7 +318,7 @@ public class Dispatch {
 
 
         Shuttle shuttle = new Shuttle(environment, jwtToken);
-        Map<Flight, Dataset<Row>> flights = new HashMap<>(1);
+        Map<Flight, Dataset<Row>> flights = new HashMap<>(2 );
         flights.put(disPersonMapping, disPerson);
         //flights.put(officerMapping, officer);
         //flights.put(disTypeMapping, disType);
@@ -363,7 +363,7 @@ public class Dispatch {
                         String fName = strNames[1].trim();
                         String[] fNames = fName.split(" ");
                         String firstName = fNames[0].trim();
-                        return firstName.toUpperCase().trim();
+                        System.out.println(Arrays.toString(fNames));
                     }
                     return null;
                 }

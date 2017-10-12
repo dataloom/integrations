@@ -258,6 +258,7 @@ propertyTypes:
   - type: "general.StringID"
     title: "String ID"
     description: "A string that uniquely identifies an instance of an entity or association"
+
 entityTypes:
 - type: "general.person"
   title: "Person"
@@ -362,6 +363,78 @@ entityTypes:
   - "object.LicensePlateType"
   - "object.LicensePlateYear"
   baseType: null
+associationTypes:
+- type:
+    type: "general.LocatedAt"
+    title: "LocatedAt"
+    description: "Links together a person with a location"
+    key:
+    - "nc.SubjectIdentification"
+    - "general.OfficerSequenceID"
+    - "general.StringID"
+    - "general.CFSSequenceID"
+    properties:
+    - "nc.SubjectIdentification"
+    - "general.OfficerSequenceID"
+    - "general.StringID"
+    - "general.CFSSequenceID"
+  src:
+  - "general.person"
+  - "general.Officer"
+  - "general.CallForService"
+  dst:
+  - "general.Location"
+  bidirectional: false
+- type:
+    type: "general.Initiated"
+    title: "Initiated"
+    description: "Links together a person with a CFS"
+    key:
+    - "nc.SubjectIdentification"
+    - "general.StringID"
+    - "general.OfficerSequenceID"
+    properties:
+    - "nc.SubjectIdentification"
+    - "general.StringID"
+    - "general.OfficerSequenceID"
+  src:
+  - "general.person"
+  - "general.Officer"
+  - "general.Place"
+  dst:
+  - "general.CallForService"
+  bidirectional: false
+- type:
+    type: "general.AssignedTo"
+    title: "AssignedTo"
+    description: "Links together a person with a call for service"
+    key:
+    - "general.OfficerSequenceID"
+    - "general.CFSSequenceID"
+    properties:
+    - "general.OfficerSequenceID"
+    - "general.CFSSequenceID"
+  src:
+  - "general.Officer"
+  dst:
+  - "general.CallForService"
+  bidirectional: false
+- type:
+    type: "general.InvolvedIn"
+    title: "InvolvedIn"
+    description: "Links together a person/place/object with incident"
+    key:
+    - "general.CFSSequenceID"
+    - "general.StringID"
+    properties:
+    - "general.CFSSequenceID"
+    - "general.StringID"
+  src:
+  - "general.Vehicle"
+  dst:
+  - "general.CallForService"
+  bidirectional: false
+
 entitySets:
 - type: "general.person"
   name: "Caller"
