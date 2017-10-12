@@ -53,6 +53,7 @@ import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
+import java.io.File;
 
 /**
  * @author Matthew Tamayo-Rios &lt;matthew@openlattice.com&gt;
@@ -61,7 +62,7 @@ public class MiddlesexCharges2 {
 
     private static final Logger         logger         = LoggerFactory
             .getLogger( MiddlesexCharges2.class );
-    private static final Environment    environment    = Environment.LOCAL;
+    private static final Environment    environment    = Environment.STAGING;
     private static final DateTimeHelper dtHelper       = new DateTimeHelper( TimeZones.America_NewYork,
             "yyyy/MM/dd HH:mm" );
     private static final DateTimeHelper bdHelper       = new DateTimeHelper( TimeZones.America_NewYork,
@@ -115,10 +116,9 @@ public class MiddlesexCharges2 {
 
         Flight flight = Flight.newFlight()
                 .createEntities()
+
                 .addEntity( "suspect" )
                 .to( "LPDArrestSuspects" )
-                .ofType( new FullQualifiedName( "general.person" ) )
-                .key( new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .value( MiddlesexCharges2::getSubjectIdentification ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
@@ -138,10 +138,9 @@ public class MiddlesexCharges2 {
                 .addProperty( "nc.PersonHeightMeasure" ).value( MiddlesexCharges2::getHeight ).ok()
                 .addProperty( "nc.PersonWeightMeasure" ).value( MiddlesexCharges2::getWeight ).ok()
                 .endEntity()
+
                 .addEntity( "arrest" )
                 .to( "LPDArrest" )
-                .ofType( new FullQualifiedName( "lawenforcement.arrest" ) )
-                .key( new FullQualifiedName( "j.ArrestSequenceID" ) )
                 .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
                 .value( row -> dtHelper.parse( ( row.getAs( "arr_date" ) + " " + row.getAs( "Time" ) ).trim() ) )
                 .ok()
@@ -149,85 +148,85 @@ public class MiddlesexCharges2 {
                 .addProperty( "j.ArrestCategory", "type_charge" )
                 .addProperty( "j.ArrestSequenceID" ).value( MiddlesexCharges2::getArrestSequenceID ).ok()
                 .endEntity()
+
                 .addEntity( "charge" )
-                .to( "LPDCharge" ).ofType( "justice.ChargeDetails" ).key( "j.ChargeSequenceID" )
+                .to( "LPDCharge" )
                 .addProperty( "j.ChargeSequenceID", "Case Number" )
                 .addProperty( "j.OffenseViolatedStatute" )
                 .value( MiddlesexCharges2::getOffenseViolatedStatute ).ok()
                 .addProperty( "j.OffenseQualifierText" )
                 .value( MiddlesexCharges2::getOffenseQualifierText ).ok()
                 .endEntity()
+
                 .addEntity( "arrestAddress" )
                 .to( "MSOAddresses" )
-                .ofType( new FullQualifiedName( "general.address" ) )
-                .key( new FullQualifiedName( "location.address" ) )
+                .useCurrentSync()
                 .addProperty( new FullQualifiedName( "location.street" ) )
                 .value( MiddlesexCharges2::getArrestAddress ).ok()
                 .endEntity()
+
                 .addEntity( "incidentAddress" )
                 .to( "MSOAddresses" )
-                .ofType( new FullQualifiedName( "general.address" ) )
-                .key( new FullQualifiedName( "location.address" ) )
+                .useCurrentSync()
                 .addProperty( new FullQualifiedName( "location.street" ) )
                 .value( MiddlesexCharges2::getIncidentAddress ).ok()
                 .endEntity()
-                .ok()
+
+                .endEntities()
                 .createAssociations()
+
                 .addAssociation( "arrestedin" )
-                .ofType( "lawenforcement.arrestedin" ).to( "LPDArrestedIn" )
+                .to( "LPDArrestedIn" )
                 .fromEntity( "suspect" )
                 .toEntity( "arrest" )
-                .key( "nc.SubjectIdentification", "j.ArrestSequenceID" )
                 .addProperty( "nc.SubjectIdentification" ).value( MiddlesexCharges2::getSubjectIdentification )
                 .ok()
                 .addProperty( "j.ArrestSequenceID" ).value( MiddlesexCharges2::getArrestSequenceID )
-                .ok().endAssociation()
+                .ok()
+                .endAssociation()
+
                 .addAssociation( "chargedwith" )
-                .ofType( "justice.chargedwith" ).to( "LPDChargedWith" )
+                .to( "LPDChargedWith" )
                 .fromEntity( "suspect" )
                 .toEntity( "charge" )
-                .key( "general.stringid" )
                 .addProperty( "general.stringid" )
                 .value( row -> MoreObjects.firstNonNull( row.getAs( "bookingnum" ), "" ) + MoreObjects
                         .firstNonNull( row.getAs( "Case Number" ), "" ) ).ok()
                 .endAssociation()
+
                 .addAssociation( "chargeappears" )
-                .ofType( "general.appearsin" ).to( "LPDChargeAppearsIn" )
+                .to( "LPDChargeAppearsIn" )
                 .fromEntity( "charge" )
                 .toEntity( "arrest" )
-                .key( "general.stringid" )
                 .addProperty( "general.stringid" )
                 .value( row -> MoreObjects.firstNonNull( row.getAs( "Case Number" ), "" ) + MoreObjects
                         .firstNonNull( row.getAs( "Charge" ), "" ) ).ok()
                 .endAssociation()
+
                 .addAssociation( "arrestedat" )
-                .ofType( new FullQualifiedName( "justice.occurredat" ) )
                 .to( "LPDOccurredAt" )
-                .key( "general.stringid", "location.address" )
                 .fromEntity( "arrest" )
                 .toEntity( "arrestAddress" )
                 .addProperty( "general.stringid", "Case Number" )
                 .addProperty( "location.address" ).value( MiddlesexCharges2::getArrestAddress ).ok()
                 .endAssociation()
+
                 .addAssociation( "occurredat" )
-                .ofType( new FullQualifiedName( "justice.occurredat" ) )
                 .to( "LPDOccurredAt" )
-                .key( "general.stringid", "location.address" )
                 .fromEntity( "charge" )
                 .toEntity( "incidentAddress" )
                 .addProperty( "general.stringid", "Case Number" )
                 .addProperty( "location.address" ).value( MiddlesexCharges2::getIncidentAddress ).ok()
                 .endAssociation()
+
                 .endAssociations()
                 .done();
 
         Flight charges = Flight.newFlight()
                 .createEntities()
                 .addEntity( "charge" )
-                .useCurrentSync()
                 .to( "LPDCharge" )
-                .ofType( new FullQualifiedName( "justice.ChargeDetails" ) )
-                .key( new FullQualifiedName( "j.ChargeSequenceID" ) )
+                .useCurrentSync()
                 .addProperty( "j.ChargeSequenceID", "Case # Off. Seq." )
                 .addProperty( "justice.ReportedDate" )
                 .value( MiddlesexCharges2::getChargeReportedDate ).ok()
@@ -239,9 +238,10 @@ public class MiddlesexCharges2 {
                 .addProperty( "j.ChargeNarrative", "comments" )
                 .addProperty( "justice.CaseStatus", "Case Status" )
                 .endEntity()
+
                 .addEntity( "address" )
-                .useCurrentSync()
                 .to( "MSOAddresses" )
+                .useCurrentSync()
                 .ofType( "general.Address" )
                 .key( "location.address" )
                 .addProperty( "location.address", "Location" )
