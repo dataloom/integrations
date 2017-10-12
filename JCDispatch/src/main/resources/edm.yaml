@@ -47,16 +47,6 @@ propertyTypes:
   - type: "date.TimeOfDay"
     title: "Time Of Day"
     description: "Time Of Day"
-- datatype: "Boolean"
-  piiField: false
-  analyzer: "STANDARD"
-  properties:
-  - type: "person.Active"
-    title: "Active"
-    description: "Active"
-  - type: "object.TransferVehicle"
-    title: "Vehicle Transferred"
-    description: "Vehicle Transferred"
 - datatype: "String"
   piiField: true
   analyzer: "METAPHONE"
