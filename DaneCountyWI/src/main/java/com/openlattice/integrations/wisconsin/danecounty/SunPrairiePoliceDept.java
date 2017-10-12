@@ -31,7 +31,7 @@ import java.util.Map;
 public class SunPrairiePoliceDept {
     private static final Logger                      logger            = LoggerFactory
             .getLogger( SunPrairiePoliceDept.class );
-    private static final RetrofitFactory.Environment environment       = Environment.STAGING;
+    private static final RetrofitFactory.Environment environment       = Environment.LOCAL;
     private static final DateTimeHelper              dtHelper          = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -6 ), "MM/dd/YY HH:mm" );
     private static final DateTimeHelper              bdHelper          = new DateTimeHelper( DateTimeZone
