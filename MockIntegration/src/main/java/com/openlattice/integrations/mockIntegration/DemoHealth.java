@@ -191,7 +191,7 @@ public class DemoHealth {
             .done();
 
         Shuttle shuttle = new Shuttle(environment, jwtToken);
-        Map<Flight, Dataset<Row>> flights = new HashMap<>(1);
+        Map<Flight, Dataset<Row>> flights = new HashMap<>(2);
         flights.put(healthMapping, health);
 
         shuttle.launch(flights);

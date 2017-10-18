@@ -6,6 +6,8 @@ import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.Maps;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
@@ -14,440 +16,532 @@ import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.dates.TimeZones;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static lib.nameParsing.*;
 
 public class Dispatch {
 
     private static final Logger logger = LoggerFactory
-            .getLogger(Dispatch.class);
+            .getLogger( Dispatch.class );
 
     private static final Environment environment = Environment.LOCAL;
-    private static final DateTimeHelper dtHelper = new DateTimeHelper(TimeZones.America_NewYork,
-            "MM/dd/yyyy");
-    private static final DateTimeHelper bdHelper = new DateTimeHelper(TimeZones.America_NewYork,
-            "MM/dd/yyyy");
-    public static void main(String[] args) throws InterruptedException {
 
-        final String disPersonPath = args[0];
-        final String officerPath = args[1];
-        final String dispatchPath = args[2];
-        final String disTypePath = args[3];
-        final String jwtToken = args[4];
+    private static final DateTimeHelper dateHelper0 = new DateTimeHelper( DateTimeZone.forOffsetHours( -8 ), "yyyy-MM-dd HH:mm:ss.S" );
+
+    public static void main( String[] args ) throws InterruptedException {
+
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
+
+        final String personPath = args[ 0 ];
+        final String unitPath = args[ 1 ];
+        final String dispatchPath = args[ 2 ];
+        final String disTypePath = args[ 3 ];
+        final String jwtToken = args[ 4 ];
 
         final SparkSession sparkSession = MissionControl.getSparkSession();
 
+        logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
-        logger.info("Using the following idToken: Bearer {}", jwtToken);
-        Retrofit retrofit = RetrofitFactory.newClient(environment, () -> jwtToken);
-        EdmApi edm = retrofit.create(EdmApi.class);
+        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
+        EdmApi edmApi = retrofit.create( EdmApi.class );
+        PermissionsApi permissionApi = retrofit.create( PermissionsApi.class );
 
-        Dataset<Row> disPerson = sparkSession
+        Dataset<Row> person = sparkSession
                 .read()
-                .format("com.databricks.spark.csv")
-                .option("header", "true")
-                .load(disPersonPath);
+                .format( "com.databricks.spark.csv" )
+                .option( "header", "true" )
+                .load( personPath );
 
-        Dataset<Row> officer = sparkSession
+        Dataset<Row> Unit = sparkSession
                 .read()
-                .format("com.databricks.spark.csv")
-                .option("header", "true")
-                .load(officerPath);
+                .format( "com.databricks.spark.csv" )
+                .option( "header", "true" )
+                .load( unitPath );
 
         Dataset<Row> dispatch = sparkSession
                 .read()
-                .format("com.databricks.spark.csv")
-                .option("header", "true")
-                .load(dispatchPath);
+                .format( "com.databricks.spark.csv" )
+                .option( "header", "true" )
+                .load( dispatchPath );
 
         Dataset<Row> disType = sparkSession
                 .read()
-                .format("com.databricks.spark.csv")
-                .option("header", "true")
-                .load(disTypePath);
+                .format( "com.databricks.spark.csv" )
+                .option( "header", "true" )
+                .load( disTypePath );
 
         RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
-                .loadConfiguration(RequiredEdmElements.class);
-        FullQualifedNameJacksonDeserializer.registerWithMapper(ObjectMappers.getYamlMapper());
-        FullQualifedNameJacksonDeserializer.registerWithMapper(ObjectMappers.getJsonMapper());
-        if (requiredEdmElements != null) {
-            RequiredEdmElementsManager reem = new RequiredEdmElementsManager(edm,
-                    retrofit.create(PermissionsApi.class));
-            reem.ensureEdmElementsExist(requiredEdmElements);
+                .loadConfiguration( RequiredEdmElements.class );
+
+        if ( requiredEdmElements != null ) {
+            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
+            manager.ensureEdmElementsExist( requiredEdmElements );
         }
 
-        logger.info("ER Field names: {}", Arrays.asList(disPerson.schema().fieldNames()));
-        logger.info("ER Field names: {}", Arrays.asList(officer.schema().fieldNames()));
-        logger.info("ER Field names: {}", Arrays.asList(dispatch.schema().fieldNames()));
-        logger.info("ER Field names: {}", Arrays.asList(disType.schema().fieldNames()));
+        logger.info( "ER Field names: {}", Arrays.asList( person.schema().fieldNames() ) );
+        logger.info( "ER Field names: {}", Arrays.asList( Unit.schema().fieldNames() ) );
+        logger.info( "ER Field names: {}", Arrays.asList( dispatch.schema().fieldNames() ) );
+        logger.info( "ER Field names: {}", Arrays.asList( disType.schema().fieldNames() ) );
 
-        Flight disPersonMapping = Flight.newFlight()
+
+        Flight UnitMapping = Flight
+                .newFlight()
                 .createEntities()
-                .addEntity("Caller")
-                .to("Caller")
-                .ofType(new FullQualifiedName("general.person"))
-                .key(new FullQualifiedName("nc.SubjectIdentification"))
-                .addProperty("nc.SubjectIdentification")
-                .value(Dispatch::getSubjectIdentification).ok()
-                .addProperty("nc.PersonGivenName")
-                .value(row -> getFirstName(row.getAs("OName"))).ok()
-                .addProperty("nc.PersonMiddleName")
-                .value(row -> getMiddleName(row.getAs("OName"))).ok()
-                .addProperty("nc.PersonSurName")
-                .value(row -> getLastName(row.getAs("OName"))).ok()
-                .addProperty("nc.PersonSex", "OSex")
-                .addProperty("nc.PersonRace", "ORace")
-                .addProperty("nc.PersonEthnicity", "Ethnicity")
-                .addProperty("nc.PersonHeightMeasure", "Height")
-                .addProperty("nc.PersonWeightMeasure", "Weight")
-                .addProperty("nc.PersonEyeColorText", "Eyes")
-                .addProperty("nc.PersonHairColorText", "Hair")
-                .addProperty("nc.PersonBirthDate")
-                .value(Dispatch::safeDOBParse).ok()
-                .addProperty("person.age", "Age")
+                .addEntity("Unit")
+                .to("Unit")
+                .useCurrentSync()
+                .addProperty("general.UnitSequenceID", "officerid")
+                .addProperty("place.OriginatingAgencyIdentifier", "ori")
+                .addProperty("person.EmployeeID")
+                .value( row -> getEmployeeId( row.getAs( "employeeid" ) ) ).ok()
+                .addProperty("person.Active")
+                .value( row -> getActive( row.getAs( "employeeid" ) ) ).ok()
+                .addProperty("person.Title", "Title")
+                .addProperty("person.FirstName")
+                .value( row -> formatText( row.getAs( "FirstName" ) ) ).ok()
+                .addProperty("person.LastName")
+                .value( row -> formatText( row.getAs( "LastName" ) ) ).ok()
                 .endEntity()
-                //.addEntity("ReporterLocation")
-                //.to("ReporterLocation")
-                //.ofType("general.Location")
-                //.key("general.StringID")
-                //.addProperty("general.StringID")
-                //.value(Dispatch::getAddress).ok()
-                //.addProperty("place.Street", "OAddress")
-                //.addProperty("place.Apartment", "OAddress_Apt")
-                //.addProperty("place.City", "OCity")
-                //.addProperty("place.State", "OState")
-                //.addProperty("place.ZipCode", "OZip")
-                //.addProperty("place.PhoneNumber", "OPhone")
-                //.endEntity()
-                //.addEntity("Vehicle")
-                //.to("Vehicle")
-                //.ofType("general.Vehicle")
-                //.key("general.StringID")
-                //.addProperty("general.StringID", "Dis_ID")
-                //.addProperty("object.VehicleMake", "MAKE")
-                //.addProperty("object.VehicleModel", "MODEL")
-                //.addProperty("object.VehicleStyle", "Style")
-                //.addProperty("object.VehicleYear", "VehYear")
-                //.addProperty("object.VehicleColor", "Color")
-                //.addProperty("object.VehicleVIN", "VIN")
-                //.addProperty("object.LicensePlateNumber", "LIC")
-                //.addProperty("object.LicensePlateState", "LIS")
-                //.addProperty("object.LicensePlateType", "LIT")
-                //.addProperty("object.LicensePlateYear", "LIY")
-                //.endEntity()
                 .endEntities()
-                //.createAssociations()
-                //.addAssociation("ReporterLocatedAt")
-                //.ofType("general.LocatedAt").to("ReporterLocatedAt")
-                //.fromEntity("Caller")
-                //.toEntity("ReporterLocation")
-                //.key("nc.SubjectIdentification", "general.StringID")
-                //.addProperty("nc.SubjectIdentification")
-                //.value(Dispatch::getSubjectIdentification).ok()
-                //.addProperty("general.StringID")
-                //.value(Dispatch::getAddress).ok()
-                //.endAssociation()
-                //.endAssociations()
                 .done();
 
-        //Flight officerMapping = Flight.newFlight()
-        //        .createEntities()
-        //        .addEntity("Officer")
-        //        .to("Officer")
-        //        .ofType(new FullQualifiedName("general.Officer"))
-        //        .key(new FullQualifiedName("general.OfficerSequenceID"))
-        //        .addProperty("general.OfficerSequenceID", "officerid")
-        //        .addProperty("person.EmployeeID")
-        //        .value( row -> getEmployeeId( row.getAs( "employeeid" ) ) ).ok()
-        //        .addProperty("person.FirstName", "FirstName")
-        //        .addProperty("person.LastName", "LastName")
-        //        .addProperty("person.Title", "Title")
-        //        .addProperty("person.Active")
-        //        .value( row -> getActive( row.getAs( "employeeid" ) ) ).ok()
-        //        .addProperty("place.OriginatingAgencyIdentifier", "ori")
-        //        .endEntity()
-        //        .endEntities()
-        //        .done();
-//
-        //Flight dispatchMapping = Flight.newFlight()
-        //        .createEntities()
-        //        .addEntity("CallForService")
-        //        .to("CallForService")
-        //        .ofType(new FullQualifiedName("general.CallForService"))
-        //        .key(new FullQualifiedName("general.CFSSequenceID"))
-        //        .addProperty("general.CFSSequenceID", "Dis_ID")
-        //        .addProperty("date.ReceivedDateTime")
-        //        .value(Dispatch::safeRSVDDateTimeParse).ok()
-        //        .addProperty("date.AlertedDateTime")
-        //        .value( row -> getAsDateTime( row.getAs( "AlertedTime" ) ) ).ok()
-        //        .addProperty("date.DayOfWeek")
-        //        .value( row -> getAsDate( row.getAs( "Dis_Date" ) ) ).ok()
-        //        //.addProperty("date.TimeOfDay")
-        //        //.value( row -> getAsTime( row.getAs( "DIS_TIME" ) ) ).ok()
-        //        .addProperty("event.DispatchCaseNumber", "Case_Number")
-        //        .addProperty("person.Operator", "Operator")
-        //        .addProperty("event.DispatchTypeText", "TYPE_ID")
-        //        .addProperty("event.DispatchTypeClass", "TYPE_CLASS")
-        //        .addProperty("event.ProQA", "PROQA")
-        //        .addProperty("event.ProQALevel", "PROQA_LEVEL")
-        //        .addProperty("event.ProQAType", "PROQA_TYPE")
-        //        .addProperty("event.HowReported", "HowReported")
-        //        .addProperty("event.ESN", "ESN")
-        //        .addProperty("event.CFS_Fire", "CFS_Fire")
-        //        .addProperty("event.CFS_EMS", "CFS_EMS")
-        //        .addProperty("event.CFS_LEA", "CFS_LEA")
-        //        .addProperty("event.FireDispatchLevel", "FireDispatchLevel")
-        //        .addProperty("event.DispatchPriority", "Priority")
-        //        .addProperty("event.Disposition", "ClearedBy")
-        //        .addProperty("event.CITDisposition", "ClearedBy2")
-        //        .endEntity()
-        //        .addEntity("DispatchLocation")
-        //        .to("DispatchLocation")
-        //        .ofType("general.Location")
-        //        .key("general.StringID")
-        //        .addProperty("general.StringID")
-        //        .value(Dispatch::getDispatchAddress).ok()
-        //        .addProperty("place.Location", "Location")
-        //        .addProperty("place.Street", "LAddress")
-        //        .addProperty("place.Apartment", "LAddress_Apt")
-        //        .addProperty("place.City", "LCity")
-        //        .addProperty("place.State", "LState")
-        //        .addProperty("place.ZipCode", "LZip")
-        //        .addProperty("place.PhoneNumber", "LPhone")
-        //        .addProperty("place.DispatchZoneID", "ZONE_ID")
-        //        .addProperty("place.DispatchZone", "Dis_Zone")
-        //        .addProperty("place.DispatchSubZone", "SubZone")
-        //        .addProperty("place.MedicalZone", "Medical_Zone")
-        //        .addProperty("place.FireDistrict", "FireDistrict")
-        //        .endEntity()
-        //        .addEntity("Caller")
-        //        .to("Caller")
-        //        .useCurrentSync()
-        //        .ofType("general.person")
-        //        .key("nc.SubjectIdentification")
-        //        .addProperty("nc.SubjectIdentification")
-        //        .value(Dispatch::getSubjectIdentification).ok()
-        //        .endEntity()
-        //        .endEntities()
-        //        .createAssociations()
-        //        .addAssociation("Initiated")
-        //        .ofType("general.Initiated").to("Initiated")
-        //        .fromEntity("Caller")
-        //        .toEntity("DispatchRecord")
-        //        .key("nc.SubjectIdentification", "general.DispatchSequenceID")
-        //        .addProperty("nc.SubjectIdentification")
-        //        .value(Dispatch::getSubjectIdentification).ok()
-        //        .addProperty("general.DispatchSequenceID", "Dis_ID")
-        //        .endAssociation()
-        //        .addAssociation("OccurredAt")
-        //        .ofType("justice.occurredat").to("OccurredAt")
-        //        .fromEntity("DispatchRecord")
-        //        .toEntity("DispatchLocation")
-        //        .key("general.DispatchSequenceID", "general.StringID")
-        //        .addProperty("general.DispatchSequenceID", "Dis_ID")
-        //        .addProperty("general.StringID")
-        //        .value(Dispatch::getDispatchAddress).ok()
-        //        .endAssociation()
-        //        .endAssociations()
-        //        .done();
-//
-        //Flight disTypeMapping = Flight.newFlight()
-        //        .createEntities()
-        //        .addEntity("CallForService")
-        //        .to("CallForService")
-        //        .ofType(new FullQualifiedName("general.CallForService"))
-        //        .key(new FullQualifiedName("general.CFSSequenceID"))
-        //        .addProperty("general.CFSSequenceID", "Dis_ID")
-        //        .addProperty("date.ReceivedDateTime")
-        //        .value( row -> getAsDateTime( row.getAs( "Timercvd" ) ) ).ok()
-        //        .addProperty("date.EnRouteDateTime")
-        //        .value( row -> getAsDateTime( row.getAs( "TimeEnroute" ) ) ).ok()
-        //        .addProperty("date.CompletedDateTime")
-        //        .value( row -> getAsDateTime( row.getAs( "TimeComp" ) ) ).ok()
-        //        .addProperty("event.DispatchTypeID", "Dispatch_Type_ID")
-        //        .addProperty("event.DispatchTypeText", "Type_ID")
-        //        .addProperty("event.CFSPriority", "Type_Priority")
-        //        .addProperty("event.TripNumber", "TripNumber")
-        //        .addProperty("event.Disposition", "Disposition")
-        //        .endEntity()
-        //        .addEntity("Officer")
-        //        .to("Officer")
-        //        .useCurrentSync()
-        //        .ofType("general.Officer")
-        //        .key("general.OfficerSequenceID")
-        //        .addProperty("general.OfficerSequenceID", "CallForServiceOfficerId")
-        //        .endEntity()
-        //        .addEntity("Vehicle")
-        //        .to("Vehicle")
-        //        .useCurrentSync()
-        //        .ofType("general.Vehicle")
-        //        .key("general.StringID")
-        //        .addProperty("general.StringID", "Dis_ID")
-        //        .endEntity()
-        //        .endEntities()
-        //        .createAssociations()
-        //        .addAssociation("AssignedTo")
-        //        .ofType("general.AssignedTo").to("AssignedTo")
-        //        .fromEntity("Officer")
-        //        .toEntity("CallForService")
-        //        .key("general.OfficerSequenceID", "general.CFSSequenceID")
-        //        .addProperty("general.OfficerSequenceID", "CallForServiceOfficerId")
-        //        .addProperty("general.CFSSequenceID", "Dis_ID")
-        //        .endAssociation()
-        //        .addAssociation("InvolvedIn")
-        //        .ofType("general.InvolvedIn").to("InvolvedIn")
-        //        .fromEntity("Vehicle")
-        //        .toEntity("CallForService")
-        //        .key("general.StringID", "general.CFSSequenceID")
-        //        .addProperty("general.StringID", "Dis_ID")
-        //        .addProperty("general.CFSSequenceID", "Dis_ID")
-        //        .endAssociation()
-        //        .endAssociations()
-        //        .done();
+
+        Flight dispatchMapping = Flight
+                .newFlight()
+                .createEntities()
+                .addEntity("CallForService")
+                .to("CallForService")
+                .useCurrentSync()
+                .addProperty("general.CFSSequenceID", "Dis_ID")
+                .addProperty("date.ReceivedDateTime")
+                .value( row -> dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).ok()
+                .addProperty("date.AlertedDateTime")
+                .value( row -> dateHelper0.parse( row.getAs( "AlertedTime" ) ) ).ok()
+                .addProperty( "date.DayOfWeek" )
+                .value( row -> getDayOfWeek( ( dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).substring( 0, 10 ) ) ).ok()
+                //.addProperty( "date.TimeOfDay" )
+                //.value( row -> getTimeOfDay( ( dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).substring( 0, 19 ) ) ).ok()
+                .addProperty("person.Operator")
+                .value( row -> formatText( row.getAs( "Operator" ) ) ).ok()
+                .addProperty("event.CFSTypeClass")
+                .value( row -> getIntFromDouble( row.getAs( "TYPE_CLASS" ) ) ).ok()
+                .addProperty("event.ProQA")
+                .value( row -> getStringFromDouble( row.getAs( "PROQA" ) ) ).ok()
+                .addProperty("event.ProQALevel", "PROQA_LEVEL")
+                .addProperty("event.ProQAType", "PROQA_TYPE")
+                .addProperty("event.HowReported", "HowReported")
+                .addProperty("event.ESN")
+                .value( row -> getIntFromDouble( row.getAs( "ESN" ) ) ).ok()
+                .addProperty("event.CFS_Fire", "CFS_Fire")
+                .addProperty("event.CFS_EMS", "CFS_EMS")
+                .addProperty("event.CFS_LEA", "CFS_LEA")
+                .addProperty("event.FireDispatchLevel", "FireDispatchLevel")
+                .addProperty("event.Disposition", "ClearedBy")
+                .addProperty("event.CITDisposition", "ClearedBy2")
+                .addProperty("event.911CallNumber", "CallNumber_911")
+                .addProperty("event.CFSCaseNumber", "Case_Number")
+                .endEntity()
+                .addEntity("Location")
+                .to("Location")
+                .useCurrentSync()
+                .addProperty("general.LocationSequenceID")
+                .value( row -> row.getAs( "Dis_ID" ) ).ok()
+                .addProperty("location.name", "Location")
+                .addProperty("location.PhoneNumber")
+                .value( row -> getPhoneNumber( row.getAs( "LPhone" ) ) ).ok()
+                .addProperty("location.DispatchZoneID")
+                .value( row -> getIntFromDouble( row.getAs( "ZONE_ID" ) ) ).ok()
+                .addProperty("location.DispatchZone", "Dis_Zone")
+                .addProperty("location.DispatchSubZone", "SubZone")
+                .addProperty("location.MedicalZone", "Medical_Zone")
+                .addProperty("location.FireDistrict", "FireDistrict")
+                .endEntity()
+                .addEntity( "Address" )
+                .to("Address")
+                .useCurrentSync()
+                .addProperty("location.address")
+                .value( row -> getAddressID( formatText( row.getAs( "LAddress" ) ) + " " + row.getAs( "LAddress_Apt" ) + " " +  formatText( row.getAs( "LCity" ) ) + row.getAs( "LState" ) + " " +  getZipCode( row.getAs( "LZip" ) ) ) ).ok()
+                .addProperty("location.street")
+                .value( row -> formatText( row.getAs( "LAddress" ) ) ).ok()
+                .addProperty("location.apartment", "LAddress_Apt")
+                .addProperty("location.city")
+                .value( row -> formatText( row.getAs( "LCity" ) ) ).ok()
+                .addProperty("location.state", "LState")
+                .addProperty("location.zip")
+                .value( row -> getZipCode( row.getAs( "LZip" ) ) ).ok()
+                .endEntity()
+                .addEntity("Unit")
+                .to("Unit")
+                .useCurrentSync()
+                .addProperty( "general.UnitSequenceID" , "AssignedOfficerID")
+                .endEntity()
+                .endEntities()
+                .createAssociations()
+                .addAssociation("LocatedAt")
+                .ofType("general.LocatedAt").to("LocatedAt")
+                .useCurrentSync()
+                .fromEntity("CallForService")
+                .toEntity("Location")
+                .addProperty("general.CFSSequenceID", "Dis_ID")
+                .addProperty("general.LocationSequenceID")
+                .value( row -> row.getAs( "Dis_ID" ) ).ok()
+                .endAssociation()
+                .addAssociation("Has")
+                .ofType("general.Has").to("Has")
+                .useCurrentSync()
+                .fromEntity("Location")
+                .toEntity("Address")
+                .addProperty("general.LocationSequenceID")
+                .value( row -> row.getAs( "Dis_ID" ) ).ok()
+                .addProperty("location.address")
+                .value( row -> getAddressID( formatText( row.getAs( "LAddress" ) ) + row.getAs( "LAddress_Apt" ) + formatText( row.getAs( "LCity" ) ) + row.getAs( "LState" ) + getZipCode( row.getAs( "LZip" ) ) ) ).ok()
+                .endAssociation()
+                .addAssociation("AssignedTo")
+                .ofType("general.AssignedTo").to("AssignedTo")
+                .useCurrentSync()
+                .fromEntity("CallForService")
+                .toEntity("Unit")
+                .addProperty("general.CFSSequenceID", "Dis_ID")
+                .addProperty("general.UnitSequenceID", "AssignedOfficerID")
+                .endAssociation()
+                .endAssociations()
+                .done();
 
 
-        Shuttle shuttle = new Shuttle(environment, jwtToken);
-        Map<Flight, Dataset<Row>> flights = new HashMap<>(2 );
-        flights.put(disPersonMapping, disPerson);
-        //flights.put(officerMapping, officer);
-        //flights.put(disTypeMapping, disType);
-        //flights.put(dispatchMapping, dispatch);
+        Flight disTypeMapping = Flight
+                .newFlight()
+                .createEntities()
+                .addEntity("DispatchType")
+                .to("DispatchType")
+                .useCurrentSync()
+                .addProperty("general.DispatchSequenceID", "Type_ID")
+                .addProperty("event.DispatchTypeText", "Type_ID")
+                .addProperty("event.DispatchTypePriority")
+                .value( row -> getIntFromDouble( row.getAs( "Type_Priority" ) ) ).ok()
+                .addProperty("event.TripNumber")
+                .value( row -> getStringFromDouble( row.getAs( "TripNumber" ) ) ).ok()
+                .endEntity()
+                .addEntity("CallForService")
+                .to("CallForService")
+                .useCurrentSync()
+                .addProperty( "general.CFSSequenceID" , "Dis_ID")
+                .addProperty("date.EnRouteDateTime")
+                .value( row -> dateHelper0.parse( row.getAs( "TimeEnroute" ) ) ).ok()
+                .addProperty("date.CompletedDateTime")
+                .value( row -> dateHelper0.parse( row.getAs( "TimeComp" ) ) ).ok()
+                .endEntity()
+                .endEntities()
+                .createAssociations()
+                .addAssociation("Includes")
+                .ofType("general.Includes").to("Includes")
+                .useCurrentSync()
+                .fromEntity("CallForService")
+                .toEntity("DispatchType")
+                .addProperty( "general.CFSSequenceID" , "Dis_ID")
+                .addProperty("general.DispatchSequenceID", "Type_ID")
+                .endAssociation()
+                .endAssociations()
+                .done();
 
-        shuttle.launch(flights);
 
+        Flight personMapping = Flight
+                .newFlight()
+                .createEntities()
+                .addEntity( "Party" )
+                .to( "Party" )
+                .useCurrentSync()
+                .addProperty( "nc.SubjectIdentification" , "ID")
+                .addProperty( "nc.PersonGivenName" )
+                .value( row -> getFirstName( row.getAs( "OName" ) ) ).ok()
+                .addProperty( "nc.PersonMiddleName" )
+                .value( row -> getMiddleName( row.getAs( "OName" ) ) ).ok()
+                .addProperty( "nc.PersonSurName" )
+                .value( row -> getLastName( row.getAs( "OName" ) ) ).ok()
+                .addProperty( "nc.PersonBirthDate" )
+                .value( row -> dateHelper0.parse( row.getAs( "DOB" ) ) ).ok()
+                .addProperty( "person.age" )
+                .value( row -> getIntFromDouble( row.getAs( "Age" ) ) ).ok()
+                .addProperty( "nc.PersonSex", "OSex" )
+                .addProperty( "nc.PersonRace", "ORace" )
+                .addProperty( "nc.PersonEthnicity", "Ethnicity" )
+                .addProperty( "nc.PersonEyeColorText", "Eyes" )
+                .addProperty( "nc.PersonHairColorText", "Hair" )
+                .addProperty( "nc.PersonHeightMeasure" )
+                .value( row -> getHeightInch( row.getAs( "Height" ) ) ).ok()
+                .addProperty( "nc.PersonWeightMeasure" )
+                .value( row -> getIntFromDouble( row.getAs( "Weight" ) ) ).ok()
+                //.addProperty( "person.Juvenile", "Juv" )
+                //.addProperty( "person.CellPhoneNumber", "CellPhone" )
+                .endEntity()
+                .addEntity("Location")
+                .to("Location")
+                .useCurrentSync()
+                .addProperty("general.LocationSequenceID")
+                .value( row -> row.getAs( "ID" ) ).ok()
+                .addProperty( "location.name" )
+                .value( row -> getAliasName( row.getAs( "OName" ) ) ).ok()
+                .addProperty("location.PhoneNumber")
+                .value( row -> getPhoneNumber( row.getAs( "OPhone" ) ) ).ok()
+                .endEntity()
+                .addEntity( "Address" )
+                .to("Address")
+                .useCurrentSync()
+                .addProperty("location.address")
+                .value( row -> getAddressID( formatText( row.getAs( "OAddress" ) ) + row.getAs( "OAddress_Apt" ) + formatText( row.getAs( "OCity" ) ) + row.getAs( "OState" ) + getZipCode( row.getAs( "OZip" ) ) ) ).ok()
+                .addProperty("location.street")
+                .value( row -> formatText( row.getAs( "OAddress" ) ) ).ok()
+                .addProperty("location.apartment", "OAddress_Apt")
+                .addProperty("location.city")
+                .value( row -> formatText( row.getAs( "OCity" ) ) ).ok()
+                .addProperty("location.state", "OState")
+                .addProperty("location.zip")
+                .value( row -> getZipCode( row.getAs( "OZip" ) ) ).ok()
+                .endEntity()
+                .addEntity("Vehicle")
+                .to("Vehicle")
+                .useCurrentSync()
+                .addProperty("general.VehicleSequenceID", "ID")
+                .addProperty("object.VehicleMake", "MAKE")
+                .addProperty("object.VehicleModel", "MODEL")
+                .addProperty("object.VehicleStyle", "Style")
+                .addProperty("object.VehicleYear")
+                .value( row -> getStrYear( row.getAs( "VehYear" ) ) ).ok()
+                .addProperty("object.VehicleColor", "Color")
+                .addProperty("object.VehicleVIN", "VIN")
+                .addProperty("object.LicensePlateNumber", "LIC")
+                .addProperty("object.LicensePlateState", "LIS")
+                .addProperty("object.LicensePlateType", "LIT")
+                .addProperty("object.LicensePlateYear")
+                .value( row -> getStrYear( row.getAs( "LIY" ) ) ).ok()
+                .endEntity()
+                .addEntity("CallForService")
+                .to("CallForService")
+                .useCurrentSync()
+                .addProperty("general.CFSSequenceID", "Dis_ID")
+                .addProperty("event.TransferVehicle", "TransferVehicle")
+                .endEntity()
+                //.addEntity("DispatchType")
+                //.to("DispatchType")
+                //.useCurrentSync()
+                //.addProperty("general.DispatchSequenceID", "Dis_ID")
+                //.addProperty("event.DispatchPersonType", "Type")
+                //.endEntity()
+                .endEntities()
+                .createAssociations()
+                .addAssociation("LocatedAt")
+                .ofType("general.LocatedAt").to("LocatedAt")
+                .fromEntity("Party")
+                .toEntity("Location")
+                .useCurrentSync()
+                .addProperty( "nc.SubjectIdentification" , "ID")
+                .addProperty("general.LocationSequenceID")
+                .value( row -> row.getAs( "ID" ) ).ok()
+                .endAssociation()
+                .addAssociation("Has")
+                .ofType("general.Has").to("Has")
+                .useCurrentSync()
+                .fromEntity("Location")
+                .toEntity("Address")
+                .addProperty("general.LocationSequenceID")
+                .value( row -> "LocationOfParty" + row.getAs( "ID" ) ).ok()
+                .addProperty("location.address")
+                .value( row -> getAddressID( formatText( row.getAs( "OAddress" ) ) + row.getAs( "OAddress_Apt" ) + formatText( row.getAs( "OCity" ) ) + row.getAs( "OState" ) + getZipCode( row.getAs( "OZip" ) ) ) ).ok()
+                .endAssociation()
+                .addAssociation("Initiated")
+                .ofType("general.Initiated").to("Initiated")
+                .fromEntity("Party")
+                .toEntity("CallForService")
+                .addProperty("nc.SubjectIdentification", "ID")
+                .addProperty("general.CFSSequenceID", "Dis_ID")
+                .endAssociation()
+                .addAssociation("InvolvedIn")
+                .ofType("general.InvolvedIn").to("InvolvedIn")
+                .fromEntity("Vehicle")
+                .toEntity("CallForService")
+                .addProperty("general.VehicleSequenceID", "ID")
+                .addProperty("general.CFSSequenceID", "Dis_ID")
+                .endAssociation()
+                .endAssociations()
+                .done();
+
+
+        Shuttle shuttle = new Shuttle( environment, jwtToken );
+        Map<Flight, Dataset<Row>> flights = new HashMap<>();
+        flights.put( UnitMapping, Unit );
+        flights.put( dispatchMapping, dispatch );
+        flights.put( disTypeMapping, disType );
+        flights.put( personMapping, person );
+
+
+        shuttle.launch( flights );
 
     }
 
-    public static String getSubjectIdentification(Row row) {
-
-        return "PARTY-" + row.getAs("ID");
-    }
-
-    public static String cleanText( Object obj ) {
-        String name = obj.toString().trim();
-        name = name.replaceAll("[\\d]+", "").trim();
-        return name;
-    }
-
-    public static String getFirstName( Object obj ) {
-        if (obj != null) {
-            String name = cleanText(obj);
-            if (!(name.contains("UNIVERSITY") ||
-                    name.contains("INC") ||
-                    name.contains("IOWA") ||
-                    name.contains("ADT") ||
-                    name.contains("ALL") ||
-                    name.contains("VERIZON") ||
-                    name.contains("SPRINT") ||
-                    name.contains("SANDWICHES") ||
-                    name.contains("LC") ||
-                    name.contains("KEY") ||
-                    name.contains("AT&T") ||
-                    name.contains("BLDG") ||
-                    name.contains("CENTER") ||
-                    name.contains("CELLULAR"))) {
-                String[] strNames = name.split(",");
-                if (strNames.length > 1) {
-                    if (strNames[1].length() > 1) {
-                        String fName = strNames[1].trim();
-                        String[] fNames = fName.split(" ");
-                        String firstName = fNames[0].trim();
-                        System.out.println(Arrays.toString(fNames));
-                    }
-                    return null;
-                }
-                String[] fullNames = strNames[0].split(" ");
-                String cName = fullNames[0].trim();
-                return cName.toUpperCase().trim();
-            }
-            return null;
+    public static String getNotNullDate( Object obj ) {
+        if ( obj != null ) {
+            String date = obj.toString().trim();
+            return date.substring( 0, 19 );
         }
         return null;
     }
 
-    public static String getLastName( Object obj ) {
-        if (obj != null) {
-            String name = cleanText(obj);
-            if (!( name.contains("UNIVERSITY") ||
-                    name.contains("INC") ||
-                    name.contains("IOWA") ||
-                    name.contains("ADT") ||
-                    name.contains("ALL") ||
-                    name.contains("VERIZON") ||
-                    name.contains("SPRINT") ||
-                    name.contains("SANDWICHES") ||
-                    name.contains("LC")) ||
-                    name.contains("KEY") ||
-                    name.contains("AT&T") ||
-                    name.contains("BLDG") ||
-                    name.contains("CENTER") ||
-                    name.contains("CELLULAR") ) {
-                String[] strNames = name.split(",");
-                if (strNames.length > 1) {
-                    String lastName = strNames[0].trim();
-                    return lastName.toUpperCase().trim();
-                }
-                String[] fullNames = strNames[0].split(" ");
-                String lName = fullNames[fullNames.length-1].trim();
-                return lName.toUpperCase().trim();
-            }
-            return null;
+    public static String getDateOfBirth( Object obj ) {
+        if ( obj != null ) {
+            String date = obj.toString().trim();
+            return date.substring( 0, 10 );
         }
         return null;
     }
 
-    public static String getMiddleName( Object obj ) {
-        if (obj != null) {
-            String name = cleanText(obj);
-            if (!(name.contains("UNIVERSITY") ||
-                    name.contains("INC") ||
-                    name.contains("IOWA") ||
-                    name.contains("ADT") ||
-                    name.contains("ALL") ||
-                    name.contains("VERIZON") ||
-                    name.contains("SPRINT") ||
-                    name.contains("SANDWICHES") ||
-                    name.contains("LC") ||
-                    name.contains("KEY") ||
-                    name.contains("AT&T") ||
-                    name.contains("BLDG") ||
-                    name.contains("CENTER") ||
-                    name.contains("CELLULAR"))) {
-                String[] strNames = name.split(",");
-                if (strNames.length > 1) {
-                    String fName = strNames[1].trim();
-                    String[] fNames = fName.split(" ");
-                    if (fNames.length > 2) {
-                        String mName = fNames[fNames.length-2].trim();
-                        return mName.toUpperCase().trim();
-                    }
-                    return null;
-                }
-                String[] middleNames = strNames[0].split(" ");
-                if (middleNames.length > 2) {
-                    String dName = middleNames[1].trim();
-                    return dName.toUpperCase().trim();
-                }
-                return null;
+    public static Integer getHeightInch( Object obj ) {
+        if ( obj != null ) {
+            String height = obj.toString().trim();
+            if (height.length() > 2) {
+                String three = height.substring( 0, 3 );
+                Integer feet = Integer.parseInt( String.valueOf( three.substring( 0, 1 ) ) );
+                Integer inch = Integer.parseInt( String.valueOf( three.substring( 1 ) ) );
+                return ( feet * 12 ) + inch;
             }
-            return null;
+
+            return Integer.parseInt( String.valueOf( height ) );
         }
         return null;
     }
 
-    public static String safeDOBParse(Row row) {
-        String dob = row.getAs("DOB");
-        return bdHelper.parse(dob);
+    public static String getEmployeeId( Object obj ) {
+        if ( obj != null ) {
+            String employeeId = obj.toString().trim();
+            if ( employeeId.toLowerCase().startsWith( "x_" ) ) {
+                return employeeId.substring( 2 ).trim();
+            }
+            return employeeId.trim();
+        }
+        return null;
+    }
+
+    public static Boolean getActive( Object obj ) {
+        if ( obj != null ) {
+            String active = obj.toString().trim();
+            if ( active.toLowerCase().startsWith( "x_" ) ) {
+                return Boolean.FALSE;
+            }
+            return Boolean.TRUE;
+        }
+        return null;
+    }
+
+    public static String getDayOfWeek( Object obj ) {
+        List<String> days = Arrays.asList( "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" );
+        if ( obj != null ) {
+            String dateStr = obj.toString().trim();
+            SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date;
+            try {
+                date = dateformat.parse( dateStr );
+                return days.get( date.getDay() );
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+            return dateStr;
+        }
+        return null;
+    }
+
+    public static String getTimeOfDay( Object obj ) {
+        if ( obj != null ) {
+            String dateStr = obj.toString().trim();
+            SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date;
+            try {
+                date = dateformat.parse( dateStr );
+                System.out.println(String.valueOf( date.getHours() ));
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+            return dateStr;
+        }
+        return null;
+    }
+
+    public static Integer getIntFromDouble( Object obj ) {
+        if ( obj != null ) {
+            String s = obj.toString().trim();
+            double d = Double.parseDouble(s);
+            return (int) d;
+        }
+        return null;
+    }
+
+    public static String getStringFromDouble( Object obj ) {
+        if ( obj != null ) {
+            String s = obj.toString().trim();
+            int d = getIntFromDouble( s );
+            return Integer.toString(d);
+        }
+        return null;
+    }
+
+    public static String getZipCode( Object obj ) {
+        if ( obj != null ) {
+            String str = obj.toString().trim();
+            String[] strDate = str.split( " " );
+            if ( strDate.length > 1 ) {
+                return getStringFromDouble( strDate[ strDate.length - 1 ]).trim();
+            }
+            String[] lZip = str.split( "-" );
+            if ( lZip.length > 1 ) {
+                return str;
+            }
+            return getStringFromDouble( strDate[ 0 ]).trim();
+        }
+        return null;
+    }
+
+    public static String getPhoneNumber( Object obj ) {
+        if ( obj != null ) {
+            String str = obj.toString().trim();
+            str = str.replaceAll( "[()-]", "" );
+            str = str.substring( 0, 10 );
+            return str;
+        }
+        return null;
+    }
+
+    public static String getStrYear( Object obj ) {
+        if ( obj != null ) {
+            String str = obj.toString().trim();
+            String[] strDate = str.split( "/" );
+            if ( strDate.length > 1 ) {
+                return getStringFromDouble( strDate[ strDate.length - 1 ]).trim();
+            }
+            if (str.contains( "DOB" )) {
+                return "";
+            }
+            return getStringFromDouble( strDate[ 0 ]).trim();
+        }
+        return null;
+    }
+
+    public static String getVehicleID( Object obj ) {
+        String id = obj.toString().trim();
+        if ( id.contains( "null" ) ) {
+            id = id.replaceAll( "null", "" );
+            String[] idList = id.split( " " );
+            return String.join("" , idList).trim();
+        }
+        return id;
     }
 }

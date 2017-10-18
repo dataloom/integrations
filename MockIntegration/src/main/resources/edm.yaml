@@ -1,11 +1,4 @@
 propertyTypes:
-- datatype: "Binary"
-  piiField: false
-  analyzer: "STANDARD"
-  properties:
-  - type: "publicsafety.mugshot"
-    title: "Mugshot"
-    description: "A person's mugshot"
 - datatype: "Int32"
   piiField: true
   analyzer: "STANDARD"
@@ -64,9 +57,22 @@ propertyTypes:
     title: "Surname"
     description: "A last name or family name of a person."
 - datatype: "String"
+  piiField: true
+  analyzer: "STANDARD"
+  properties:
+  - type: "nc.SSN"
+    title: "Social Security Number"
+    description: "The social security number of a subject."
+  - type: "person.CellPhoneNumber"
+    title: "Cell Phone Number"
+    description: "Cell Phone Number"
+- datatype: "String"
   piiField: false
   analyzer: "STANDARD"
   properties:
+  - type: "nc.SubjectIdentification"
+    title: "Subject Identification"
+    description: "An assigned identification that identifies a subject."
   - type: "nc.PersonSex"
     title: "Sex"
     description: "A data concept for the gender or sex of a person."
@@ -76,15 +82,14 @@ propertyTypes:
   - type: "nc.PersonEthnicity"
     title: "Person Ethnicity"
     description: "A data concept for ethnicity."
-  - type: "nc.SubjectIdentification"
-    title: "Subject Identification"
-    description: "An assigned identification that identifies a subject."
+
+
+
+
+
   - type: "nc.ProviderIdentification"
     title: "Provider Identification"
     description: "Provider Identification"
-  - type: "general.stringid"
-    title: "Id"
-    description: "A string that uniquely identifies"
   - type: "person.NationalProviderNumber"
     title: "National Provider Number"
     description: "Identification used to refer to a medical provider"
