@@ -3,6 +3,7 @@ package lib;
 import com.auth0.jwt.internal.org.apache.commons.lang3.text.WordUtils;
 import org.apache.spark.sql.Row;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -13,7 +14,7 @@ public class nameParsing {
     public static String formatText( Object obj ) {
         if ( obj != null ) {
             String name = obj.toString().toLowerCase().trim();
-            name = name.replace( "/", " | " ).replace( ",", ", " );
+            name = name.replace( "-", "- " ).replace( ",", ", " );
             return WordUtils.capitalize( name.trim() );
         }
         return null;
@@ -26,7 +27,7 @@ public class nameParsing {
     }
 
     public static final Pattern p = Pattern
-            .compile( "\\b(UNIVERSITY|INC|IOWA|ADT|VERIZON|SPRINT|SANDWICHES|AT&T|BLDG|CENTER|CELLULAR)\\b" , Pattern.CASE_INSENSITIVE );
+            .compile( "\\b(UNIVERSITY|EMS|HONDA|LP|REHABILITATION|INC|IOWA|ADT|VERIZON|SPRINT|SANDWICHES|AT&T|BLDG|CENTER|CELLULAR|INTERNATIONAL|SCIENCES)\\b" , Pattern.CASE_INSENSITIVE );
 
     public static String getFirstName( Object obj ) {
         if ( obj != null ) {
@@ -102,9 +103,9 @@ public class nameParsing {
         return null;
     }
 
-    public static String getAliasName( Object obj ) {
+    public static String getName( Object obj ) {
         if ( obj != null ) {
-            String name = formatText( obj );
+            String name = obj.toString().trim();
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {
@@ -124,6 +125,28 @@ public class nameParsing {
                 return String.join( "" , Arrays.asList( address.split( " " ) ) );
             }
             return String.join( "" , Arrays.asList( address.split( " " ) ) );
+        }
+        return null;
+    }
+
+    public static String getIntersection( Object obj ) {
+        if ( obj != null ) {
+            String address = obj.toString().trim();
+            if ( address.contains( "/" ) ) {
+                return address.replace( "/", " & " );
+            }
+            return "";
+        }
+        return null;
+    }
+
+    public static String getLocation( Object obj ) {
+        if ( obj != null ) {
+            String location = obj.toString().trim();
+            if ( location.contains( "/" ) ) {
+                return "";
+            }
+            return location;
         }
         return null;
     }
