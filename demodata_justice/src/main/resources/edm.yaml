@@ -1,11 +1,11 @@
 propertyTypes:
-- datatype: "Binary"
-  piiField: false
-  analyzer: "STANDARD"
-  properties:
-  - type: "publicsafety.mugshot"
-    title: "Mugshot"
-    description: "A person's mugshot"
+#- datatype: "Binary"
+#  piiField: false
+#  analyzer: "STANDARD"
+#  properties:
+#  - type: "publicsafety.mugshot"
+#    title: "Mugshot"
+#    description: "A person's mugshot"
 - datatype: "Int32"
   piiField: true
   analyzer: "STANDARD"
@@ -455,7 +455,7 @@ entityTypes:
   - "nc.MaritalStatus"
   - "nc.PersonEyeColorText"
   - "nc.SSN"
-  - "publicsafety.mugshot"
+#  - "publicsafety.mugshot"
   - "person.StateIdentificationState"
   - "person.StateIdentificationNumber"
   - "j.SentenceRegisterSexOffenderIndicator"
@@ -532,7 +532,7 @@ entityTypes:
   - "nc.PersonWeightMeasure"
   - "nc.PersonHeightMeasure"
   - "person.ScarsMarksTattoos"
-  - "publicsafety.mugshot"
+#  - "publicsafety.mugshot"
   - "person.SafetyConcerns"
   - "event.ReasonHeldCode"
   - "event.ReasonHeldText"
@@ -587,25 +587,25 @@ entityTypes:
   - "event.SentenceTermDays"
   - "event.SentenceTermHours"
   baseType: null
-- type: "general.SentencingRecords"
-  title: "Sentencing Records"
-  description: "Sentencing Records"
-  key:
-  - "general.StringID"
-  properties:
-  - "general.StringID"
-  - "date.SentenceStartDate"
-  - "date.SentenceReleaseDate"
-  - "event.ServeConcurrentOffense"
-  - "event.ServeConsecutiveWithOffenseID"
-  - "event.TimeServedDays"
-  - "event.TimeServedHours"
-  - "event.TimeServedMinutes"
-  - "event.GoodTimeDays"
-  - "event.GoodTimeHours"
-  - "event.GoodTimeMinutes"
-  - "event.GoodTimePercentage"
-  baseType: null
+#- type: "general.SentencingRecords"
+#  title: "Sentencing Records"
+#  description: "Sentencing Records"
+#  key:
+#  - "general.StringID"
+#  properties:
+#  - "general.StringID"
+#  - "date.SentenceStartDate"
+#  - "date.SentenceReleaseDate"
+#  - "event.ServeConcurrentOffense"
+#  - "event.ServeConsecutiveWithOffenseID"
+#  - "event.TimeServedDays"
+#  - "event.TimeServedHours"
+#  - "event.TimeServedMinutes"
+#  - "event.GoodTimeDays"
+#  - "event.GoodTimeHours"
+#  - "event.GoodTimeMinutes"
+#  - "event.GoodTimePercentage"
+#  baseType: null
 associationTypes:
 - type:
     type: "general.ArrestedIn"
@@ -762,10 +762,19 @@ entitySets:
   owners:
   - "auth0|59a985a557d70e1088c0c425"
   - "auth0|588a2038aa03fb78b0e52307"
-- type: "general.SentencingRecords"
-  name: "SentencingRecords"
-  title: "Sentencing Records"
-  description: "Demo Sentencing Records"
+#- type: "general.SentencingRecords"
+#  name: "SentencingRecords"
+#  title: "Sentencing Records"
+#  description: "Demo Sentencing Records"
+#  contacts:
+#  - "support@openlattice.com"
+#  owners:
+#  - "auth0|59a985a557d70e1088c0c425"
+#  - "auth0|588a2038aa03fb78b0e52307"
+- type: "j.EnforcementOfficial"
+  name: "DemoOfficers"
+  title: "DemoOfficers"
+  description: "Any County and Anytown Officers"
   contacts:
   - "support@openlattice.com"
   owners:
@@ -793,15 +802,6 @@ entitySets:
   name: "DemoChargedWith"
   title: "DemoChargedWith"
   description: "Any County (demo) Suspect ChargedWith"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "j.EnforcementOfficial"
-  name: "DemoOfficers"
-  title: "DemoOfficers"
-  description: "Any County and Anytown Officers"
   contacts:
   - "support@openlattice.com"
   owners:

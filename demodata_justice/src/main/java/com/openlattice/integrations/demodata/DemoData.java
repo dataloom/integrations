@@ -27,6 +27,7 @@ import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.google.common.io.Resources;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
+import com.openlattice.integrations.cruft.FormattedDateTime;
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
@@ -47,7 +48,7 @@ public class DemoData {
 
     private static final Logger logger = LoggerFactory.getLogger( DemoData.class );
 
-    private static final Environment environment = Environment.LOCAL;
+    private static final Environment environment = Environment.PRODUCTION;
 
     public static void main( String[] args ) throws InterruptedException {
 
@@ -56,7 +57,7 @@ public class DemoData {
 
         System.out.println("Hello World");
 
-        final String jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImtpbUBvcGVubGF0dGljZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXBwX21ldGFkYXRhIjp7InJvbGVzIjpbIkF1dGhlbnRpY2F0ZWRVc2VyIiwiYWRtaW4iLCJ1c2VyIl19LCJuaWNrbmFtZSI6ImtpbSIsInJvbGVzIjpbIkF1dGhlbnRpY2F0ZWRVc2VyIiwiYWRtaW4iLCJ1c2VyIl0sInVzZXJfaWQiOiJnb29nbGUtb2F1dGgyfDEwNDg0NjI1NDY0OTE3NTg1OTUwOCIsImlzcyI6Imh0dHBzOi8vbG9vbS5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDQ4NDYyNTQ2NDkxNzU4NTk1MDgiLCJhdWQiOiJQVG15RXhkQmNrSEFpeU9qaDR3Mk1xU0lVR1dXRWRmOCIsImlhdCI6MTUwNjUzMzU3OCwiZXhwIjoxNTA2NTY5NTc4fQ.lUSl6Did-c9pnwHsCEKbasMO96_8Gn_pk5VEQpIIAcU";
+        final String jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImtpbUBvcGVubGF0dGljZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwidXNlcl9pZCI6Imdvb2dsZS1vYXV0aDJ8MTA0ODQ2MjU0NjQ5MTc1ODU5NTA4IiwiYXBwX21ldGFkYXRhIjp7InJvbGVzIjpbIkF1dGhlbnRpY2F0ZWRVc2VyIiwiYWRtaW4iLCJ1c2VyIl19LCJuaWNrbmFtZSI6ImtpbSIsInJvbGVzIjpbIkF1dGhlbnRpY2F0ZWRVc2VyIiwiYWRtaW4iLCJ1c2VyIl0sImlzcyI6Imh0dHBzOi8vb3BlbmxhdHRpY2UuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTA0ODQ2MjU0NjQ5MTc1ODU5NTA4IiwiYXVkIjoibzhZMlUyemI1SXdvMDFqZHhNTjFXMmFpTjhQeHdWamgiLCJpYXQiOjE1MDg1MTg3NTAsImV4cCI6MTUwODU1NDc1MH0.Od10SqlHQvIuzMgsV35lkwdu42GEl4nbP5yND4glp7g";
         final SparkSession sparkSession = MissionControl.getSparkSession();
 
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
@@ -143,7 +144,7 @@ public class DemoData {
                             .addProperty("nc.PersonSex", "Sex")
                             .addProperty("nc.PersonRace", "Race")
                             .addProperty("nc.PersonEthnicity", "Ethnicity")
-                            .addProperty("nc.PersonBirthDate", "BirthDate")
+                            .addProperty("nc.PersonBirthDate").value( row -> fixDate(row.getAs("BirthDate")) ).ok()
                             .addProperty("nc.PersonEyeColorText", "EyeColorText")
                             .addProperty("nc.SSN", "SocialSecurityNumber")
                             .addProperty("j.SentenceRegisterSexOffenderIndicator", "RegisteredSexOffender")
@@ -151,7 +152,7 @@ public class DemoData {
                         .addEntity("Incident")
                             .to("DemoIncidents")
                             .addProperty("general.StringID", "IncidentID")
-                            .addProperty("date.IncidentDate", "IncidentDate")
+                            .addProperty("date.IncidentDate").value( row -> fixDate(row.getAs("IncidentDate")) ).ok()
                             .addProperty("place.StreetAddress", "IncidentStreet")
                             .addProperty("place.City", "IncidentCity")
                             .addProperty("event.DrugsPresentAtArrest", "DrugsPresent")
@@ -169,7 +170,7 @@ public class DemoData {
                             .to("DemoArrests")
                             .addProperty("general.ArrestSequenceID", "ArrestNumber")
                             .addProperty("event.ArrestNumber", "ArrestNumber")
-                            .addProperty("date.ArrestDate", "ArrestDate")
+                            .addProperty("date.ArrestDate").value( row -> fixDate(row.getAs("ArrestDate")) ).ok()
                             .addProperty("event.ArrestCategory", "ArrestCategory")
                             .addProperty("event.WarrantType", "WarrantType")
                             .addProperty("place.ArrestingAgency", "ArrestingAgencyName")
@@ -186,8 +187,8 @@ public class DemoData {
                             .to("DemoCases")
                             .addProperty("general.StringID", "CaseID")
                             .addProperty("event.ConvictionResults", "ConvictionResults")
-                            .addProperty("event.SentenceTermYears", "SentenceDurationYrs")
-                            .addProperty("event.SentenceTermDays", "SentenceTermDays")
+                            .addProperty("event.SentenceTermYears").value( row -> parseNumber( row.getAs( "SentenceDurationYrs" ) ) ).ok()
+                            .addProperty("event.SentenceTermDays").value( row -> parseNumber( row.getAs( "SentenceTermDays" ) ) ).ok()
                             .endEntity()
                         .endEntities()
                 .createAssociations()
@@ -227,23 +228,23 @@ public class DemoData {
                             .addProperty("general.StringID", "CaseID")
                             .endAssociation()
                     .addAssociation("Demo Arrested By")
-                            .to("DemoArrestedBy")       //name of entity set belonging to
+                            .to("DemoArrestedBy")       //name of entity set belonging to, must match yaml.
                             .fromEntity("Person")
                             .toEntity("ArrOfficer")
                             .addProperty("general.StringID", "ArrestingOfficerBadgeID")
                             .endAssociation()
-//                    .addAssociation("Demo Released By")
-//                            .to("DemoReleasedBy")       //name of entity set belonging to
-//                            .fromEntity("Person")
-//                            .toEntity("RelOfficer")
-//                            .addProperty("general.StringID", "ReleaseOfficerBadgeID")
-//                            .endAssociation()
-//                    .addAssociation("DemoTransportedBy")
-//                            .to("Demo Transported By")       //name of entity set belonging to
-//                            .fromEntity("Person")
-//                            .toEntity("TrOfficer")
-//                            .addProperty("general.StringID", "TranspOfficerBadgeID")
-//                            .endAssociation()
+                    .addAssociation("Demo Released By")
+                            .to("DemoReleasedBy")       //name of entity set belonging to
+                            .fromEntity("Person")
+                            .toEntity("RelOfficer")
+                            .addProperty("general.StringID", "ReleaseOfficerBadgeID")
+                            .endAssociation()
+                    .addAssociation("DemoTransportedBy")
+                            .to("DemoTransportedBy")       //name of entity set belonging to
+                            .fromEntity("Person")
+                            .toEntity("TrOfficer")
+                            .addProperty("general.StringID", "TranspOfficerBadgeID")
+                            .endAssociation()
                         .endAssociations()
                         .done();
 
@@ -254,4 +255,38 @@ public class DemoData {
 
         return flight;
     }
+
+    public static Integer parseNumber( String num ) {
+        if (num == null) return null;
+        try {
+            Double d = Double.parseDouble( num );
+            return d.intValue();
+        } catch (NumberFormatException e) {}
+
+        try {
+            Integer i = Integer.parseInt( num );
+            return i;
+        } catch ( NumberFormatException e) {}
+
+        return null;
+    }
+
+    public static String fixDate( Object obj ) {
+        if ( obj == null ) {
+            return null;
+
+        }
+        String checkme = obj.toString();
+        if ( checkme.equals( "0.00" ) ) {
+        logger.info( "OMG ITS THAT NUMBER -----------------------------" );
+        return null;
+    }
+        if ( obj != null ) {
+        String d = obj.toString();
+        FormattedDateTime date = new FormattedDateTime( d, null, "MM/dd/yyyy", "HH:mm:ss" );
+        return date.getDateTime();
+    }
+        return null;
+}
+
 }
