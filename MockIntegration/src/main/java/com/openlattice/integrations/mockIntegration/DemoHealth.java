@@ -31,10 +31,6 @@ public class DemoHealth {
     private static final Logger logger = LoggerFactory
             .getLogger(DemoHealth.class);
     private static final Environment environment = Environment.LOCAL;
-    private static final DateTimeHelper dtHelper = new DateTimeHelper(TimeZones.America_NewYork,
-            "MM/dd/yyyy");
-    private static final DateTimeHelper bdHelper = new DateTimeHelper(TimeZones.America_NewYork,
-            "MM/dd/yyyy");
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -68,133 +64,109 @@ public class DemoHealth {
 
         logger.info("ER Field names: {}", Arrays.asList(health.schema().fieldNames()));
 
-    Flight healthMapping = Flight.newFlight()
-            .createEntities()
-            .addEntity("Patients")
-            .to("DemoPatients")
-            .ofType(new FullQualifiedName("general.person"))
-            .key(new FullQualifiedName("nc.SubjectIdentification"))
-            .addProperty("nc.SubjectIdentification")
-            .value(DemoHealth::getSubjectIdentification).ok()
-            .addProperty("nc.PersonGivenName", "FirstName")
-            .addProperty("nc.PersonSurName", "LastName")
-            .addProperty("nc.PersonSex", "Sex")
-            .addProperty("nc.PersonRace", "Race")
-            .addProperty("nc.PersonEthnicity", "Ethnicity")
-            .addProperty("nc.PersonBirthDate")
-            .value(DemoHealth::safeDOBParse).ok()
-            .endEntity()
-            .addEntity("Providers")
-            .to("DemoProviders")
-            .ofType("general.Provider")
-            .key("nc.ProviderIdentification")
-            .addProperty("nc.ProviderIdentification")
-            .value(DemoHealth::getProviderIdentification).ok()
-            .addProperty("nc.PersonGivenName", "providerFNames")
-            .addProperty("nc.PersonSurName", "providerLNames")
-            .endEntity()
-            .addEntity("Appointments")
-            .to("DemoAppointments")
-            .ofType("general.Appointment")
-            .key("general.AppointmentSequenceID")
-            .addProperty("general.AppointmentSequenceID")
-            .value(DemoHealth::getAppointmentSequenceID).ok()
-            .addProperty("date.UpcomingVisit")
-            .value(DemoHealth::safeupcomingApptParse).ok()
-            .addProperty("date.MissedAppointment")
-            .value(DemoHealth::safemissedApptParse).ok()
-            .addProperty("event.MissedAppointmentCount", "NumMissedAppt")
-            .addProperty("event.AppointmentType", "ApptTypes")
-            .endEntity()
-            .addEntity("AdmissionRecords")
-            .to("DemoAdmissionRecords")
-            .ofType("general.AdmissionRecord")
-            .key("general.AdmissionSequenceID")
-            .addProperty("general.AdmissionSequenceID")
-            .value(DemoHealth::getAdmissionSequenceID).ok()
-            .addProperty("date.AdmissionDate")
-            .value(DemoHealth::safeAdmissionDateParse).ok()
-            .addProperty("date.LastUsed")
-            .value(DemoHealth::safeLastUsedParse).ok()
-            .addProperty("event.SubstanceType", "DrugType")
-            .addProperty("event.RouteOfAdministration", "DrugRoute")
-            .addProperty("event.SubstanceFrequency", "DrugFreq")
-            .addProperty("event.Seizure", "Seizure")
-            .addProperty("event.ChestPain", "ChestPain")
-            .addProperty("event.AbdominalPain", "AbdominalPain")
-            .addProperty("event.CurrentMedicationName", "currentMedication")
-            .endEntity()
-            .addEntity("MedicalAssessments")
-            .to("DemoMedicalAssessments")
-            .ofType("general.MedicalAssessment")
-            .key("general.AssessmentSequenceID")
-            .addProperty("general.AssessmentSequenceID")
-            .value(DemoHealth::getAssessmentSequenceID).ok()
-            .addProperty("date.MedicalAssessmentDate")
-            .value(DemoHealth::safeAdmissionDateParse).ok()
-            .addProperty("event.VisitReason", "VisitReason")
-            .addProperty("event.Symptoms", "Symptoms")
-            .addProperty("event.DrugPresentAtVisit", "DrugPresent")
-            .addProperty("event.Temperature", "Temperature")
-            .addProperty("event.BloodPressure", "BloodPressure")
-            .endEntity()
-            .endEntities()
-            .createAssociations()
-            .addAssociation("AppearsInAppointment")
-            .ofType("general.AppearsIn").to("HealthAppearsIn")
-            .fromEntity("Patients")
-            .toEntity("Appointments")
-            .key("nc.SubjectIdentification", "general.AppointmentSequenceID")
-            .addProperty("nc.SubjectIdentification")
-            .value(DemoHealth::getSubjectIdentification)
-            .ok()
-            .addProperty("general.AppointmentSequenceID")
-            .value(DemoHealth::getAppointmentSequenceID)
-            .ok()
-            .endAssociation()
-            .addAssociation("AppearsInAdmission")
-            .ofType("general.AppearsIn").to("HealthAppearsIn")
-            .fromEntity("Patients")
-            .toEntity("AdmissionRecords")
-            .key("nc.SubjectIdentification", "general.AdmissionSequenceID")
-            .addProperty("nc.SubjectIdentification")
-            .value(DemoHealth::getSubjectIdentification)
-            .ok()
-            .addProperty("general.AdmissionSequenceID")
-            .value(DemoHealth::getAdmissionSequenceID)
-            .ok()
-            .endAssociation()
-            .addAssociation("VisitedIn")
-            .ofType("general.VisitedIn").to("VisitedIn")
-            .fromEntity("Patients")
-            .toEntity("MedicalAssessments")
-            .key("nc.SubjectIdentification", "general.AssessmentSequenceID")
-            .addProperty("nc.SubjectIdentification")
-            .value(DemoHealth::getSubjectIdentification)
-            .ok()
-            .addProperty("general.AssessmentSequenceID")
-            .value(DemoHealth::getAssessmentSequenceID).ok()
-            .endAssociation()
-            .addAssociation("AssessedBy")
-            .ofType("general.AssessedBy").to("AssessedBy")
-            .fromEntity("Providers")
-            .toEntity("MedicalAssessments")
-            .key("nc.ProviderIdentification", "general.AssessmentSequenceID")
-            .addProperty("nc.ProviderIdentification")
-            .value(DemoHealth::getProviderIdentification)
-            .ok()
-            .addProperty("general.AssessmentSequenceID")
-            .value(DemoHealth::getAdmissionSequenceID)
-            .ok()
-            .endAssociation()
-            .endAssociations()
-            .done();
-
-        Shuttle shuttle = new Shuttle(environment, jwtToken);
-        Map<Flight, Dataset<Row>> flights = new HashMap<>(2);
-        flights.put(healthMapping, health);
-
-        shuttle.launch(flights);
+   //Flight healthMapping = Flight.newFlight()
+   //        .createEntities()
+   //        .addEntity("Patients")
+   //        .to("DemoPatients")
+   //        .ofType(new FullQualifiedName("general.person"))
+   //        .key(new FullQualifiedName("nc.SubjectIdentification"))
+   //        .addProperty("nc.SubjectIdentification")
+   //        .value(DemoHealth::getSubjectIdentification).ok()
+   //        .addProperty("nc.PersonGivenName", "FirstName")
+   //        .addProperty("nc.PersonSurName", "LastName")
+   //        .addProperty("nc.PersonSex", "Sex")
+   //        .addProperty("nc.PersonRace", "Race")
+   //        .addProperty("nc.PersonEthnicity", "Ethnicity")
+   //        .addProperty("nc.PersonBirthDate")
+   //        .value(DemoHealth::safeDOBParse).ok()
+   //        .endEntity()
+   //        .addEntity("Providers")
+   //        .to("DemoProviders")
+   //        .ofType("general.Provider")
+   //        .key("nc.ProviderIdentification")
+   //        .addProperty("nc.ProviderIdentification")
+   //        .value(DemoHealth::getProviderIdentification).ok()
+   //        .addProperty("nc.PersonGivenName", "providerFNames")
+   //        .addProperty("nc.PersonSurName", "providerLNames")
+   //        .endEntity()
+   //        .addEntity("Appointments")
+   //        .to("DemoAppointments")
+   //        .ofType("general.Appointment")
+   //        .key("general.AppointmentSequenceID")
+   //        .addProperty("general.AppointmentSequenceID")
+   //        .value(DemoHealth::getAppointmentSequenceID).ok()
+   //        .addProperty("date.UpcomingVisit")
+   //        .value(DemoHealth::safeupcomingApptParse).ok()
+   //        .addProperty("date.MissedAppointment")
+   //        .value(DemoHealth::safemissedApptParse).ok()
+   //        .addProperty("event.MissedAppointmentCount", "NumMissedAppt")
+   //        .addProperty("event.AppointmentType", "ApptTypes")
+   //        .endEntity()
+   //        .addEntity("AdmissionRecords")
+   //        .to("DemoAdmissionRecords")
+   //        .ofType("general.AdmissionRecord")
+   //        .key("general.AdmissionSequenceID")
+   //        .addProperty("general.AdmissionSequenceID")
+   //        .value(DemoHealth::getAdmissionSequenceID).ok()
+   //        .addProperty("date.AdmissionDate")
+   //        .value(DemoHealth::safeAdmissionDateParse).ok()
+   //        .addProperty("date.LastUsed")
+   //        .value(DemoHealth::safeLastUsedParse).ok()
+   //        .addProperty("event.SubstanceType", "DrugType")
+   //        .addProperty("event.RouteOfAdministration", "DrugRoute")
+   //        .addProperty("event.SubstanceFrequency", "DrugFreq")
+   //        .addProperty("event.Seizure", "Seizure")
+   //        .addProperty("event.ChestPain", "ChestPain")
+   //        .addProperty("event.AbdominalPain", "AbdominalPain")
+   //        .addProperty("event.CurrentMedicationName", "currentMedication")
+   //        .endEntity()
+   //        .addEntity("MedicalAssessments")
+   //        .to("DemoMedicalAssessments")
+   //        .ofType("general.MedicalAssessment")
+   //        .key("general.AssessmentSequenceID")
+   //        .addProperty("general.AssessmentSequenceID")
+   //        .value(DemoHealth::getAssessmentSequenceID).ok()
+   //        .addProperty("date.MedicalAssessmentDate")
+   //        .value(DemoHealth::safeAdmissionDateParse).ok()
+   //        .addProperty("event.VisitReason", "VisitReason")
+   //        .addProperty("event.Symptoms", "Symptoms")
+   //        .addProperty("event.DrugPresentAtVisit", "DrugPresent")
+   //        .addProperty("event.Temperature", "Temperature")
+   //        .addProperty("event.BloodPressure", "BloodPressure")
+   //        .endEntity()
+   //        .endEntities()
+   //        .createAssociations()
+   //        .addAssociation("AppearsInAppointment")
+   //        .ofType("general.AppearsIn").to("HealthAppearsIn")
+   //        .fromEntity("Patients")
+   //        .toEntity("Appointments")
+   //        .key("nc.SubjectIdentification", "general.AppointmentSequenceID")
+   //        .addProperty("nc.SubjectIdentification")
+   //        .value(DemoHealth::getSubjectIdentification)
+   //        .ok()
+   //        .addProperty("general.AppointmentSequenceID")
+   //        .value(DemoHealth::getAppointmentSequenceID)
+   //        .ok()
+   //        .endAssociation()
+   //        .addAssociation("AppearsInAdmission")
+   //        .ofType("general.AppearsIn").to("HealthAppearsIn")
+   //        .fromEntity("Patients")
+   //        .toEntity("AdmissionRecords")
+   //        .key("nc.SubjectIdentification", "general.AdmissionSequenceID")
+   //        .addProperty("nc.SubjectIdentification")
+   //        .value(DemoHealth::getSubjectIdentification)
+   //        .ok()
+   //        .addProperty("general.AdmissionSequenceID")
+   //        .value(DemoHealth::getAdmissionSequenceID)
+   //        .ok()
+   //        .endAssociation()
+   //        .addAssociation("VisitedIn")
+   //        .ofType("general.VisitedIn").to("VisitedIn")
+   //        .fromEntity("Patients")
+   //        .toEntity("MedicalAssessments")
+   //        .key("nc.SubjectIdentification", "general.AssessmentSequenceID")
+   //        .addProperty("nc.SubjectIdentification")
+   //    shuttle.launch(flights);
     }
 
     public static String getSubjectIdentification(Row row) {
@@ -207,15 +179,15 @@ public class DemoHealth {
         return "PROVIDER-" + row.getAs("NPI");
     }
 
-    public static String safeLastUsedParse(Row row) {
-        String LastUsed = row.getAs("LastUsed");
-        return dtHelper.parse(LastUsed);
-    }
-
-    public static String safeAdmissionDateParse(Row row) {
-        String visitDate = row.getAs("visitDate");
-        return dtHelper.parse(visitDate);
-    }
+    //public static String safeLastUsedParse(Row row) {
+    //    String LastUsed = row.getAs("LastUsed");
+    //    return dtHelper.parse(LastUsed);
+    //}
+//
+    //public static String safeAdmissionDateParse(Row row) {
+    //    String visitDate = row.getAs("visitDate");
+    //    return dtHelper.parse(visitDate);
+    //}
 
     public static String getAssessmentSequenceID(Row row) {
 
@@ -232,19 +204,19 @@ public class DemoHealth {
         return "APPOINTMENT-" + row.getAs("id");
     }
 
-    public static String safeDOBParse(Row row) {
-        String dob = row.getAs("BirthDate");
-        return bdHelper.parse(dob);
-    }
-
-    public static String safeupcomingApptParse(Row row) {
-        String upcomingAppt = row.getAs("upcomingAppt");
-        return dtHelper.parse(upcomingAppt);
-    }
-
-    public static String safemissedApptParse(Row row) {
-        String missedAppt = row.getAs("missedAppt");
-        return dtHelper.parse(missedAppt);
-    }
+    //public static String safeDOBParse(Row row) {
+    //    String dob = row.getAs("BirthDate");
+    //    return bdHelper.parse(dob);
+    //}
+//
+    //public static String safeupcomingApptParse(Row row) {
+    //    String upcomingAppt = row.getAs("upcomingAppt");
+    //    return dtHelper.parse(upcomingAppt);
+    //}
+//
+    //public static String safemissedApptParse(Row row) {
+    //    String missedAppt = row.getAs("missedAppt");
+    //    return dtHelper.parse(missedAppt);
+    //}
 
 }
