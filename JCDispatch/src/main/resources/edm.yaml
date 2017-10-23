@@ -54,13 +54,6 @@ propertyTypes:
   - type: "date.CompletedDateTime"
     title: "Dispatch Completed DateTime"
     description: "CFS Completed DateTime"
-- datatype: "TimeOfDay"
-  piiField: false
-  analyzer: "STANDARD"
-  properties:
-  - type: "date.TimeOfDay"
-    title: "Time Of Day"
-    description: "Time Of Day"
 - datatype: "Boolean"
   piiField: false
   analyzer: "STANDARD"
@@ -131,7 +124,7 @@ propertyTypes:
   - type: "location.street"
     title: "Street Address"
     description: "Street Address"
-  - type: "location.apartment"
+  - type: "location.Apartment"
     title: "Apartment No"
     description: "Apartment Number"
   - type: "location.city"
@@ -143,7 +136,7 @@ propertyTypes:
   - type: "location.zip"
     title: "Zip Code"
     description: "A zip code"
-  - type: "location.PhoneNumber"
+  - type: "contact.PhoneNumber"
     title: "Phone Number"
     description: "Phone Number"
   - type: "location.DispatchZone"
@@ -257,9 +250,9 @@ propertyTypes:
   - type: "general.CFSSequenceID"
     title: "CFS SequenceID"
     description: "Call for service SequenceID"
-  - type: "general.LocationSequenceID"
-    title: "LocationSequenceID"
-    description: "A string that uniquely identifies an location"
+  - type: "general.PlaceSequenceID"
+    title: "PlaceSequenceID"
+    description: "A string that uniquely identifies an place"
   - type: "general.AddressSequenceID"
     title: "AddressSequenceID"
     description: "A string that uniquely identifies an address"
@@ -281,9 +274,9 @@ propertyTypes:
   - type: "date.DayOfWeek"
     title: "Day Of Week"
     description: "Day Of Week"
-  - type: "date.AvgHoldTime"
-    title: "Average Hold Time"
-    description: "Average Hold Time"
+  - type: "contact.SequenceID"
+    title: "SequenceID"
+    description: "SequenceID"
 
 entityTypes:
 - type: "general.Address"
@@ -293,27 +286,36 @@ entityTypes:
   - "location.address"
   properties:
   - "location.street"
-  - "location.apartment"
+  - "location.Intersection"
+  - "location.Apartment"
   - "location.city"
   - "location.state"
   - "location.zip"
   - "location.address"
   baseType: null
-- type: "general.Location"
-  title: "Location"
-  description: "Location"
+- type: "general.Place"
+  title: "Place"
+  description: "Place"
   key:
-  - "general.LocationSequenceID"
+  - "general.PlaceSequenceID"
   properties:
   - "location.name"
   - "location.Intersection"
-  - "location.PhoneNumber"
   - "location.DispatchZoneID"
   - "location.DispatchZone"
   - "location.DispatchSubZone"
   - "location.MedicalZone"
   - "location.FireDistrict"
-  - "general.LocationSequenceID"
+  - "general.PlaceSequenceID"
+  baseType: null
+- type: "general.ContactInformation"
+  title: "ContactInformation"
+  description: "Contact Information"
+  key:
+  - "contact.SequenceID"
+  properties:
+  - "contact.PhoneNumber"
+  - "contact.SequenceID"
   baseType: null
 - type: "general.person"
   title: "Person"
@@ -334,6 +336,7 @@ entityTypes:
   - "nc.PersonWeightMeasure"
   - "nc.PersonHairColorText"
   - "nc.PersonEyeColorText"
+  - "nc.MaritalStatus"
   - "nc.SubjectIdentification"
   baseType: null
 - type: "general.Unit"
@@ -358,7 +361,6 @@ entityTypes:
   properties:
   - "date.ReceivedDateTime"
   - "date.DayOfWeek"
-  - "date.TimeOfDay"
   - "date.AlertedDateTime"
   - "date.EnRouteDateTime"
   - "date.CompletedDateTime"
@@ -418,17 +420,17 @@ associationTypes:
     description: "Links together an entity with a location"
     key:
     - "nc.SubjectIdentification"
-    - "general.LocationSequenceID"
+    - "general.PlaceSequenceID"
     - "general.CFSSequenceID"
     properties:
     - "nc.SubjectIdentification"
-    - "general.LocationSequenceID"
+    - "general.PlaceSequenceID"
     - "general.CFSSequenceID"
   src:
   - "general.person"
   - "general.CallForService"
   dst:
-  - "general.Location"
+  - "general.Place"
   bidirectional: false
 - type:
     type: "general.Initiated"
@@ -436,15 +438,15 @@ associationTypes:
     description: "Links together a entity that initiates an event"
     key:
     - "nc.SubjectIdentification"
-    - "general.LocationSequenceID"
+    - "general.PlaceSequenceID"
     - "general.CFSSequenceID"
     properties:
     - "nc.SubjectIdentification"
-    - "general.LocationSequenceID"
+    - "general.PlaceSequenceID"
     - "general.CFSSequenceID"
   src:
   - "general.person"
-  - "general.Location"
+  - "general.Place"
   dst:
   - "general.CallForService"
   bidirectional: false
@@ -483,15 +485,37 @@ associationTypes:
     title: "Has"
     description: "Links together an entity with another"
     key:
-    - "general.LocationSequenceID"
+    - "general.PlaceSequenceID"
     - "location.address"
+    - "nc.SubjectIdentification"
     properties:
-    - "general.LocationSequenceID"
+    - "general.PlaceSequenceID"
     - "location.address"
+    - "nc.SubjectIdentification"
   src:
-  - "general.Location"
+  - "general.person"
+  - "general.Place"
   dst:
   - "general.Address"
+  bidirectional: false
+- type:
+    type: "general.BelongsTo"
+    title: "BelongsTo"
+    description: "Links together a contact information with person"
+    key:
+    - "general.PlaceSequenceID"
+    - "contact.SequenceID"
+    - "nc.SubjectIdentification"
+    properties:
+    - "
+    - "general.PlaceSequenceID"
+    - "contact.SequenceID"
+    - "nc.SubjectIdentification"
+  src:
+  - "general.ContactInformation"
+  dst:
+  - "general.person"
+  - "general.Place"
   bidirectional: false
 - type:
     type: "general.Includes"
@@ -519,7 +543,7 @@ entitySets:
   owners:
   - "auth0|59a985a557d70e1088c0c425"
   - "auth0|588a2038aa03fb78b0e52307"
-- type: "general.Location"
+- type: "general.Place"
   name: "Location"
   title: "Location"
   description: "Location"
@@ -622,6 +646,24 @@ entitySets:
   name: "Includes"
   title: "Includes"
   description: "Dispatch type involved in call for service"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.ContactInformation"
+  name: "ContactInformation"
+  title: "ContactInformation"
+  description: "Contact information other than address"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.BelongsTo"
+  name: "BelongsTo"
+  title: "BelongsTo"
+  description: "Contact information belongs to party"
   contacts:
   - "support@openlattice.com"
   owners:

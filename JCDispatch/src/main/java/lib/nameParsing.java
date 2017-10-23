@@ -14,7 +14,11 @@ public class nameParsing {
     public static String formatText( Object obj ) {
         if ( obj != null ) {
             String name = obj.toString().toLowerCase().trim();
-            name = name.replace( "-", "- " ).replace( ",", ", " );
+            name = name.replace( ",", ", " );
+            if (name.contains( "-" )) {
+                name = name.replace( "-", "- " );
+                return WordUtils.capitalize( name.trim() ).replace( "-", "-" );
+            }
             return WordUtils.capitalize( name.trim() );
         }
         return null;

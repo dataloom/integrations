@@ -30,7 +30,7 @@ public class DemoHealth {
 
     private static final Logger logger = LoggerFactory
             .getLogger(DemoHealth.class);
-    private static final Environment environment = Environment.LOCAL;
+    private static final Environment environment = Environment.STAGING;
 
     public static void main(String[] args) throws InterruptedException {
 
