@@ -1,9 +1,19 @@
 propertyTypes:
+- datatype: "Double"
+  piiField: false
+  analyzer: "STANDARD"
+  properties:
+  - type: "dispatch.latitude"
+    title: "Latitude"
+    description: "Latitude"
+  - type: "dispatch.longitude"
+    title: "Longitude"
+    description: "Longitude"
 - datatype: "Int32"
   piiField: false
   analyzer: "STANDARD"
   properties:
-  - type: "dispatch.type_priority"
+  - type: "dispatch.typePriority"
     title: "Priority"
     description: "Dispatch Type Priority"
   - type: "dispatch.OSQ"
@@ -12,7 +22,7 @@ propertyTypes:
   - type: "cfs.class"
     title: "Class"
     description: "CFS Type Class"
-  - type: "dispatch.zone_id"
+  - type: "dispatch.zoneID"
     title: "Zone ID"
     description: "Dispatch Zone ID"
   - type: "dispatch.esn"
@@ -42,19 +52,23 @@ propertyTypes:
   piiField: false
   analyzer: "STANDARD"
   properties:
-  - type: "date.received_datetime"
+  - type: "date.receivedDatetime"
     title: "Received DateTime"
     description: "Datetime CFS was received"
-  - type: "date.alerted_datetime"
+  - type: "date.alertedDatetime"
     title: "Alerted DateTime"
     description: "CFS Alerted DateTime"
-  - type: "date.enroute_datetime"
-    title: .enroute DateTime"
-    description: "Dispatch.enroute DateTime"
-  - type: "date.completed_datetime"
+  - type: "date.enRouteDatetime"
+    title: "EnRoute DateTime"
+    description: "EnRoute DateTime"
+  - type: "date.completedDatetime"
     title: "Completed DateTime"
-    description: "CFS Completed DateTime"
-  - type: "date.time_of_day"
+    description: "Completed DateTime"
+- datatype: "TimeOfDay"
+  piiField: false
+  analyzer: "STANDARD"
+  properties:
+  - type: "date.timeOfDay"
     title: "Time Of Day"
     description: "Time Of Day"
 - datatype: "Boolean"
@@ -64,10 +78,10 @@ propertyTypes:
   - type: "general.active"
     title: "Active"
     description: "Active"
-  - type: "dispatch.transfer_vehicle"
-    title: "TransferVehicle"
-    description: "TransferVehicle"
-  - type: "person.Juvenile"
+  - type: "dispatch.transferVehicle"
+    title: "Transfer Vehicle"
+    description: "Transfer Vehicle"
+  - type: "person.juvenile"
     title: "Juvenile"
     description: "Juvenile"
 - datatype: "String"
@@ -89,7 +103,7 @@ propertyTypes:
   properties:
   - type: "im.PersonNickName"
     title: "Name"
-    description: "Location name"
+    description: "Name"
 - datatype: "String"
   piiField: true
   analyzer: "STANDARD"
@@ -97,9 +111,6 @@ propertyTypes:
   - type: "nc.SSN"
     title: "Social Security Number"
     description: "The social security number of a subject."
-  - type: "person.CellPhoneNumber"
-    title: "Cell Phone Number"
-    description: "Cell Phone Number"
 - datatype: "String"
   piiField: false
   analyzer: "STANDARD"
@@ -119,7 +130,10 @@ propertyTypes:
   - type: "nc.PersonEyeColorText"
     title: "Eye Color"
     description: "Eye color of a person"
-  - type: "location.name"
+  - type: "nc.MaritalStatus"
+    title: "MaritalStatus"
+    description: "MaritalStatus"
+  - type: "general.FullName"
     title: "Location Name"
     description: "Location Name"
   - type: "location.intersection"
@@ -143,70 +157,70 @@ propertyTypes:
   - type: "location.zip"
     title: "Zip Code"
     description: "A zip code"
-  - type: "contact.phone_number"
+  - type: "contact.PhoneNumber"
     title: "Phone Number"
     description: "Phone Number"
   - type: "dispatch.zone"
     title: "Dispatch Zone"
     description: "Dispatch Zone"
-  - type: "dispatch.sub_zone"
+  - type: "dispatch.subZone"
     title: "Dispatch SubZone"
     description: "Dispatch SubZone"
-  - type: "dispatch.medical_zone"
+  - type: "dispatch.medicalZone"
     title: "Medical Zone"
     description: "Medical Zone"
-  - type: "dispatch.fire_district"
+  - type: "dispatch.fireDistrict"
     title: "Fire District"
     description: "Fire District"
-  - type: "place.originating_agency_identifier"
+  - type: "place.originatingAgencyIdentifier"
     title: "Originating Agency Identifier"
     description: "Originating Agency Identifier (ORI)"
   - type: "dispatch.disposition"
     title: "Disposition"
     description: "The disposition of an event"
-  - type: "dispatch.cit_disposition"
+  - type: "dispatch.citDisposition"
     title: "CIT Disposition"
     description: "CIT Disposition"
   - type: "person.operator"
     title: "Operator"
     description: "Operator"
-  - type: "dispatch.how_reported"
+  - type: "dispatch.howReported"
     title: "How Reported"
     description: "How Reported"
   - type: "person.title"
     title: "Title"
     description: "Title"
-  - type: "person.employee_id"
+  - type: "person.employeeID"
     title: "Employee ID"
     description: "Employee ID"
-  - type: "cfs.case_number"
+  - type: "cfs.caseNumber"
     title: "CFS Case Number"
     description: "CFS Case Number"
-  - type: "dispatch.type_text"
+  - type: "dispatch.typeText"
     title: "Dispatch Type Text"
     description: "Dispatch Type Text"
-  - type: "dispatch.pro_qa"
+  - type: "dispatch.proQa"
     title: "ProQA"
     description: "ProQA"
-  - type: "dispatch.pro_qa_level"
+  - type: "dispatch.proQaLevel"
     title: "ProQA Level"
     description: "ProQA Level"
-  - type: "dispatch.pro_qa_type"
+  - type: "dispatch.proQaType"
     title: "ProQA Type"
     description: "ProQA Type"
-  - type: "dispatch.fire_level"
+  - type: "dispatch.fireLevel"
     title: "Dispatch Fire Level"
     description: "Dispatch Fire Level"
-  - type: "dispatch.cfs_fire"
-    title: "CFS_Fire"
-    description: "CFS_Fire"
-  - type: "dispatch.cfs_ems"
-    title: "CFS_EMS"
-    description: "CFS_EMS"
-  - type: "dispatch.cfs_lea"
-    title: "CFS_LEA"
-    description: "CFS_LEA"
-  - type: "dispatch.trip_number"
+  - type: "dispatch.cfsFire"
+    title: "CFS Fire"
+    description: "CFS Fire"
+  - type: "dispatch.cfsEMS"
+    title: "CFS EMS"
+    description: "CFS EMS"
+  - type: "dispatch.cfsLEA"
+    title: "CFS LEA"
+    description: "CFS LEA"
+  - type: "dispatch.tripNumber"
     title: "Trip Number"
     description: "Trip Number"
   - type: "vehicle.make"
@@ -227,48 +241,51 @@ propertyTypes:
   - type: "vehicle.style"
     title: "Style"
     description: "Vehicle Style"
-  - type: "general.license_plate_number"
+  - type: "vehicle.licensePlateNumber"
     title: "License Plate Number"
     description: "License plate number"
-  - type: "general.license_plate_tate"
+  - type: "vehicle.licensePlateState"
     title: "License Plate State"
     description: "License plate state"
-  - type: "general.license_plate_type"
+  - type: "vehicle.licensePlateType"
     title: "License Plate Type"
     description: "License plate type-auto, truck, apportioned, etc."
-  - type: "general.license_plate_year"
+  - type: "vehicle.licensePlateYear"
     title: "License Plate Year"
     description: "License plate year of expiration"
   - type: "nc.SubjectIdentification"
     title: "Subject Identification"
     description: "Assigned identification that identifies a person"
-  - type: "general.unit_id"
+  - type: "general.unitID"
     title: "Unit ID"
     description: "A string that uniquely identifies an unit"
-  - type: "general.cfs_id"
+  - type: "general.cfsID"
     title: "Call For Service ID"
     description: "A string that uniquely identifies a call for service"
-  - type: "general.place_id"
+  - type: "place.uniqueID"
     title: "Place ID"
     description: "A string that uniquely identifies an place"
-  - type: "general.vehicle_id"
+  - type: "general.vehicleID"
     title: "VehicleID"
     description: "A string that uniquely identifies an vehicle"
-  - type: "general.dispatch_id"
+  - type: "general.dispatchID"
     title: "Dispatch ID"
     description: "A string that uniquely identifies a dispatch"
-  - type: "dispatch.911call_number"
+  - type: "dispatch.911callNumber"
     title: "911 Call Number"
     description: "911 Call Number"
-  - type: "dispatch.person_type"
+  - type: "dispatch.personType"
     title: "Dispatch Person Type"
     description: "Dispatch Person Type"
-  - type: "date.day_of_week"
+  - type: "date.dayOfWeek"
     title: "Day Of Week"
     description: "Day Of Week"
-  - type: "general.contact_id"
+  - type: "contact.uniqueID"
     title: "Contact ID"
     description: "Contact ID"
+  - type: "dispatch.uniqueZoneID"
+    title: "uniqueZoneID"
+    description: "uniqueZoneID"
 
 entityTypes:
 - type: "general.Address"
@@ -283,381 +300,423 @@ entityTypes:
   - "location.city"
   - "location.state"
   - "location.zip"
+  - "dispatch.latitude"
+  - "dispatch.longitude"
   - "location.address"
   baseType: null
-#- type: "general.Place"
-#  title: "Place"
-#  description: "Place"
-#  key:
-#  - "general.place_id"
-#  properties:
-#  - "location.name"
-#  - "location.intersection"
-#  - "dispatch.zone_id"
-#  - "dispatch.zone"
-#  - "dispatch.sub_zone"
-#  - "dispatch.medical_zone"
-#  - "dispatch.fire_district"
-#  - "general.place_id"
-#  baseType: null
-#- type: "general.ContactInformation"
-#  title: "ContactInformation"
-#  description: "Contact Information"
-#  key:
-#  - "general.contact_id"
-#  properties:
-#  - "contact.phone_number"
-#  - "general.contact_id"
-#  baseType: null
-#- type: "general.person"
-#  title: "Person"
-#  description: "A person"
-#  key:
-#  - "nc.SubjectIdentification"
-#  properties:
-#  - "nc.PersonGivenName"
-#  - "nc.PersonMiddleName"
-#  - "nc.PersonSurName"
-#  - "im.PersonNickName"
-#  - "nc.PersonBirthDate"
-#  - "person.age"
-#  - "nc.PersonSex"
-#  - "nc.PersonRace"
-#  - "nc.PersonEthnicity"
-#  - "nc.PersonHeightMeasure"
-#  - "nc.PersonWeightMeasure"
-#  - "nc.PersonHairColorText"
-#  - "nc.PersonEyeColorText"
-#  - "nc.MaritalStatus"
-#  - "nc.SubjectIdentification"
-#  baseType: null
-#- type: "general.Unit"
-#  title: "Unit"
-#  description: "Unit"
-#  key:
-#  - "general.unit_id"
-#  properties:
-#  - "place.originating_agency_identifier"
-#  - "general.active"
-#  - "person.employee_id"
-#  - "person.title"
-#  - "nc.PersonGivenName"
-#  - "nc.PersonSurName"
-#  - "general.unit_id"
-#  baseType: null
-#- type: "general.CallForService"
-#  title: "Call For Service"
-#  description: "Call For Service"
-#  key:
-#  - "general.cfs_id"
-#  properties:
-#  - "date.received_datetime"
-#  - "date.alerted_datetime"
-#  - "date.day_of_week"
-#  - "date.time_of_day"
-#  - "date.enroute_datetime"
-#  - "date.completed_datetime"
-#  - "person.operator"
-#  - "cfs.class"
-#  - "dispatch.pro_qa"
-#  - "dispatch.pro_qa_level"
-#  - "dispatch.pro_qa_type"
-#  - "dispatch.how_reported"
-#  - "dispatch.cfs_fire"
-#  - "dispatch.cfs_ems"
-#  - "dispatch.cfs_lea"
-#  - "dispatch.fire_level"
-#  - "dispatch.esn"
-#  - "dispatch.disposition"
-#  - "cfs.case_number"
-#  - "dispatch.cit_disposition"
-#  - "dispatch.transfer_vehicle"
-#  - "dispatch.911call_number"
-#  - "general.cfs_id"
-#  baseType: null
-#- type: "general.DispatchType"
-#  title: "Dispatch Type"
-#  description: "Dispatch Type"
-#  key:
-#  - "general.dispatch_id"
-#  properties:
-#  - "dispatch.type_text"
-#  - "dispatch.type_priority"
-#  - "dispatch.person_type"
-#  - "dispatch.trip_number"
-#  - "general.dispatch_id"
-#  baseType: null
-#- type: "general.Vehicle"
-#  title: "Vehicle"
-#  description: "Vehicle"
-#  key:
-#  - "general.vehicle_id"
-#  properties:
-#  - "vehicle.make"
-#  - "vehicle.model"
-#  - "vehicle.style"
-#  - "vehicle.year"
-#  - "vehicle.color"
-#  - "vehicle.vin"
-#  - "vehicle.license_plate_number"
-#  - "vehicle.license_plate_tate"
-#  - "vehicle.license_plate_type"
-#  - "vehicle.license_plate_year"
-#  - "general.vehicle_id"
-#  baseType: null
-#
-#associationTypes:
-#- type:
-#    type: "general.LocatedAt"
-#    title: "LocatedAt"
-#    description: "Links together an entity with a location"
-#    key:
-#    - "nc.SubjectIdentification"
-#    - "general.place_id"
-#    - "general.cfs_id"
-#    properties:
-#    - "nc.SubjectIdentification"
-#    - "general.place_id"
-#    - "general.cfs_id"
-#  src:
-#  - "general.person"
-#  - "general.CallForService"
-#  dst:
-#  - "general.Place"
-#  bidirectional: false
-#- type:
-#    type: "general.Initiated"
-#    title: "Initiated"
-#    description: "Links together a entity that initiates an event"
-#    key:
-#    - "nc.SubjectIdentification"
-#    - "general.place_id"
-#    - "general.cfs_id"
-#    properties:
-#    - "nc.SubjectIdentification"
-#    - "general.place_id"
-#    - "general.cfs_id"
-#  src:
-#  - "general.person"
-#  - "general.Place"
-#  dst:
-#  - "general.CallForService"
-#  bidirectional: false
-#- type:
-#    type: "general.AssignedTo"
-#    title: "AssignedTo"
-#    description: "Links together a unit to an event"
-#    key:
-#    - "general.unit_id"
-#    - "general.cfs_id"
-#    properties:
-#    - "general.unit_id"
-#    - "general.cfs_id"
-#  src:
-#  - "general.CallForService"
-#  dst:
-#  - "general.Unit"
-#  bidirectional: false
-#- type:
-#    type: "general.InvolvedIn"
-#    title: "InvolvedIn"
-#    description: "Links together a entity with an event"
-#    key:
-#    - "general.cfs_id"
-#    - "general.vehicle_id"
-#    properties:
-#    - "general.cfs_id"
-#    - "general.vehicle_id"
-#  src:
-#  - "general.Vehicle"
-#  dst:
-#  - "general.CallForService"
-#  bidirectional: false
-#- type:
-#    type: "general.Has"
-#    title: "Has"
-#    description: "Links together an entity with another"
-#    key:
-#    - "general.place_id"
-#    - "location.address"
-#    - "nc.SubjectIdentification"
-#    properties:
-#    - "general.place_id"
-#    - "location.address"
-#    - "nc.SubjectIdentification"
-#  src:
-#  - "general.person"
-#  - "general.Place"
-#  dst:
-#  - "general.Address"
-#  bidirectional: false
-#- type:
-#    type: "general.BelongsTo"
-#    title: "BelongsTo"
-#    description: "Links together a contact information with person"
-#    key:
-#    - "general.place_id"
-#    - "general.contact_id"
-#    - "nc.SubjectIdentification"
-#    properties:
-#    - "general.place_id"
-#    - "general.contact_id"
-#    - "nc.SubjectIdentification"
-#  src:
-#  - "general.ContactInformation"
-#  dst:
-#  - "general.person"
-#  - "general.Place"
-#  bidirectional: false
-#- type:
-#    type: "general.Includes"
-#    title: "Includes"
-#    description: "Links together an entity with another"
-#    key:
-#    - "general.cfs_id"
-#    - "general.dispatch_id"
-#    properties:
-#    - "general.cfs_id"
-#    - "general.dispatch_id"
-#  src:
-#  - "general.CallForService"
-#  dst:
-#  - "general.DispatchType"
-#  bidirectional: false
-#
-#entitySets:
-#- type: "general.person"
-#  name: "Party"
-#  title: "Party"
-#  description: "Party involved in Call For Service"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.Place"
-#  name: "Location"
-#  title: "Location"
-#  description: "Location"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.Address"
-#  name: "Address"
-#  title: "Address"
-#  description: "Address of a location"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.Vehicle"
-#  name: "Vehicle"
-#  title: "Vehicle"
-#  description: "Vehicle involved in Call For Service"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.LocatedAt"
-#  name: "LocatedAt"
-#  title: "LocatedAt"
-#  description: "Call for service location"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.Unit"
-#  name: "Unit"
-#  title: "Unit"
-#  description: "Dispatch unit information"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.CallForService"
-#  name: "CallForService"
-#  title: "Call For Service"
-#  description: "Call for service information"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.Initiated"
-#  name: "Initiated"
-#  title: "Initiated"
-#  description: "Party initiating a call for service"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.AssignedTo"
-#  name: "AssignedTo"
-#  title: "AssignedTo"
-#  description: "Dispatch unit assigned to call for service"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.InvolvedIn"
-#  name: "InvolvedIn"
-#  title: "InvolvedIn"
-#  description: "Vehicle involved in Call For Service"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.DispatchType"
-#  name: "DispatchType"
-#  title: "Dispatch Type"
-#  description: "Different types of dispatch"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.Has"
-#  name: "Has"
-#  title: "Has"
-#  description: "Address of a Location"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.Includes"
-#  name: "Includes"
-#  title: "Includes"
-#  description: "Dispatch type involved in call for service"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.ContactInformation"
-#  name: "ContactInformation"
-#  title: "ContactInformation"
-#  description: "Contact information other than address"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
-#- type: "general.BelongsTo"
-#  name: "BelongsTo"
-#  title: "BelongsTo"
-#  description: "Contact information belongs to party"
-#  contacts:
-#  - "support@openlattice.com"
-#  owners:
-#  - "auth0|59a985a557d70e1088c0c425"
-#  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.Place"
+  title: "Place"
+  description: "Place"
+  key:
+  - "place.uniqueID"
+  properties:
+  - "general.FullName"
+  - "contact.PhoneNumber"
+  - "place.uniqueID"
+  baseType: null
+- type: "general.DispatchZone"
+  title: "DispatchZone"
+  description: "DispatchZone"
+  key:
+  - "dispatch.uniqueZoneID"
+  properties:
+  - "dispatch.zoneID"
+  - "dispatch.zone"
+  - "dispatch.subZone"
+  - "dispatch.medicalZone"
+  - "dispatch.fireDistrict"
+  - "dispatch.uniqueZoneID"
+  baseType: null
+- type: "general.ContactInformation"
+  title: "ContactInformation"
+  description: "Contact Information"
+  key:
+  - "contact.uniqueID"
+  properties:
+  - "contact.PhoneNumber"
+  - "contact.uniqueID"
+  baseType: null
+- type: "general.person"
+  title: "Person"
+  description: "A person"
+  key:
+  - "nc.SubjectIdentification"
+  properties:
+  - "nc.PersonGivenName"
+  - "nc.PersonMiddleName"
+  - "nc.PersonSurName"
+  - "im.PersonNickName"
+  - "nc.PersonBirthDate"
+  - "nc.PersonSex"
+  - "nc.PersonRace"
+  - "nc.PersonEthnicity"
+  - "nc.PersonHairColorText"
+  - "nc.PersonEyeColorText"
+  - "nc.SubjectIdentification"
+  baseType: null
+- type: "general.Unit"
+  title: "Unit"
+  description: "Unit"
+  key:
+  - "general.unitID"
+  properties:
+  - "place.originatingAgencyIdentifier"
+  - "general.active"
+  - "person.employeeID"
+  - "person.title"
+  - "nc.PersonGivenName"
+  - "nc.PersonSurName"
+  - "general.unitID"
+  baseType: null
+- type: "general.CallForService"
+  title: "Call For Service"
+  description: "Call For Service"
+  key:
+  - "general.cfsID"
+  properties:
+  - "date.receivedDatetime"
+  - "date.alertedDatetime"
+  - "date.dayOfWeek"
+  - "date.timeOfDay"
+  - "date.enRouteDatetime"
+  - "date.completedDatetime"
+  - "person.operator"
+  - "cfs.class"
+  - "dispatch.proQa"
+  - "dispatch.proQaLevel"
+  - "dispatch.proQaType"
+  - "dispatch.howReported"
+  - "dispatch.cfsFire"
+  - "dispatch.cfsEMS"
+  - "dispatch.cfsLEA"
+  - "dispatch.fireLevel"
+  - "dispatch.esn"
+  - "dispatch.disposition"
+  - "cfs.caseNumber"
+  - "dispatch.citDisposition"
+  - "dispatch.transferVehicle"
+  - "dispatch.911callNumber"
+  - "person.age"
+  - "nc.PersonHeightMeasure"
+  - "nc.PersonWeightMeasure"
+  - "general.cfsID"
+  baseType: null
+- type: "general.DispatchType"
+  title: "Dispatch Type"
+  description: "Dispatch Type"
+  key:
+  - "general.dispatchID"
+  properties:
+  - "dispatch.typeText"
+  - "dispatch.typePriority"
+  - "dispatch.personType"
+  - "dispatch.tripNumber"
+  - "general.dispatchID"
+  baseType: null
+- type: "general.Vehicle"
+  title: "Vehicle"
+  description: "Vehicle"
+  key:
+  - "general.vehicleID"
+  properties:
+  - "vehicle.make"
+  - "vehicle.model"
+  - "vehicle.style"
+  - "vehicle.year"
+  - "vehicle.color"
+  - "vehicle.vin"
+  - "vehicle.licensePlateNumber"
+  - "vehicle.licensePlateState"
+  - "vehicle.licensePlateType"
+  - "vehicle.licensePlateYear"
+  - "general.vehicleID"
+  baseType: null
+
+associationTypes:
+- type:
+    type: "general.LocatedAt"
+    title: "LocatedAt"
+    description: "Links together a person with a location"
+    key:
+    - "nc.SubjectIdentification"
+    - "location.address"
+    - "place.uniqueID"
+    properties:
+    - "nc.SubjectIdentification"
+    - "location.address"
+    - "place.uniqueID"
+  src:
+  - "general.person"
+  - "general.Place"
+  dst:
+  - "general.Address"
+  bidirectional: false
+- type:
+    type: "justice.occurredat"
+    title: "OccurredAt"
+    description: "Links together an incident with a location"
+    key:
+    - "general.cfsID"
+    - "location.address"
+    properties:
+    - "general.cfsID"
+    - "location.address"
+  src:
+  - "general.CallForService"
+  dst:
+  - "general.Address"
+  bidirectional: false
+- type:
+    type: "general.Initiated"
+    title: "Initiated"
+    description: "Links together a entity that initiates an event"
+    key:
+    - "nc.SubjectIdentification"
+    - "place.uniqueID"
+    - "general.cfsID"
+    properties:
+    - "nc.SubjectIdentification"
+    - "place.uniqueID"
+    - "general.cfsID"
+  src:
+  - "general.person"
+  - "general.Place"
+  dst:
+  - "general.CallForService"
+  bidirectional: false
+- type:
+    type: "general.assignto"
+    title: "AssignedTo"
+    description: "Links together a unit to an event"
+    key:
+    - "general.unitID"
+    - "general.cfsID"
+    properties:
+    - "general.unitID"
+    - "general.cfsID"
+  src:
+  - "general.CallForService"
+  dst:
+  - "general.Unit"
+  bidirectional: false
+- type:
+    type: "general.InvolvedIn"
+    title: "InvolvedIn"
+    description: "Links together a entity with an event"
+    key:
+    - "general.cfsID"
+    - "general.vehicleID"
+    properties:
+    - "general.cfsID"
+    - "general.vehicleID"
+  src:
+  - "general.Vehicle"
+  dst:
+  - "general.CallForService"
+  bidirectional: false
+- type:
+    type: "general.Has"
+    title: "Has"
+    description: "Links together an entity with another"
+    key:
+    - "place.uniqueID"
+    - "location.address"
+    - "nc.SubjectIdentification"
+    - "contact.uniqueID"
+    properties:
+    - "place.uniqueID"
+    - "location.address"
+    - "nc.SubjectIdentification"
+    - "contact.uniqueID"
+  src:
+  - "general.person"
+  - "general.Place"
+  dst:
+  - "general.Address"
+  - "general.ContactInformation"
+  bidirectional: false
+- type:
+    type: "general.appearsin"
+    title: "AppearsIn"
+    description: "Links together a location with a zone"
+    key:
+    - "general.cfsID"
+    - "dispatch.uniqueZoneID"
+    properties:
+    - "general.cfsID"
+    - "dispatch.uniqueZoneID"
+  src:
+   - "general.CallForService"
+  dst:
+   - "general.DispatchZone"
+  bidirectional: false
+- type:
+    type: "general.Includes"
+    title: "Includes"
+    description: "Links together an entity with another"
+    key:
+    - "general.cfsID"
+    - "general.dispatchID"
+    properties:
+    - "general.cfsID"
+    - "general.dispatchID"
+  src:
+  - "general.CallForService"
+  dst:
+  - "general.DispatchType"
+  bidirectional: false
+
+entitySets:
+- type: "general.person"
+  name: "Party"
+  title: "Party"
+  description: "Party involved in Call For Service"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.Place"
+  name: "Place"
+  title: "Place"
+  description: "Place"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.Address"
+  name: "Address"
+  title: "Address"
+  description: "Address of a location"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.Vehicle"
+  name: "Vehicle"
+  title: "Vehicle"
+  description: "Vehicle involved in Call For Service"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.LocatedAt"
+  name: "LocatedAt"
+  title: "LocatedAt"
+  description: "LocatedAt"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "justice.occurredat"
+  name: "OccurredAt"
+  title: "OccurredAt"
+  description: "OccurredAt"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.Unit"
+  name: "Unit"
+  title: "Unit"
+  description: "Dispatch unit information"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.CallForService"
+  name: "CallForService"
+  title: "Call For Service"
+  description: "Call for service information"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.Initiated"
+  name: "Initiated"
+  title: "Initiated"
+  description: "Initiated"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.assignto"
+  name: "AssignedTo"
+  title: "AssignedTo"
+  description: "AssignedTo"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.InvolvedIn"
+  name: "InvolvedIn"
+  title: "InvolvedIn"
+  description: "InvolvedIn"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.DispatchType"
+  name: "DispatchType"
+  title: "Dispatch Type"
+  description: "Different types of dispatch"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.Has"
+  name: "Has"
+  title: "Has"
+  description: "Has"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.Includes"
+  name: "Includes"
+  title: "Includes"
+  description: "Includes"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.ContactInformation"
+  name: "ContactInformation"
+  title: "ContactInformation"
+  description: "Contact information other than address"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.DispatchZone"
+  name: "DispatchZone"
+  title: "Dispatch Zone"
+  description: "Dispatch Zone"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
+- type: "general.appearsin"
+  name: "AppearsIn"
+  title: "AppearsIn"
+  description: "AppearsIn"
+  contacts:
+  - "support@openlattice.com"
+  owners:
+  - "auth0|59a985a557d70e1088c0c425"
+  - "auth0|588a2038aa03fb78b0e52307"
