@@ -33,6 +33,12 @@ public class BurlingtonPDFlight {
     //which environment to send integration to
     private static final RetrofitFactory.Environment environment = RetrofitFactory.Environment.LOCAL;
 
+    //Parse dates correctly, from input string columns. Offset from UTC.
+    private static final DateTimeHelper dtHelper = new DateTimeHelper(DateTimeZone
+            .forOffsetHours(-4), "YYYYMMdd");
+    private static final DateTimeHelper bdHelper = new DateTimeHelper(DateTimeZone
+            .forOffsetHours(-4), "YYYYMMdd");
+
     public static void main( String[] args ) throws InterruptedException {
 /*
          * It's worth noting that we are omitting validation such as making sure enough args were passed in, checking
@@ -40,14 +46,9 @@ public class BurlingtonPDFlight {
          * will cause the program to exit with an exception.
          */
 
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
-
-        //Parse dates correctly, from input string columns. CHECK OFFSET HOURS
-        private static final DateTimeHelper dtHelper          = new DateTimeHelper( DateTimeZone
-                .forOffsetHours( -6 ), "YYYYMMdd" );
-        private static final DateTimeHelper              bdHelper          = new DateTimeHelper( DateTimeZone
-                .forOffsetHours( -6 ), "YYYYMMdd" );
+        //translates json and yamls into FQNs. Serialization transforms a java object into something else. Don't need, already in shuttle.
+//        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+//        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
 
         final SparkSession sparkSession = MissionControl.getSparkSession();
 
@@ -60,11 +61,11 @@ public class BurlingtonPDFlight {
         final String jwtToken = MissionControl.getIdToken( username, password );
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
-        //purpose:
-        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
+        //purpose: java library, using Retrofit to talk to EDMApi and Permissions API
+//        Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
 
-        EdmApi edmApi = retrofit.create( EdmApi.class );
-        PermissionsApi permissionApi = retrofit.create( PermissionsApi.class );
+//        EdmApi edmApi = retrofit.create( EdmApi.class );
+//        PermissionsApi permissionApi = retrofit.create( PermissionsApi.class );
 
 
         // Configure Spark to load and read your datasource
@@ -75,13 +76,13 @@ public class BurlingtonPDFlight {
 
 
         //load edm.yaml and ensure all EDM elements exist
-        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
-                .loadConfiguration( RequiredEdmElements.class );
-
-        if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
-            manager.ensureEdmElementsExist( requiredEdmElements );
-        }
+//        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
+//                .loadConfiguration( RequiredEdmElements.class );
+//
+//        if ( requiredEdmElements != null ) {
+//            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
+//            manager.ensureEdmElementsExist( requiredEdmElements );
+//        }
          //all EDM elements should now exist, and we should be safe to proceed with the integration
 
 
@@ -94,10 +95,10 @@ public class BurlingtonPDFlight {
                     .addProperty("publicsafety.OffenseNIBRS", "ibrcode")
                     .addProperty("date.IncidentReportedDateTime").value( row -> bdHelper.parse( row.getAs( "reporteddate" ) ) )   //these rows are shorthand for a full function .value as below
                         .ok()
-                    .addProperty("j.ArrestCategory", "TypeOfArrest")
+                    .addProperty("j.ArrestCategory","TypeOfArrest")
                     .endEntity()
-                .addEntity("suspect")
-                    .to("BurlingtonPeopleinCAD")
+                .addEntity("people")
+                    .to("BurlingtonJusticeInvolvedPeople")
                     .addProperty("nc.SSN", "SSN")
                     .addProperty("nc.PersonSurName", "lastname")
                     .addProperty("nc.PersonGivenName", "firstname")
@@ -105,10 +106,11 @@ public class BurlingtonPDFlight {
                         .ok()
                     .addProperty("nc.PersonRace", "race")
                     .addProperty("nc.PersonSex", "Sex")
+                    .addProperty("justice.persontype", "PersonType")
                     .endEntity()
                 .addEntity("address")
                     .to("BurlingtonIncidentAddresses")
-                .addProperty("location.Address")    //unique ID for address
+                    .addProperty("location.Address")    //unique ID for address
                         .value(row -> {
                             return Parsers.getAsString(row.getAs("StreetNum")) + Parsers.getAsString(row.getAs("StreetName"))
                                     + Parsers.getAsString(row.getAs("City")) + Parsers.getAsString(row.getAs("State"))
@@ -119,9 +121,25 @@ public class BurlingtonPDFlight {
                             return Parsers.getAsString(row.getAs("StreetNum")) + " " + Parsers.getAsString(row.getAs("StreetName"))
                         })
                         .ok()
-                   .addProperty("location.city", "City")
+                    .addProperty("location.city", "City")
                     .addProperty("location.state", "State")
-                //.addProperty("nonsuspects")       //break apart nonsuspects - can do by col factor? or something else.
+                    .endEntity()
+                .endEntities()
+            .createAssociations()
+                .addAssociation("Appears In")
+                    .to("BurlingtonAppearsIn")
+                    .fromEntity("people")
+                    .toEntity("incident")
+                    .endAssociation()
+                .addAssociation("Happens At")
+                    .to("BurlingtonHappensAt")
+                    .fromEntity("incident")
+                    .toEntity("address")
+                .endAssociation()
+
+
+
+
 
         // At this point, your flight contains 1 table's worth of data
         // If you want to integrate more tables, create another flight (flight2) and

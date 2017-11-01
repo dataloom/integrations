@@ -18,7 +18,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 //TODO: Use credentials from environment variables.
-run.args = ["/Users/kimengie/Documents/Data/Middlesex/Burlington_PD_DDJ_Data2015-2016/ArresteeQuery2015-2016.csv.csv",
+run.args = ["/Users/kimengie/Documents/Data/Middlesex/Burlington_PD_DDJ_Data2015-2016/burlingtonPD_formatted_1-1-17.csv",
             "kim@openlattice.com","password"]
 
 configurations {
