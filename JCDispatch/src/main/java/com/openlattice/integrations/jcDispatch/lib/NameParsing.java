@@ -113,39 +113,4 @@ public class NameParsing {
         }
         return null;
     }
-
-    public static String getAddressID( Object obj ) {
-        if ( obj != null ) {
-            String address = Parsers.getAsString( obj );
-            if ( address.contains( "Ia" ) || address.contains( "null" ) ) {
-                address = address.replace( "Ia", "IA" );
-                address = address.replace( "null", "" );
-                return String.join( "" , Arrays.asList( address.split( " " ) ) );
-            }
-            return String.join( "" , Arrays.asList( address.split( " " ) ) );
-        }
-        return null;
-    }
-
-    public static String getIntersection( Object obj ) {
-        if ( obj != null ) {
-            String address = Parsers.getAsString( obj );
-            if ( address.contains( "/" ) ) {
-                return address.replace( "/", " & " );
-            }
-            return "";
-        }
-        return null;
-    }
-
-    public static String getLocation( Object obj ) {
-        if ( obj != null ) {
-            String location = Parsers.getAsString( obj );
-            if ( location.contains( "/" ) ) {
-                return "";
-            }
-            return location;
-        }
-        return null;
-    }
 }

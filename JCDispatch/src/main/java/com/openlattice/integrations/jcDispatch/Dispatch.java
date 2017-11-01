@@ -13,6 +13,7 @@ import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
+import com.openlattice.shuttle.util.Parsers;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -175,9 +176,11 @@ public class Dispatch {
                             .to("Address")
                             .useCurrentSync()
                             .addProperty("location.address")
-                            .value( row -> getAddressID( addSpaceAfterCommaUpperCase( row.getAs( "LAddress" ) ) + " " + row.getAs( "LAddress_Apt" ) + " " +  addSpaceAfterCommaUpperCase( row.getAs( "LCity" ) ) + row.getAs( "LState" ) + " " +  getZipCode( row.getAs( "LZip" ) ) ) ).ok()
+                            .value( row -> getAddressID( getStreet( row.getAs( "LAddress" ) ) + " " + row.getAs( "LAddress_Apt" ) + " " +  addSpaceAfterCommaUpperCase( row.getAs( "LCity" ) ) + row.getAs( "LState" ) + " " +  getZipCode( row.getAs( "LZip" ) ) ) ).ok()
                             .addProperty("location.street")
-                            .value( row -> addSpaceAfterCommaUpperCase( row.getAs( "LAddress" ) ) ).ok()
+                            .value( row -> getStreet( row.getAs( "LAddress" ) ) ).ok()
+                            .addProperty("location.intersection")
+                            .value( row -> getIntersection( row.getAs( "LAddress" ) ) ).ok()
                             .addProperty("location.apartment", "LAddress_Apt")
                             .addProperty("location.city")
                             .value( row -> addSpaceAfterCommaUpperCase( row.getAs( "LCity" ) ) ).ok()
@@ -208,7 +211,7 @@ public class Dispatch {
                         .toEntity("Address")
                         .addProperty("general.cfsID", "Dis_ID")
                         .addProperty("location.address")
-                        .value( row -> getAddressID( addSpaceAfterCommaUpperCase( row.getAs( "LAddress" ) ) + " " + row.getAs( "LAddress_Apt" ) + " " +  addSpaceAfterCommaUpperCase( row.getAs( "LCity" ) ) + row.getAs( "LState" ) + " " +  getZipCode( row.getAs( "LZip" ) ) ) ).ok()
+                        .value( row -> getAddressID( getStreet( row.getAs( "LAddress" ) ) + " " + row.getAs( "LAddress_Apt" ) + " " +  addSpaceAfterCommaUpperCase( row.getAs( "LCity" ) ) + row.getAs( "LState" ) + " " +  getZipCode( row.getAs( "LZip" ) ) ) ).ok()
                     .endAssociation()
                     .addAssociation("AppearsIn")
                         .ofType("general.appearsin").to("AppearsIn")
@@ -226,7 +229,7 @@ public class Dispatch {
                         .addProperty("place.uniqueID")
                         .value( row -> row.getAs( "Location" ) ).ok()
                         .addProperty("location.address")
-                        .value( row -> getAddressID( addSpaceAfterCommaUpperCase( row.getAs( "LAddress" ) ) + row.getAs( "LAddress_Apt" ) + addSpaceAfterCommaUpperCase( row.getAs( "LCity" ) ) + row.getAs( "LState" ) + getZipCode( row.getAs( "LZip" ) ) ) ).ok()
+                        .value( row -> getAddressID( getStreet( row.getAs( "LAddress" ) ) + row.getAs( "LAddress_Apt" ) + addSpaceAfterCommaUpperCase( row.getAs( "LCity" ) ) + row.getAs( "LState" ) + getZipCode( row.getAs( "LZip" ) ) ) ).ok()
                     .endAssociation()
                     .addAssociation("AssignedTo")
                         .ofType("general.assignedto").to("AssignedTo")
@@ -326,9 +329,11 @@ public class Dispatch {
                             .to("Address")
                             .useCurrentSync()
                             .addProperty("location.address")
-                            .value( row -> getAddressID( addSpaceAfterCommaUpperCase( row.getAs( "OAddress" ) ) + row.getAs( "OAddress_Apt" ) + addSpaceAfterCommaUpperCase( row.getAs( "OCity" ) ) + row.getAs( "OState" ) + getZipCode( row.getAs( "OZip" ) ) ) ).ok()
+                            .value( row -> getAddressID( getStreet( row.getAs( "OAddress" ) ) + row.getAs( "OAddress_Apt" ) + addSpaceAfterCommaUpperCase( row.getAs( "OCity" ) ) + row.getAs( "OState" ) + getZipCode( row.getAs( "OZip" ) ) ) ).ok()
                             .addProperty("location.street")
-                            .value( row -> addSpaceAfterCommaUpperCase( row.getAs( "OAddress" ) ) ).ok()
+                            .value( row -> getStreet( row.getAs( "OAddress" ) ) ).ok()
+                            .addProperty("location.intersection")
+                            .value( row -> getIntersection( row.getAs( "OAddress" ) ) ).ok()
                             .addProperty("location.apartment", "OAddress_Apt")
                             .addProperty("location.city")
                             .value( row -> addSpaceAfterCommaUpperCase( row.getAs( "OCity" ) ) ).ok()
@@ -374,7 +379,7 @@ public class Dispatch {
                             .toEntity("Address")
                             .addProperty( "nc.SubjectIdentification" , "ID")
                             .addProperty("location.address")
-                            .value( row -> getAddressID( addSpaceAfterCommaUpperCase( row.getAs( "OAddress" ) ) + row.getAs( "OAddress_Apt" ) + addSpaceAfterCommaUpperCase( row.getAs( "OCity" ) ) + row.getAs( "OState" ) + getZipCode( row.getAs( "OZip" ) ) ) ).ok()
+                            .value( row -> getAddressID( getStreet( row.getAs( "OAddress" ) ) + row.getAs( "OAddress_Apt" ) + addSpaceAfterCommaUpperCase( row.getAs( "OCity" ) ) + row.getAs( "OState" ) + getZipCode( row.getAs( "OZip" ) ) ) ).ok()
                         .endAssociation()
                         .addAssociation("Has1")
                             .ofType("general.Has").to("Has")
@@ -419,7 +424,7 @@ public class Dispatch {
 
     public static Integer getHeightInch( Object obj ) {
         if ( obj != null ) {
-            String height = obj.toString().trim();
+            String height = Parsers.getAsString( obj );
             if (height.length() > 2) {
                 String three = height.substring( 0, 3 );
                 Integer feet = Integer.parseInt( String.valueOf( three.substring( 0, 1 ) ) );
@@ -434,7 +439,7 @@ public class Dispatch {
 
     public static String getEmployeeId( Object obj ) {
         if ( obj != null ) {
-            String employeeId = obj.toString().trim();
+            String employeeId = Parsers.getAsString( obj );
             if ( employeeId.toLowerCase().startsWith( "x_" ) ) {
                 return employeeId.substring( 2 ).trim();
             }
@@ -445,7 +450,7 @@ public class Dispatch {
 
     public static Boolean getActive( Object obj ) {
         if ( obj != null ) {
-            String active = obj.toString().trim();
+            String active = Parsers.getAsString( obj );
             if ( active.toLowerCase().startsWith( "x_" ) ) {
                 return Boolean.FALSE;
             }
@@ -454,26 +459,10 @@ public class Dispatch {
         return null;
     }
 
-    public static String getNotNullDate( Object obj ) {
-        if ( obj != null ) {
-            String date = obj.toString().trim();
-            return date.substring( 0, 19 );
-        }
-        return null;
-    }
-
-    public static String getDateOfBirth( Object obj ) {
-        if ( obj != null ) {
-            String date = obj.toString().trim();
-            return date.substring( 0, 10 );
-        }
-        return null;
-    }
-
     public static String getDayOfWeek( Object obj ) {
-        List<String> days = Arrays.asList( "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" );
+        List<String> days = Arrays.asList( "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" );
         if ( obj != null ) {
-            String dateStr = obj.toString().trim();
+            String dateStr = Parsers.getAsString( obj );
             SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
             Date date;
             try {
@@ -487,25 +476,9 @@ public class Dispatch {
         return null;
     }
 
-    public static String getTimeOfDay( Object obj ) {
-        if ( obj != null ) {
-            String dateStr = obj.toString().trim();
-            SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date;
-            try {
-                date = dateformat.parse( dateStr );
-                System.out.println(String.valueOf( date.getHours() ));
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
-            return dateStr;
-        }
-        return null;
-    }
-
     public static Integer getIntFromDouble( Object obj ) {
         if ( obj != null ) {
-            String s = obj.toString().trim();
+            String s = Parsers.getAsString( obj );
             double d = Double.parseDouble(s);
             return (int) d;
         }
@@ -514,7 +487,7 @@ public class Dispatch {
 
     public static String getStringFromDouble( Object obj ) {
         if ( obj != null ) {
-            String s = obj.toString().trim();
+            String s = Parsers.getAsString( obj );
             int d = getIntFromDouble( s );
             return Integer.toString(d);
         }
@@ -523,7 +496,7 @@ public class Dispatch {
 
     public static String getZipCode( Object obj ) {
         if ( obj != null ) {
-            String str = obj.toString().trim();
+            String str = Parsers.getAsString( obj );
             String[] strDate = str.split( " " );
             if ( strDate.length > 1 ) {
                 return getStringFromDouble( strDate[ strDate.length - 1 ]).trim();
@@ -539,7 +512,7 @@ public class Dispatch {
 
     public static String getPhoneNumber( Object obj ) {
         if ( obj != null ) {
-            String str = obj.toString().trim();
+            String str = Parsers.getAsString( obj );
             str = str.replaceAll( "[()-]", "" );
             str = str.substring( 0, 10 );
             return str;
@@ -549,7 +522,7 @@ public class Dispatch {
 
     public static String getStrYear( Object obj ) {
         if ( obj != null ) {
-            String str = obj.toString().trim();
+            String str = Parsers.getAsString( obj );
             String[] strDate = str.split( "/" );
             if ( strDate.length > 1 ) {
                 return getStringFromDouble( strDate[ strDate.length - 1 ]).trim();
@@ -562,13 +535,37 @@ public class Dispatch {
         return null;
     }
 
-    public static String getVehicleID( Object obj ) {
-        String id = obj.toString().trim();
-        if ( id.contains( "null" ) ) {
-            id = id.replaceAll( "null", "" );
-            String[] idList = id.split( " " );
-            return String.join("" , idList).trim();
+    public static String getStreet( Object obj ) {
+        if ( obj != null ) {
+            String address = Parsers.getAsString( obj );
+            if ( !( address.contains( "/" ) ) ) {
+                return addSpaceAfterCommaUpperCase( address );
+            }
+            return "";
         }
-        return id;
+        return null;
+    }
+
+    public static String getAddressID( Object obj ) {
+        if ( obj != null ) {
+            String address = Parsers.getAsString( obj );
+            if ( address.contains( "null" ) ) {
+                address = address.replace( "null", "" );
+                return String.join( "" , Arrays.asList( address.split( " " ) ) );
+            }
+            return String.join( "" , Arrays.asList( address.split( " " ) ) );
+        }
+        return null;
+    }
+
+    public static String getIntersection( Object obj ) {
+        if ( obj != null ) {
+            String address = Parsers.getAsString( obj );
+            if ( address.contains( "/" ) ) {
+                return address.replace( "/", " & " );
+            }
+            return "";
+        }
+        return null;
     }
 }
