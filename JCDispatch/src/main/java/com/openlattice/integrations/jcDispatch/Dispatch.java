@@ -31,7 +31,7 @@ public class Dispatch {
     private static final Logger logger = LoggerFactory
             .getLogger( Dispatch.class );
 
-    private static final Environment environment = Environment.LOCAL;
+    private static final Environment environment = Environment.STAGING;
 
     private static final DateTimeHelper dateHelper0 = new DateTimeHelper( DateTimeZone.forOffsetHours( -8 ), "yyyy-MM-dd HH:mm:ss.S" );
 

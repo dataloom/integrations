@@ -569,7 +569,7 @@ associationTypes:
 entitySets:
 - type: "general.person"
   name: "Party"
-  title: "Party"
+  title: "Johnson County Party"
   description: "Party involved in Call For Service"
   contacts:
   - "support@openlattice.com"
@@ -578,7 +578,7 @@ entitySets:
   - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.Place"
   name: "Place"
-  title: "Place"
+  title: "Johnson County Place"
   description: "Place"
   contacts:
   - "support@openlattice.com"
@@ -587,7 +587,7 @@ entitySets:
   - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.Address"
   name: "Address"
-  title: "Address"
+  title: "Johnson County Address"
   description: "Address of a location"
   contacts:
   - "support@openlattice.com"
@@ -596,7 +596,7 @@ entitySets:
   - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.Vehicle"
   name: "Vehicle"
-  title: "Vehicle"
+  title: "Johnson County Vehicle"
   description: "Vehicle involved in Call For Service"
   contacts:
   - "support@openlattice.com"
@@ -623,7 +623,7 @@ entitySets:
   - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.Unit"
   name: "Unit"
-  title: "Unit"
+  title: "Johnson County Unit"
   description: "Dispatch unit information"
   contacts:
   - "support@openlattice.com"
@@ -632,7 +632,7 @@ entitySets:
   - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.CallForService"
   name: "CallForService"
-  title: "Call For Service"
+  title: "Johnson County Call For Service"
   description: "Call for service information"
   contacts:
   - "support@openlattice.com"
@@ -668,7 +668,7 @@ entitySets:
   - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.DispatchType"
   name: "DispatchType"
-  title: "Dispatch Type"
+  title: "Johnson County Dispatch Type"
   description: "Different types of dispatch"
   contacts:
   - "support@openlattice.com"
@@ -695,7 +695,7 @@ entitySets:
   - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.ContactInformation"
   name: "ContactInformation"
-  title: "ContactInformation"
+  title: "Johnson County Contact Information"
   description: "Contact information other than address"
   contacts:
   - "support@openlattice.com"
@@ -704,7 +704,7 @@ entitySets:
   - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.DispatchZone"
   name: "DispatchZone"
-  title: "Dispatch Zone"
+  title: "Johnson County Dispatch Zone"
   description: "Dispatch Zone"
   contacts:
   - "support@openlattice.com"
