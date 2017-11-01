@@ -1,29 +1,25 @@
-package lib;
+package com.openlattice.integrations.jcDispatch.lib;
 
-import com.auth0.jwt.internal.org.apache.commons.lang3.text.WordUtils;
+import com.openlattice.shuttle.util.Parsers;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class nameParsing {
+public class NameParsing {
 
-    public static String formatText( Object obj ) {
+    public static String addSpaceAfterCommaUpperCase( Object obj ) {
         if ( obj != null ) {
-            String name = obj.toString().toLowerCase().trim();
-            name = name.replace( ",", ", " );
-            if (name.contains( "-" )) {
-                name = name.replace( "-", "- " );
-                return WordUtils.capitalize( name.trim() ).replace( "-", "-" );
-            }
-            return WordUtils.capitalize( name.trim() );
+            String name = Parsers.getAsString( obj ).toLowerCase();
+            return name.replace( ",", ", " ).toUpperCase();
         }
         return null;
     }
 
-    public static String removeDigit( Object obj ) {
-        String name = obj.toString().trim();
+    public static String removeDigits( Object obj ) {
+        String name = Parsers.getAsString( obj );
         name = name.replaceAll( "[\\d]+", "" ).trim();
         return name;
     }
@@ -33,8 +29,8 @@ public class nameParsing {
 
     public static String getFirstName( Object obj ) {
         if ( obj != null ) {
-            String name = formatText( obj );
-            name = removeDigit( name );
+            String name = addSpaceAfterCommaUpperCase( obj );
+            name = removeDigits( name );
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {
@@ -56,8 +52,8 @@ public class nameParsing {
 
     public static String getLastName( Object obj ) {
         if ( obj != null ) {
-            String name = formatText( obj );
-            name = removeDigit( name );
+            String name = addSpaceAfterCommaUpperCase( obj );
+            name = removeDigits( name );
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {
@@ -76,8 +72,8 @@ public class nameParsing {
 
     public static String getMiddleName( Object obj ) {
         if ( obj != null ) {
-            String name = formatText( obj );
-            name = removeDigit( name );
+            String name = addSpaceAfterCommaUpperCase( obj );
+            name = removeDigits( name );
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {
@@ -107,7 +103,7 @@ public class nameParsing {
 
     public static String getName( Object obj ) {
         if ( obj != null ) {
-            String name = obj.toString().trim();
+            String name = Parsers.getAsString( obj );
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {
@@ -120,7 +116,7 @@ public class nameParsing {
 
     public static String getAddressID( Object obj ) {
         if ( obj != null ) {
-            String address = obj.toString().trim();
+            String address = Parsers.getAsString( obj );
             if ( address.contains( "Ia" ) || address.contains( "null" ) ) {
                 address = address.replace( "Ia", "IA" );
                 address = address.replace( "null", "" );
@@ -133,7 +129,7 @@ public class nameParsing {
 
     public static String getIntersection( Object obj ) {
         if ( obj != null ) {
-            String address = obj.toString().trim();
+            String address = Parsers.getAsString( obj );
             if ( address.contains( "/" ) ) {
                 return address.replace( "/", " & " );
             }
@@ -144,7 +140,7 @@ public class nameParsing {
 
     public static String getLocation( Object obj ) {
         if ( obj != null ) {
-            String location = obj.toString().trim();
+            String location = Parsers.getAsString( obj );
             if ( location.contains( "/" ) ) {
                 return "";
             }
