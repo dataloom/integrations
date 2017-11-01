@@ -331,10 +331,9 @@ entityTypes:
   title: "ContactInformation"
   description: "Contact Information"
   key:
-  - "contact.uniqueID"
+  - "contact.PhoneNumber"
   properties:
   - "contact.PhoneNumber"
-  - "contact.uniqueID"
   baseType: null
 - type: "general.person"
   title: "Person"
@@ -353,6 +352,9 @@ entityTypes:
   - "nc.PersonHairColorText"
   - "nc.PersonEyeColorText"
   - "nc.SubjectIdentification"
+  - "person.age"
+  - "nc.PersonHeightMeasure"
+  - "nc.PersonWeightMeasure"
   baseType: null
 - type: "general.Unit"
   title: "Unit"
@@ -396,9 +398,6 @@ entityTypes:
   - "dispatch.citDisposition"
   - "dispatch.transferVehicle"
   - "dispatch.911callNumber"
-  - "person.age"
-  - "nc.PersonHeightMeasure"
-  - "nc.PersonWeightMeasure"
   - "general.cfsID"
   baseType: null
 - type: "general.DispatchType"
@@ -458,13 +457,16 @@ associationTypes:
     key:
     - "general.cfsID"
     - "location.address"
+    - "place.uniqueID"
     properties:
     - "general.cfsID"
     - "location.address"
+    - "place.uniqueID"
   src:
   - "general.CallForService"
   dst:
   - "general.Address"
+  - "general.Place"
   bidirectional: false
 - type:
     type: "general.Initiated"
@@ -522,12 +524,12 @@ associationTypes:
     - "place.uniqueID"
     - "location.address"
     - "nc.SubjectIdentification"
-    - "contact.uniqueID"
+    - "contact.PhoneNumber"
     properties:
     - "place.uniqueID"
     - "location.address"
     - "nc.SubjectIdentification"
-    - "contact.uniqueID"
+    - "contact.PhoneNumber"
   src:
   - "general.person"
   - "general.Place"
