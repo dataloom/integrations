@@ -19,9 +19,12 @@ public class NameParsing {
     }
 
     public static String removeDigits( Object obj ) {
-        String name = Parsers.getAsString( obj );
-        name = name.replaceAll( "[\\d]+", "" ).trim();
-        return name;
+        if ( obj != null ) {
+            String name = Parsers.getAsString( obj );
+            name = name.replaceAll( "[\\d]+", "" ).trim();
+            return name;
+        }
+        return null;
     }
 
     public static final Pattern p = Pattern

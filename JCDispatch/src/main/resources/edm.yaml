@@ -3,10 +3,10 @@ propertyTypes:
   piiField: false
   analyzer: "STANDARD"
   properties:
-  - type: "dispatch.latitude"
+  - type: "location.latitude"
     title: "Latitude"
     description: "Latitude"
-  - type: "dispatch.longitude"
+  - type: "location.longitude"
     title: "Longitude"
     description: "Longitude"
 - datatype: "Int32"
@@ -286,6 +286,9 @@ propertyTypes:
   - type: "dispatch.uniqueZoneID"
     title: "uniqueZoneID"
     description: "uniqueZoneID"
+  - type: "general.stringid"
+    title: "Unique ID"
+    description: "Unique ID"
 
 entityTypes:
 - type: "general.Address"
@@ -300,8 +303,8 @@ entityTypes:
   - "location.city"
   - "location.state"
   - "location.zip"
-  - "dispatch.latitude"
-  - "dispatch.longitude"
+  - "location.latitude"
+  - "location.longitude"
   - "location.address"
   baseType: null
 - type: "general.Place"
@@ -331,8 +334,9 @@ entityTypes:
   title: "ContactInformation"
   description: "Contact Information"
   key:
-  - "contact.PhoneNumber"
+  - "general.stringid"
   properties:
+  - "general.stringid"
   - "contact.PhoneNumber"
   baseType: null
 - type: "general.person"
@@ -437,13 +441,9 @@ associationTypes:
     title: "LocatedAt"
     description: "Links together a person with a location"
     key:
-    - "nc.SubjectIdentification"
-    - "location.address"
-    - "place.uniqueID"
+    - "general.stringid"
     properties:
-    - "nc.SubjectIdentification"
-    - "location.address"
-    - "place.uniqueID"
+    - "general.stringid"
   src:
   - "general.person"
   - "general.Place"
@@ -455,13 +455,9 @@ associationTypes:
     title: "OccurredAt"
     description: "Links together an incident with a location"
     key:
-    - "general.cfsID"
-    - "location.address"
-    - "place.uniqueID"
+    - "general.stringid"
     properties:
-    - "general.cfsID"
-    - "location.address"
-    - "place.uniqueID"
+    - "general.stringid"
   src:
   - "general.CallForService"
   dst:
@@ -473,13 +469,9 @@ associationTypes:
     title: "Initiated"
     description: "Links together a entity that initiates an event"
     key:
-    - "nc.SubjectIdentification"
-    - "place.uniqueID"
-    - "general.cfsID"
+    - "general.stringid"
     properties:
-    - "nc.SubjectIdentification"
-    - "place.uniqueID"
-    - "general.cfsID"
+    - "general.stringid"
   src:
   - "general.person"
   - "general.Place"
@@ -491,11 +483,9 @@ associationTypes:
     title: "AssignedTo"
     description: "Links together a unit to an event"
     key:
-    - "general.unitID"
-    - "general.cfsID"
+    - "general.stringid"
     properties:
-    - "general.unitID"
-    - "general.cfsID"
+    - "general.stringid"
   src:
   - "general.CallForService"
   dst:
@@ -506,11 +496,9 @@ associationTypes:
     title: "InvolvedIn"
     description: "Links together a entity with an event"
     key:
-    - "general.cfsID"
-    - "general.vehicleID"
+    - "general.stringid"
     properties:
-    - "general.cfsID"
-    - "general.vehicleID"
+    - "general.stringid"
   src:
   - "general.Vehicle"
   dst:
@@ -521,15 +509,9 @@ associationTypes:
     title: "Has"
     description: "Links together an entity with another"
     key:
-    - "place.uniqueID"
-    - "location.address"
-    - "nc.SubjectIdentification"
-    - "contact.PhoneNumber"
+    - "general.stringid"
     properties:
-    - "place.uniqueID"
-    - "location.address"
-    - "nc.SubjectIdentification"
-    - "contact.PhoneNumber"
+    - "general.stringid"
   src:
   - "general.person"
   - "general.Place"
@@ -542,11 +524,9 @@ associationTypes:
     title: "AppearsIn"
     description: "Links together a location with a zone"
     key:
-    - "general.cfsID"
-    - "dispatch.uniqueZoneID"
+    - "general.stringid"
     properties:
-    - "general.cfsID"
-    - "dispatch.uniqueZoneID"
+    - "general.stringid"
   src:
    - "general.CallForService"
   dst:
@@ -557,11 +537,9 @@ associationTypes:
     title: "Includes"
     description: "Links together an entity with another"
     key:
-    - "general.cfsID"
-    - "general.dispatchID"
+    - "general.stringid"
     properties:
-    - "general.cfsID"
-    - "general.dispatchID"
+    - "general.stringid"
   src:
   - "general.CallForService"
   dst:
@@ -576,8 +554,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.Place"
   name: "Place"
   title: "Johnson County Place"
@@ -585,8 +562,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.Address"
   name: "Address"
   title: "Johnson County Address"
@@ -594,8 +570,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.Vehicle"
   name: "Vehicle"
   title: "Johnson County Vehicle"
@@ -603,8 +578,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.LocatedAt"
   name: "LocatedAt"
   title: "LocatedAt"
@@ -612,8 +586,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "justice.occurredat"
   name: "OccurredAt"
   title: "OccurredAt"
@@ -621,8 +594,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.Unit"
   name: "Unit"
   title: "Johnson County Unit"
@@ -630,8 +602,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.CallForService"
   name: "CallForService"
   title: "Johnson County Call For Service"
@@ -639,8 +610,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.Initiated"
   name: "Initiated"
   title: "Initiated"
@@ -648,8 +618,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.assignto"
   name: "AssignedTo"
   title: "AssignedTo"
@@ -657,8 +626,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.InvolvedIn"
   name: "InvolvedIn"
   title: "InvolvedIn"
@@ -666,8 +634,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.DispatchType"
   name: "DispatchType"
   title: "Johnson County Dispatch Type"
@@ -675,8 +642,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.Has"
   name: "Has"
   title: "Has"
@@ -684,8 +650,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.Includes"
   name: "Includes"
   title: "Includes"
@@ -693,8 +658,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.ContactInformation"
   name: "ContactInformation"
   title: "Johnson County Contact Information"
@@ -702,8 +666,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.DispatchZone"
   name: "DispatchZone"
   title: "Johnson County Dispatch Zone"
@@ -711,8 +674,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
 - type: "general.appearsin"
   name: "AppearsIn"
   title: "AppearsIn"
@@ -720,5 +682,4 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "google-oauth2|106872520530872168352"
