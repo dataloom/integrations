@@ -12,7 +12,7 @@ public class NameParsing {
 
     public static String addSpaceAfterCommaUpperCase( Object obj ) {
         String name = Parsers.getAsString( obj );
-        if ( obj != null ) {
+        if ( name != null ) {
             return name.toLowerCase().replace( ",", ", " ).toUpperCase();
         }
         return null;
@@ -20,9 +20,8 @@ public class NameParsing {
 
     public static String removeDigits( Object obj ) {
         String name = Parsers.getAsString( obj );
-        if ( obj != null ) {
-            name = name.replaceAll( "[\\d]+", "" ).trim();
-            return name;
+        if ( name != null ) {
+            return name.replaceAll( "[\\d]+", "" ).trim();
         }
         return null;
     }
@@ -31,9 +30,9 @@ public class NameParsing {
             .compile( "\\b(UNIVERSITY|EMS|HONDA|LP|REHABILITATION|INC|IOWA|ADT|VERIZON|SPRINT|SANDWICHES|AT&T|BLDG|CENTER|CELLULAR|INTERNATIONAL|SCIENCES)\\b" , Pattern.CASE_INSENSITIVE );
 
     public static String getFirstName( Object obj ) {
-        if ( obj != null ) {
-            String name = addSpaceAfterCommaUpperCase( obj );
-            name = removeDigits( name );
+        String name = addSpaceAfterCommaUpperCase( obj );
+        name = removeDigits( name );
+        if ( name != null ) {
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {
@@ -54,9 +53,9 @@ public class NameParsing {
     }
 
     public static String getLastName( Object obj ) {
-        if ( obj != null ) {
-            String name = addSpaceAfterCommaUpperCase( obj );
-            name = removeDigits( name );
+        String name = addSpaceAfterCommaUpperCase( obj );
+        name = removeDigits( name );
+        if ( name != null ) {
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {
@@ -74,9 +73,9 @@ public class NameParsing {
     }
 
     public static String getMiddleName( Object obj ) {
-        if ( obj != null ) {
-            String name = addSpaceAfterCommaUpperCase( obj );
-            name = removeDigits( name );
+        String name = addSpaceAfterCommaUpperCase( obj );
+        name = removeDigits( name );
+        if ( name != null ) {
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {
@@ -106,7 +105,7 @@ public class NameParsing {
 
     public static String getName( Object obj ) {
         String name = Parsers.getAsString( obj );
-        if ( obj != null ) {
+        if ( name != null ) {
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {

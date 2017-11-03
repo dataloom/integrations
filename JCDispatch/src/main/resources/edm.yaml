@@ -139,7 +139,7 @@ propertyTypes:
   - type: "location.intersection"
     title: "Intersection"
     description: "Intersection"
-  - type: "location.address"
+  - type: "location.Address"
     title: "Location Address"
     description: "Location Address"
   - type: "location.street"
@@ -262,7 +262,7 @@ propertyTypes:
   - type: "general.cfsID"
     title: "Call For Service ID"
     description: "A string that uniquely identifies a call for service"
-  - type: "place.uniqueID"
+  - type: "place.SequenceID"
     title: "Place ID"
     description: "A string that uniquely identifies an place"
   - type: "general.vehicleID"
@@ -289,13 +289,16 @@ propertyTypes:
   - type: "general.stringid"
     title: "Unique ID"
     description: "Unique ID"
+  - type: "contact.SequenceID"
+    title: "Contact Unique ID"
+    description: "Contact Unique ID"
 
 entityTypes:
 - type: "general.Address"
   title: "Address"
   description: "An address"
   key:
-  - "location.address"
+  - "location.Address"
   properties:
   - "location.street"
   - "location.intersection"
@@ -305,17 +308,17 @@ entityTypes:
   - "location.zip"
   - "location.latitude"
   - "location.longitude"
-  - "location.address"
+  - "location.Address"
   baseType: null
 - type: "general.Place"
   title: "Place"
   description: "Place"
   key:
-  - "place.uniqueID"
+  - "place.SequenceID"
   properties:
   - "general.FullName"
   - "contact.PhoneNumber"
-  - "place.uniqueID"
+  - "place.SequenceID"
   baseType: null
 - type: "general.DispatchZone"
   title: "DispatchZone"
@@ -334,10 +337,10 @@ entityTypes:
   title: "ContactInformation"
   description: "Contact Information"
   key:
-  - "general.stringid"
+  - "contact.SequenceID"
   properties:
-  - "general.stringid"
   - "contact.PhoneNumber"
+  - "contact.SequenceID"
   baseType: null
 - type: "general.person"
   title: "Person"
