@@ -420,8 +420,8 @@ public class Dispatch {
     }
 
     public static Integer getHeightInch( Object obj ) {
+        String height = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String height = Parsers.getAsString( obj );
             if (height.length() > 2) {
                 String three = height.substring( 0, 3 );
                 Integer feet = Integer.parseInt( String.valueOf( three.substring( 0, 1 ) ) );
@@ -435,8 +435,8 @@ public class Dispatch {
     }
 
     public static String getEmployeeId( Object obj ) {
+        String employeeId = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String employeeId = Parsers.getAsString( obj );
             if ( employeeId.toLowerCase().startsWith( "x_" ) ) {
                 return employeeId.substring( 2 ).trim();
             }
@@ -446,8 +446,8 @@ public class Dispatch {
     }
 
     public static Boolean getActive( Object obj ) {
+        String active = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String active = Parsers.getAsString( obj );
             if ( active.toLowerCase().startsWith( "x_" ) ) {
                 return Boolean.FALSE;
             }
@@ -458,12 +458,12 @@ public class Dispatch {
 
     public static String getDayOfWeek( Object obj ) {
         List<String> days = Arrays.asList( "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" );
+        String dateStr = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String dateStr = Parsers.getAsString( obj );
-            SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date date;
             try {
-                date = dateformat.parse( dateStr );
+                date = dateFormat.parse( dateStr );
                 return days.get( date.getDay() );
             } catch ( Exception e ) {
                 e.printStackTrace();
@@ -474,8 +474,8 @@ public class Dispatch {
     }
 
     public static Integer getIntFromDouble( Object obj ) {
+        String s = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String s = Parsers.getAsString( obj );
             double d = Double.parseDouble(s);
             return (int) d;
         }
@@ -483,8 +483,8 @@ public class Dispatch {
     }
 
     public static String getStringFromDouble( Object obj ) {
+        String s = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String s = Parsers.getAsString( obj );
             int d = getIntFromDouble( s );
             return Integer.toString(d);
         }
@@ -492,8 +492,8 @@ public class Dispatch {
     }
 
     public static String getZipCode( Object obj ) {
+        String str = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String str = Parsers.getAsString( obj );
             String[] strDate = str.split( " " );
             if ( strDate.length > 1 ) {
                 return getStringFromDouble( strDate[ strDate.length - 1 ]).trim();
@@ -508,8 +508,8 @@ public class Dispatch {
     }
 
     public static String getPhoneNumber( Object obj ) {
+        String str = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String str = Parsers.getAsString( obj );
             str = str.replaceAll( "[()-]", "" );
             str = str.substring( 0, 10 );
             return str;
@@ -518,8 +518,8 @@ public class Dispatch {
     }
 
     public static String getStrYear( Object obj ) {
+        String str = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String str = Parsers.getAsString( obj );
             String[] strDate = str.split( "/" );
             if ( strDate.length > 1 ) {
                 return getStringFromDouble( strDate[ strDate.length - 1 ]).trim();
@@ -533,8 +533,8 @@ public class Dispatch {
     }
 
     public static String getStreet( Object obj ) {
+        String address = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String address = Parsers.getAsString( obj );
             if ( !( address.contains( "/" ) ) ) {
                 return addSpaceAfterCommaUpperCase( address );
             }
@@ -544,8 +544,8 @@ public class Dispatch {
     }
 
     public static String getAddressID( Object obj ) {
+        String address = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String address = Parsers.getAsString( obj );
             if ( address.contains( "null" ) ) {
                 address = address.replace( "null", "" );
                 return String.join( "" , Arrays.asList( address.split( " " ) ) );
@@ -556,8 +556,8 @@ public class Dispatch {
     }
 
     public static String getIntersection( Object obj ) {
+        String address = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String address = Parsers.getAsString( obj );
             if ( address.contains( "/" ) ) {
                 return address.replace( "/", " & " );
             }

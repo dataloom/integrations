@@ -11,16 +11,16 @@ import java.util.regex.Pattern;
 public class NameParsing {
 
     public static String addSpaceAfterCommaUpperCase( Object obj ) {
+        String name = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String name = Parsers.getAsString( obj ).toLowerCase();
-            return name.replace( ",", ", " ).toUpperCase();
+            return name.toLowerCase().replace( ",", ", " ).toUpperCase();
         }
         return null;
     }
 
     public static String removeDigits( Object obj ) {
+        String name = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String name = Parsers.getAsString( obj );
             name = name.replaceAll( "[\\d]+", "" ).trim();
             return name;
         }
@@ -105,8 +105,8 @@ public class NameParsing {
     }
 
     public static String getName( Object obj ) {
+        String name = Parsers.getAsString( obj );
         if ( obj != null ) {
-            String name = Parsers.getAsString( obj );
             Matcher m = p.matcher( name );
 
             if ( m.find() ) {
