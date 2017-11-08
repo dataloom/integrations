@@ -840,6 +840,15 @@ propertyTypes:
   - type: "general.stringid"
     title: "id"
     description: "id"
+  - type: "medical.HistoryID"
+    title: "Medical Condition ID"
+    description: "Medical Condition ID"
+  - type: "medical.SmokeCigarettes"
+    title: "Smoke Cigarettes"
+    description: "Smoke Cigarettes"
+  - type: "medical.CigarettesPerDay"
+    title: "Cigarettes Per Day"
+    description: "Cigarettes Per Day"
 
 entityTypes:
 - type: "general.Address"
@@ -966,16 +975,13 @@ entityTypes:
   - "event.Comments"
   - "medication.SequenceID"
   baseType: null
-- type: "medical.DetoxScreening"
-  title: "Detox Screening"
-  description: "Detox Screening"
+- type: "medical.History"
+  title: "Medical History"
+  description: "Medical History"
   key:
-  - "detox.ScreeningID"
+  - "medical.HistoryID"
   properties:
   - "date.CompletedDateTime"
-  - "screening.HomelessIndicator"
-  - "screening.HomelessInState"
-  - "screening.BeenToClinicBefore"
   - "neurological.HistoryOfSeizure"
   - "screening.LastSeizureDate"
   - "neurological.DeliriumTremens"
@@ -988,8 +994,22 @@ entityTypes:
   - "medical.SuicidalIdeation"
   - "screening.MalignantHyperthermia"
   - "screening.MHComments"
+  - "medical.SmokeCigarettes"
+  - "medical.CigarettesPerDay"
+  - "event.AgeFirstUsed"
   - "screening.IssuePreventDetox"
   - "screening.ReadWriteHelp"
+  - "event.Comments"
+  - "medical.HistoryID"
+  baseType: null
+- type: "medical.DetoxScreening"
+  title: "Detox Screening"
+  description: "Detox Screening"
+  key:
+  - "detox.ScreeningID"
+  properties:
+  - "date.CompletedDateTime"
+  - "screening.BeenToClinicBefore"
   - "screening.AdmissionApproval"
   - "screening.NoAdmissionReason"
   - "screening.AcuteIntoxicationWithdrawalRisk"
@@ -1061,6 +1081,7 @@ entityTypes:
   key:
   - "nutritional.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "event.WeightGainLossPastMonth"
   - "event.PriorEatingHabit"
   - "event.Comments"
@@ -1072,6 +1093,7 @@ entityTypes:
   key:
   - "neurological.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "neurological.HistoryOfFalls"
   - "neurological.HistoryOfHeadInjuries"
   - "neurological.HistoryOfConcussions"
@@ -1095,6 +1117,7 @@ entityTypes:
   key:
   - "respiratory.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "respiratory.HistoryOfAsthmaEmphysemaBronchitisCOPD"
   - "respiratory.TestedForTuberculosis"
   - "respiratory.HistoryOfPositiveTuberculosis"
@@ -1116,6 +1139,7 @@ entityTypes:
   key:
   - "cardiovascular.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "cardiovascular.HeartDisease"
   - "cardiovascular.Hypertension"
   - "cardiovascular.MyocardialInfarction"
@@ -1131,6 +1155,7 @@ entityTypes:
   key:
   - "gastrointestinal.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "gastrointestinal.LastBowelMovement"
   - "gastrointestinal.NormalBowelMovementPattern"
   - "gastrointestinal.LiverDisease"
@@ -1150,6 +1175,7 @@ entityTypes:
   key:
   - "endocrine.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "endocrine.Diabetic"
   - "endocrine.DiabeticManagementComments"
   - "endocrine.InsulinDependant"
@@ -1164,6 +1190,7 @@ entityTypes:
   key:
   - "genitourinary.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "genitourinary.PainOrDifficultyUrinating"
   - "genitourinary.Other"
   - "event.Comments"
@@ -1175,6 +1202,7 @@ entityTypes:
   key:
   - "musculoskeletal.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "musculoskeletal.CurrentLimitations"
   - "musculoskeletal.BackProblems"
   - "musculoskeletal.BackProblemsDescription"
@@ -1189,6 +1217,7 @@ entityTypes:
   key:
   - "skin.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "skin.NeedleTrackMarks"
   - "skin.TrackMarksDescription"
   - "skin.HeadPediculiPresent"
@@ -1208,6 +1237,7 @@ entityTypes:
   key:
   - "reproductive.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "reproductive.SexuallyActive"
   - "reproductive.HistoryOfSexuallyTransmittedDisease"
   - "reproductive.SexuallyTransmittedDiseaseNames"
@@ -1227,6 +1257,7 @@ entityTypes:
   key:
   - "emotionalBehavioral.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "medical.SeriousDepression"
   - "medical.SelfHarmingThoughts"
   - "medical.RacingThoughts"
@@ -1345,92 +1376,24 @@ entityTypes:
 
 associationTypes:
 - type:
-    type: "location.livesat"
-    title: "Lives at"
-    description: "An association describe that location at which an entity lives"
-    key:
-    - "nc.SubjectIdentification"
-    - "location.address"
-    properties:
-    - "nc.SubjectIdentification"
-    - "location.address"
-  src:
-  - "general.person"
-  dst:
-  - "general.Address"
-  bidirectional: false
-- type:
-    type: "location.MailsAt"
-    title: "Mails At"
-    description: "An association describe that location at which an entity mails"
-    key:
-    - "nc.SubjectIdentification"
-    - "location.address"
-    properties:
-    - "nc.SubjectIdentification"
-    - "location.address"
-  src:
-  - "general.person"
-  dst:
-  - "general.Address"
-  bidirectional: false
-- type:
-    type: "general.Has"
-    title: "Has"
-    description: "Links together 2 entities"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "general.Place"
-  - "general.person"
-  - "medical.Provider"
-  dst:
-  - "general.Address"
-  - "medical.Insurance"
-  - "medical.SubstanceTreatmentHistory"
-  - "medical.Allergy"
-  - "general.ContactInformation"
-  bidirectional: false
-- type:
-    type: "general.EmployedBy"
-    title: "EmployedBy"
-    description: "An association describe that location at which an entity mails"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "general.person"
-  dst:
-  - "general.Place"
-  bidirectional: false
-- type:
     type: "general.AssessedBy"
     title: "Assessed By"
     description: "Assessed By"
     key:
-    - "general.stringid"
+    - "detox.ScreeningID"
+    - "medical.InitialAssessmentID"
+    - "medical.BioPsychoSocialID"
+    - "provider.NationalProviderIdentification"
     properties:
-    - "general.stringid"
-  src:
-  - "medical.InitialAssessment"
-  - "medical.BioPsychoSocial"
-  - "medical.BioMedicalAssessment"
-  dst:
-  - "medical.Provider"
-  bidirectional: false
-- type:
-    type: "general.ScreenedBy"
-    title: "Screened By"
-    description: "Screened By"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
+    - "detox.ScreeningID"
+    - "medical.InitialAssessmentID"
+    - "medical.BioPsychoSocialID"
+    - "provider.NationalProviderIdentification"
+    - "date.CompletedDateTime"
   src:
   - "medical.DetoxScreening"
+  - "medical.InitialAssessment"
+  - "medical.BioPsychoSocial"
   dst:
   - "medical.Provider"
   bidirectional: false
@@ -1439,9 +1402,11 @@ associationTypes:
     title: "Taking"
     description: "An association describe that location at which an entity mails"
     key:
-    - "general.stringid"
+    - "nc.SubjectIdentification"
+    - "medication.SequenceID"
     properties:
-    - "general.stringid"
+    - "nc.SubjectIdentification"
+    - "medication.SequenceID"
   src:
   - "general.person"
   dst:
@@ -1452,75 +1417,52 @@ associationTypes:
     title: "Used"
     description: "An association describe that location at which an entity mails"
     key:
-    - "general.stringid"
+    - "nc.SubjectIdentification"
+    - "substance.SequenceID"
     properties:
-    - "general.stringid"
+    - "nc.SubjectIdentification"
+    - "substance.SequenceID"
   src:
   - "general.person"
   dst:
   - "medical.Substance"
-  bidirectional: false
-- type:
-    type: "general.Includes"
-    title: "Includes"
-    description: "An association where an entity includes another entity"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "medical.DetoxScreening"
-  - "medical.InitialAssessment"
-  - "medical.BioPsychoSocial"
-  dst:
-  - "medical.Substance"
-  - "medical.Medication"
-  - "medical.WithdrawalAssessment"
-  - "medical.BioMedicalAssessment"
-  - "medical.NutritionalAssessment"
-  - "medical.NeurologicalAssessment"
-  - "medical.RespiratoryAssessment"
-  - "medical.CardiovascularAssessment"
-  - "medical.GastrointestinalAssessment"
-  - "medical.EndocrineAssessment"
-  - "medical.GenitourinaryAssessment"
-  - "medical.MusculoSkeletalAssessment"
-  - "medical.ReproductiveAssessment"
-  - "medical.EmotionalBehavioralAssessment"
-  - "medical.SubstanceTreatmentHistory"
-  bidirectional: false
-- type:
-    type: "general.Screened"
-    title: "Screened"
-    description: "An association describe that location at which an entity mails"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "general.person"
-  dst:
-  - "medical.DetoxScreening"
   bidirectional: false
 - type:
     type: "general.Assessed"
     title: "Assessed"
     description: "An association describe that location at which an entity mails"
     key:
-    - "general.stringid"
+    - "nc.SubjectIdentification"
+    - "medical.InitialAssessmentID"
+    - "medical.BioPsychoSocialID"
     properties:
-    - "general.stringid"
+    - "nc.SubjectIdentification"
+    - "medical.InitialAssessmentID"
+    - "medical.BioPsychoSocialID"
   src:
   - "general.person"
   dst:
   - "medical.InitialAssessment"
   - "medical.BioPsychoSocial"
-  - "medical.BioMedicalAssessment"
   bidirectional: false
 - type:
-    type: "general.DiagnosedWith"
-    title: "DiagnosedWith"
-    description: "An association between a diagnosis and patient"
+    type: "general.InsuredBy"
+    title: "Insured By"
+    description: "Insured By"
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+    - "date.CompletedDateTime"
+  src:
+  - "general.person"
+  dst:
+  - "medical.Insurance"
+  bidirectional: false
+- type:
+    type: "medical.Reported"
+    title: "Reported"
+    description: "An association which describes a person's and medical history"
     key:
     - "general.stringid"
     properties:
@@ -1528,35 +1470,8 @@ associationTypes:
   src:
   - "general.person"
   dst:
-  - "medical.Diagnosis"
-  bidirectional: false
-- type:
-    type: "general.ReferredBy"
-    title: "ReferredBy"
-    description: "An association between a patient and provider"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "general.person"
-  dst:
-  - "medical.Provider"
-  bidirectional: false
-- type:
-    type: "general.ReviewedBy"
-    title: "Reviewed By"
-    description: "An association between a provider"
-    key:
-    - "general.stringid"
-    properties:
-    - "general.stringid"
-  src:
-  - "general.person"
-  - "medical.DetoxScreening"
-  - "medical.InitialAssessment"
-  dst:
-  - "medical.Provider"
+  - "medical.Allergy"
+  - "medical.History"
   bidirectional: false
 
 entitySets:
@@ -1600,10 +1515,10 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|106872520530872168352"
-- type: "medical.DetoxScreening"
-  name: "DetoxScreening"
-  title: "Demo Detox Screening"
-  description: "Demo Detox Screening"
+- type: "medical.History"
+  name: "MedicalHistory"
+  title: "Demo Medical History"
+  description: "Demo Medical History"
   contacts:
   - "support@openlattice.com"
   owners:
@@ -1616,18 +1531,10 @@ entitySets:
   - "support@openlattice.com"
   owners:
   - "auth0|106872520530872168352"
-- type: "general.Has"
-  name: "Has"
-  title: "Has"
-  description: "Has"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|106872520530872168352"
 - type: "general.Taking"
   name: "Taking"
   title: "Taking"
-  description: "Taking"
+  description: "Demo Taking"
   contacts:
   - "support@openlattice.com"
   owners:
@@ -1635,15 +1542,15 @@ entitySets:
 - type: "general.Used"
   name: "Used"
   title: "Used"
-  description: "Used"
+  description: "Demo Used"
   contacts:
   - "support@openlattice.com"
   owners:
   - "auth0|106872520530872168352"
-- type: "general.Screened"
-  name: "Screened"
-  title: "Screened"
-  description: "Screened"
+- type: "medical.Reported"
+  name: "Reported"
+  title: "Reported"
+  description: "Demo Reported"
   contacts:
   - "support@openlattice.com"
   owners:
@@ -1651,23 +1558,23 @@ entitySets:
 - type: "general.Assessed"
   name: "Assessed"
   title: "Assessed"
-  description: "Assessed"
+  description: "Demo Assessed"
   contacts:
   - "support@openlattice.com"
   owners:
   - "auth0|106872520530872168352"
 - type: "general.AssessedBy"
   name: "AssessedBy"
-  title: "AssessedBy"
-  description: "AssessedBy"
+  title: "Assessed By"
+  description: "Demo Assessed By"
   contacts:
   - "support@openlattice.com"
   owners:
   - "auth0|106872520530872168352"
-- type: "general.ScreenedBy"
-  name: "ScreenedBy"
-  title: "ScreenedBy"
-  description: "ScreenedBy"
+- type: "general.InsuredBy"
+  name: "InsuredBy"
+  title: "Insured By"
+  description: "Demo Insured By"
   contacts:
   - "support@openlattice.com"
   owners:
