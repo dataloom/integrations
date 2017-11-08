@@ -11,8 +11,8 @@ propertyTypes:
   analyzer: "STANDARD"
   properties:
   - type: "event.AgeFirstUsed"
-    title: "Age First Used"
-    description: "Age First Used"
+    title: "Age Started"
+    description: "Age of a person which they first started to use"
   - type: "nc.PersonHeightMeasure"
     title: "Person Height Measure"
     description: "A measurement of the height of a person."
@@ -21,25 +21,25 @@ propertyTypes:
     description: "A measurement of the weight of a person."
   - type: "medical.TotalPsychologicalSymptoms"
     title: "Total Psychological Symptoms"
-    description: "Total Psychological Symptoms"
+    description: "Total number of yes answers to the psychological portion of AC-OK screening tool"
   - type: "medical.TotalAlcoholAndDrugSymptoms"
-    title: "Total Alcohol And Drug Symptoms"
-    description: "Total Alcohol And Drug Symptoms"
+    title: "Total Substance Abuse Symptoms"
+    description: "Total number of yes answers to the substance abuse portion of AC-OK screening tool"
   - type: "medical.TotalCountPertainingTrauma"
-    title: "Total Count Pertaining Trauma"
-    description: "Total Count Pertaining Trauma"
+    title: "Total Trauma Symptoms"
+    description: "Total number of yes answers to the trauma portion of AC-OK screening tool"
   - type: "reproductive.NumberOfGravidaPregnancy"
-    title: "Number Of Gravida Pregnancy"
-    description: "NumberOfGravidaPregnancy"
+    title: "Gravida Pregnancy Count"
+    description: "Number of pregnencies regardless of pregnancy outcome"
   - type: "reproductive.NumberOfParityPregnancy"
-    title: "NumberOfParityPregnancy"
-    description: "NumberOfParityPregnancy"
+    title: "Parity Pregnancy Count"
+    description: "Number of pregnencies reaching viable gestational age (including live births and stillbirths)"
   - type: "medical.ImportanceOfReduceUse"
-    title: "ImportanceOfReduceUse"
-    description: "ImportanceOfReduceUse"
+    title: "Importance Of Use Reduction"
+    description: "How important is reducing and/or eliminating use on scale of 1 to 10"
   - type: "medical.ConfidenceOfSubstanceReduction"
-    title: "ConfidenceOfSubstanceReduction"
-    description: "ConfidenceOfSubstanceReduction"
+    title: "Confidence to Reduce Substance"
+    description: "How confident is the subject to reduce and/or eliminate use on scale of 1 to 10"
 - datatype: "Int32"
   piiField: true
   analyzer: "STANDARD"
@@ -52,68 +52,68 @@ propertyTypes:
   analyzer: "STANDARD"
   properties:
   - type: "screening.HomelessIndicator"
-    title: "HomelessIndicator"
-    description: "HomelessIndicator"
+    title: "Homeless Indicator"
+    description: "Whether or not the subject homeless"
   - type: "screening.HomelessInState"
-    title: "HomelessInState"
-    description: "HomelessInState"
+    title: "Homeless In State"
+    description: "Whether or not the subject homeless from Maine or out of state"
   - type: "screening.BeenToClinicBefore"
-    title: "BeenToClinicBefore"
-    description: "BeenToClinicBefore"
+    title: "Sunject Previously Seen"
+    description: "Whether or not the subject been seen at the current clinic priviously"
   - type: "neurological.HistoryOfSeizure"
-    title: "HistoryOfSeizure"
-    description: "HistoryOfSeizure"
+    title: "History Of Seizure"
+    description: "Whether or not the subject has experienced seizure previously"
   - type: "neurological.DeliriumTremens"
-    title: "DeliriumTremens"
-    description: "DeliriumTremens"
+    title: "Delirium Tremens"
+    description: "Whether or not the subject has experienced delirium tremens previously"
   - type: "cardiovascular.ChestPain"
-    title: "ChestPain"
-    description: "ChestPain"
+    title: "Chest Pain"
+    description: "Whether or not the subject has experienced chest pain previously"
   - type: "screening.AbdominalPain"
-    title: "AbdominalPain"
-    description: "AbdominalPain"
+    title: "Abdominal Pain"
+    description: "Whether or not the subject has experienced abdominal pain previously"
   - type: "respiratory.ShortnessOfBreathe"
-    title: "ShortnessOfBreathe"
-    description: "ShortnessOfBreathe"
+    title: "Shortness Of Breathe"
+    description: "Whether or not the subject has experienced shortness of breathe previously"
   - type: "screening.Pregnant"
     title: "Pregnant"
-    description: "Pregnant"
+    description: "Whether or not the subject has experienced pregnancy previously"
   - type: "gastrointestinal.RectalBleeding"
-    title: "GastroIntestinalBleed"
-    description: "GastroIntestinalBleed"
+    title: "GastroIntestinal Bleed"
+    description: "Whether or not the subject has experienced gastrointestinal bleeding previously"
   - type: "screening.Fever"
     title: "Fever"
-    description: "Fever"
+    description: "Whether or not the subject has experienced fever previously"
   - type: "medical.SuicidalIdeation"
-    title: "SuicidalIdeation"
-    description: "SuicidalIdeation"
+    title: "Suicidal Ideation"
+    description: "Whether or not the subject has experienced Suicidal ideation previously"
   - type: "screening.MalignantHyperthermia"
-    title: "MalignantHyperthermia"
-    description: "MalignantHyperthermia"
+    title: "Malignant Hyperthermia"
+    description: "Whether or not the subject has experienced malignant hyperthermia previously"
   - type: "screening.IssuePreventDetox"
-    title: "IssuePreventDetox"
-    description: "IssuePreventDetox"
+    title: "Issue Preventing Detox"
+    description: "Whether or not the subject has any mdeical or legal issues"
   - type: "screening.ReadWriteHelp"
-    title: "ReadWriteHelp"
-    description: "ReadWriteHelp"
+    title: "Read Write Help"
+    description: "Whether or not the subject needs help with reading and/or writing"
   - type: "screening.AdmissionApproval"
-    title: "AdmissionApproval"
-    description: "AdmissionApproval"
+    title: "Admission Approval"
+    description: "Whether or not the subject is approved for admission"
   - type: "screening.AcuteIntoxicationWithdrawalRisk"
-    title: "AcuteIntoxicationWithdrawalRisk"
-    description: "AcuteIntoxicationWithdrawalRisk"
+    title: "Acute Intoxication Withdrawal Risk"
+    description: "Whether or not the subject is at risk for acute intoxication and/or withdrawal risk"
   - type: "screening.MedicalConditionMonitoring"
-    title: "MedicalConditionMonitoring"
-    description: "MedicalConditionMonitoring"
+    title: "Medical Condition Monitoring"
+    description: "Whether or not the subject requires 24 hour nursing/medical monitoring"
   - type: "substance.FamilyHistoryAbuse"
-    title: "FamilyHistoryAbuse"
-    description: "FamilyHistoryAbuse"
+    title: "Family History Abuse"
+    description: "Whether or not the subject has history of family abuse"
   - type: "substance.FamilyHistoryMentalIllness"
-    title: "FamilyHistoryMentalIllness"
-    description: "FamilyHistoryMentalIllness"
+    title: "Family History Mental Illness"
+    description: "Whether or not the subject has history of family mental illness"
   - type: "substance.ConsequenceBlackOuts"
     title: "ConsequenceBlackOuts"
-    description: "ConsequenceBlackOuts"
+    description: "Whether or not the subject experienced delirium tremens previously"
   - type: "substance.ConsequenceTremorsShakes"
     title: "ConsequenceTremorsShakes"
     description: "ConsequenceTremorsShakes"
@@ -438,12 +438,12 @@ propertyTypes:
   - type: "medical.AllergySequenceID"
     title: "AllergySequenceID"
     description: "AllergySequenceID"
-  - type: "drug.Allergy"
-    title: "Drug Allergy"
-    description: "Drug Allergy"
-  - type: "food.Allergy"
-    title: "Food Allergy"
-    description: "Food Allergy"
+  - type: "medical.AllergyReactionType"
+    title: "Type"
+    description: "Reaction Type"
+  - type: "medical.AllergyReactionSeverity"
+    title: "Severity"
+    description: "Allergy Reaction Severity"
   - type: "provider.NationalProviderIdentification"
     title: "NationalProviderIdentification"
     description: "NationalProviderIdentification"
@@ -837,6 +837,9 @@ propertyTypes:
   - type: "diagnosis.Description"
     title: "diagnosis Description"
     description: "diagnosis Description"
+  - type: "general.stringid"
+    title: "id"
+    description: "id"
 
 entityTypes:
 - type: "general.Address"
@@ -897,8 +900,9 @@ entityTypes:
   key:
   - "medical.AllergySequenceID"
   properties:
-  - "drug.Allergy"
-  - "food.Allergy"
+  - "general.FullName"
+  - "medical.AllergyReactionType"
+  - "medical.AllergyReactionSeverity"
   - "medical.AllergySequenceID"
   baseType: null
 - type: "medical.Provider"
@@ -936,6 +940,7 @@ entityTypes:
   key:
   - "substance.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "substance.Type"
   - "general.FullName"
   - "substance.UsageAmount"
@@ -953,6 +958,7 @@ entityTypes:
   key:
   - "medication.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "general.FullName"
   - "medication.Type"
   - "medication.Dosage"
@@ -997,6 +1003,7 @@ entityTypes:
   key:
   - "withdrawal.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "substance.PeriodsOfSobriety"
   - "substance.SobrietySupport"
   - "substance.SobrietyAfterCarePlan"
@@ -1025,6 +1032,7 @@ entityTypes:
   key:
   - "biomedical.SequenceID"
   properties:
+  - "date.CompletedDateTime"
   - "vitals.Temperature"
   - "vitals.Respiration"
   - "vitals.BloodPressure"
@@ -1246,7 +1254,7 @@ entityTypes:
   key:
   - "medical.InitialAssessmentID"
   properties:
-  - "date.CompletedDatetime"
+  - "date.CompletedDateTime"
   - "medical.VisitReason"
   - "medical.PsychiatricDiagnosis"
   - "medical.PsychiatricMedications"
@@ -1270,7 +1278,7 @@ entityTypes:
   key:
   - "substance.TreatmentHistoryID"
   properties:
-  - "date.CompletedDatetime"
+  - "date.CompletedDateTime"
   - "substance.PreviousTreatingFacility"
   - "substance.PreviousLevelOfCare"
   - "substance.PreviousLengthOfStay"
@@ -1286,7 +1294,7 @@ entityTypes:
   key:
   - "medical.TreatmentOrderID"
   properties:
-  - "date.CompletedDatetime"
+  - "date.CompletedDateTime"
   - "medical.TreatmentOrderDescription"
   - "medical.TreatmentLength"
   - "event.Comments"
@@ -1298,7 +1306,7 @@ entityTypes:
   key:
   - "medical.BioPsychoSocialID"
   properties:
-  - "date.CompletedDatetime"
+  - "date.CompletedDateTime"
   - "substance.OtherConsequenceOfSubstanceUse"
   - "substance.OtherConsequenceComments"
   - "substance.PatternsOfUse"
@@ -1328,7 +1336,7 @@ entityTypes:
   key:
   - "medical.DiagnosisID"
   properties:
-  - "date.CompletedDatetime"
+  - "date.CompletedDateTime"
   - "diagnosis.Code"
   - "diagnosis.Description"
   - "event.Comments"
@@ -1371,23 +1379,9 @@ associationTypes:
     title: "Has"
     description: "Links together 2 entities"
     key:
-    - "place.SequenceID"
-    - "location.address"
-    - "nc.SubjectIdentification"
-    - "provider.NationalProviderIdentification"
-    - "insurance.SequenceID"
-    - "substance.TreatmentHistoryID"
-    - "medical.AllergySequenceID"
-    - "contact.SequenceID"
+    - "general.stringid"
     properties:
-    - "place.SequenceID"
-    - "location.address"
-    - "nc.SubjectIdentification"
-    - "provider.NationalProviderIdentification"
-    - "insurance.SequenceID"
-    - "substance.TreatmentHistoryID"
-    - "medical.AllergySequenceID"
-    - "contact.SequenceID"
+    - "general.stringid"
   src:
   - "general.Place"
   - "general.person"
@@ -1404,13 +1398,9 @@ associationTypes:
     title: "EmployedBy"
     description: "An association describe that location at which an entity mails"
     key:
-    - "nc.SubjectIdentification"
-    - "provider.NationalProviderIdentification"
-    - "place.SequenceID"
+    - "general.stringid"
     properties:
-    - "nc.SubjectIdentification"
-    - "provider.NationalProviderIdentification"
-    - "place.SequenceID"
+    - "general.stringid"
   src:
   - "general.person"
   dst:
@@ -1421,19 +1411,26 @@ associationTypes:
     title: "Assessed By"
     description: "Assessed By"
     key:
-    - "detox.ScreeningID"
-    - "medical.InitialAssessmentID"
-    - "medical.BioPsychoSocialID"
-    - "provider.NationalProviderIdentification"
+    - "general.stringid"
     properties:
-    - "detox.ScreeningID"
-    - "medical.InitialAssessmentID"
-    - "medical.BioPsychoSocialID"
-    - "provider.NationalProviderIdentification"
+    - "general.stringid"
   src:
-  - "medical.DetoxScreening"
   - "medical.InitialAssessment"
   - "medical.BioPsychoSocial"
+  - "medical.BioMedicalAssessment"
+  dst:
+  - "medical.Provider"
+  bidirectional: false
+- type:
+    type: "general.ScreenedBy"
+    title: "Screened By"
+    description: "Screened By"
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "medical.DetoxScreening"
   dst:
   - "medical.Provider"
   bidirectional: false
@@ -1442,11 +1439,9 @@ associationTypes:
     title: "Taking"
     description: "An association describe that location at which an entity mails"
     key:
-    - "nc.SubjectIdentification"
-    - "medication.SequenceID"
+    - "general.stringid"
     properties:
-    - "nc.SubjectIdentification"
-    - "medication.SequenceID"
+    - "general.stringid"
   src:
   - "general.person"
   dst:
@@ -1457,11 +1452,9 @@ associationTypes:
     title: "Used"
     description: "An association describe that location at which an entity mails"
     key:
-    - "nc.SubjectIdentification"
-    - "substance.SequenceID"
+    - "general.stringid"
     properties:
-    - "nc.SubjectIdentification"
-    - "substance.SequenceID"
+    - "general.stringid"
   src:
   - "general.person"
   dst:
@@ -1472,43 +1465,9 @@ associationTypes:
     title: "Includes"
     description: "An association where an entity includes another entity"
     key:
-    - "detox.ScreeningID"
-    - "medical.InitialAssessmentID"
-    - "medical.BioPsychoSocialID"
-    - "substance.SequenceID"
-    - "medication.SequenceID"
-    - "withdrawal.SequenceID"
-    - "biomedical.SequenceID"
-    - "nutritional.SequenceID"
-    - "neurological.SequenceID"
-    - "respiratory.SequenceID"
-    - "cardiovascular.SequenceID"
-    - "gastrointestinal.SequenceID"
-    - "endocrine.SequenceID"
-    - "genitourinary.SequenceID"
-    - "musculoskeletal.SequenceID"
-    - "reproductive.SequenceID"
-    - "emotionalBehavioral.SequenceID"
-    - "substance.TreatmentHistoryID"
+    - "general.stringid"
     properties:
-    - "detox.ScreeningID"
-    - "medical.InitialAssessmentID"
-    - "medical.BioPsychoSocialID"
-    - "substance.SequenceID"
-    - "medication.SequenceID"
-    - "withdrawal.SequenceID"
-    - "biomedical.SequenceID"
-    - "nutritional.SequenceID"
-    - "neurological.SequenceID"
-    - "respiratory.SequenceID"
-    - "cardiovascular.SequenceID"
-    - "gastrointestinal.SequenceID"
-    - "endocrine.SequenceID"
-    - "genitourinary.SequenceID"
-    - "musculoskeletal.SequenceID"
-    - "reproductive.SequenceID"
-    - "emotionalBehavioral.SequenceID"
-    - "substance.TreatmentHistoryID"
+    - "general.stringid"
   src:
   - "medical.DetoxScreening"
   - "medical.InitialAssessment"
@@ -1535,11 +1494,9 @@ associationTypes:
     title: "Screened"
     description: "An association describe that location at which an entity mails"
     key:
-    - "nc.SubjectIdentification"
-    - "detox.ScreeningID"
+    - "general.stringid"
     properties:
-    - "nc.SubjectIdentification"
-    - "detox.ScreeningID"
+    - "general.stringid"
   src:
   - "general.person"
   dst:
@@ -1550,29 +1507,24 @@ associationTypes:
     title: "Assessed"
     description: "An association describe that location at which an entity mails"
     key:
-    - "nc.SubjectIdentification"
-    - "medical.InitialAssessmentID"
-    - "medical.BioPsychoSocialID"
+    - "general.stringid"
     properties:
-    - "nc.SubjectIdentification"
-    - "medical.InitialAssessmentID"
-    - "medical.BioPsychoSocialID"
+    - "general.stringid"
   src:
   - "general.person"
   dst:
   - "medical.InitialAssessment"
   - "medical.BioPsychoSocial"
+  - "medical.BioMedicalAssessment"
   bidirectional: false
 - type:
     type: "general.DiagnosedWith"
     title: "DiagnosedWith"
     description: "An association between a diagnosis and patient"
     key:
-    - "nc.SubjectIdentification"
-    - "medical.DiagnosisID"
+    - "general.stringid"
     properties:
-    - "nc.SubjectIdentification"
-    - "medical.DiagnosisID"
+    - "general.stringid"
   src:
   - "general.person"
   dst:
@@ -1583,270 +1535,87 @@ associationTypes:
     title: "ReferredBy"
     description: "An association between a patient and provider"
     key:
-    - "nc.SubjectIdentification"
-    - "provider.NationalProviderIdentification"
+    - "general.stringid"
     properties:
-    - "nc.SubjectIdentification"
-    - "provider.NationalProviderIdentification"
+    - "general.stringid"
   src:
   - "general.person"
   dst:
   - "medical.Provider"
   bidirectional: false
+- type:
+    type: "general.ReviewedBy"
+    title: "Reviewed By"
+    description: "An association between a provider"
+    key:
+    - "general.stringid"
+    properties:
+    - "general.stringid"
+  src:
+  - "general.person"
+  - "medical.DetoxScreening"
+  - "medical.InitialAssessment"
+  dst:
+  - "medical.Provider"
+  bidirectional: false
 
 entitySets:
-- type: "general.Address"
-  name: "Address"
-  title: "Address"
-  description: "Address"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "general.Place"
-  name: "Place"
-  title: "Place"
-  description: "Place"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "general.ContactInformation"
-  name: "ContactInformation"
-  title: "ContactInformation"
-  description: "ContactInformation"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
 - type: "general.person"
-  name: "DemoPatients"
+  name: "Patients"
   title: "Demo Patients"
   description: "Demo Patients"
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.Allergy"
-  name: "Allergy"
-  title: "Allergy"
-  description: "Allergy"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "medical.Provider"
-  name: "DemoProviders"
+  name: "Providers"
   title: "Demo Providers"
   description: "Demo Providers"
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "medical.Insurance"
   name: "Insurance"
-  title: "Insurance"
-  description: "Insurance"
+  title: "Demo Insurance"
+  description: "Demo Insurance"
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "medical.Substance"
   name: "Substance"
-  title: "Substance"
-  description: "Substance"
+  title: "Demo Substance"
+  description: "Demo Substance"
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "medical.Medication"
   name: "Medication"
-  title: "Medication"
-  description: "Medication"
+  title: "Demo Medication"
+  description: "Demo Medication"
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "medical.DetoxScreening"
   name: "DetoxScreening"
-  title: "DetoxScreening"
-  description: "DetoxScreening"
+  title: "Demo Detox Screening"
+  description: "Demo Detox Screening"
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.WithdrawalAssessment"
-  name: "WithdrawalAssessment"
-  title: "WithdrawalAssessment"
-  description: "WithdrawalAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "medical.BioMedicalAssessment"
   name: "BioMedicalAssessment"
-  title: "BioMedicalAssessment"
-  description: "Assessed By"
+  title: "Demo BioMedical Assessment"
+  description: "Demo BioMedical Assessment"
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.NutritionalAssessment"
-  name: "NutritionalAssessment"
-  title: "NutritionalAssessment"
-  description: "NutritionalAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.NeurologicalAssessment"
-  name: "NeurologicalAssessment"
-  title: "NeurologicalAssessment"
-  description: "NeurologicalAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.RespiratoryAssessment"
-  name: "RespiratoryAssessment"
-  title: "RespiratoryAssessment"
-  description: "RespiratoryAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.CardiovascularAssessment"
-  name: "CardiovascularAssessment"
-  title: "CardiovascularAssessment"
-  description: "CardiovascularAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.GastrointestinalAssessment"
-  name: "GastrointestinalAssessment"
-  title: "GastrointestinalAssessment"
-  description: "GastrointestinalAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.EndocrineAssessment"
-  name: "EndocrineAssessment"
-  title: "EndocrineAssessment"
-  description: "EndocrineAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.GenitourinaryAssessment"
-  name: "GenitourinaryAssessment"
-  title: "GenitourinaryAssessment"
-  description: "GenitourinaryAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.MusculoSkeletalAssessment"
-  name: "MusculoSkeletalAssessment"
-  title: "MusculoSkeletalAssessment"
-  description: "MusculoSkeletalAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.ReproductiveAssessment"
-  name: "ReproductiveAssessment"
-  title: "ReproductiveAssessment"
-  description: "ReproductiveAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.EmotionalBehavioralAssessment"
-  name: "EmotionalBehavioralAssessment"
-  title: "EmotionalBehavioralAssessment"
-  description: "EmotionalBehavioralAssessment"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.SubstanceTreatmentHistory"
-  name: "SubstanceTreatmentHistory"
-  title: "SubstanceTreatmentHistory"
-  description: "SubstanceTreatmentHistory"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.TreatmentOrder"
-  name: "TreatmentOrder"
-  title: "TreatmentOrder"
-  description: "TreatmentOrder"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.BioPsychoSocial"
-  name: "BioPsychoSocial"
-  title: "BioPsychoSocial"
-  description: "BioPsychoSocial"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "medical.Diagnosis"
-  name: "Diagnosis"
-  title: "Diagnosis"
-  description: "Diagnosis"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "location.livesat"
-  name: "livesat"
-  title: "livesat"
-  description: "livesat"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "location.MailsAt"
-  name: "MailsAt"
-  title: "MailsAt"
-  description: "MailsAt"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "general.Has"
   name: "Has"
   title: "Has"
@@ -1854,26 +1623,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "general.EmployedBy"
-  name: "EmployedBy"
-  title: "EmployedBy"
-  description: "EmployedBy"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "general.AssessedBy"
-  name: "AssessedBy"
-  title: "AssessedBy"
-  description: "AssessedBy"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "general.Taking"
   name: "Taking"
   title: "Taking"
@@ -1881,8 +1631,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "general.Used"
   name: "Used"
   title: "Used"
@@ -1890,17 +1639,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "general.Includes"
-  name: "Includes"
-  title: "Includes"
-  description: "Includes"
-  contacts:
-  - "support@openlattice.com"
-  owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "general.Screened"
   name: "Screened"
   title: "Screened"
@@ -1908,8 +1647,7 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
+  - "auth0|106872520530872168352"
 - type: "general.Assessed"
   name: "Assessed"
   title: "Assessed"
@@ -1917,26 +1655,20 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "general.DiagnosedWith"
-  name: "DiagnosedWith"
-  title: "DiagnosedWith"
-  description: "DiagnosedWith"
+  - "auth0|106872520530872168352"
+- type: "general.AssessedBy"
+  name: "AssessedBy"
+  title: "AssessedBy"
+  description: "AssessedBy"
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-- type: "general.ReferredBy"
-  name: "ReferredBy"
-  title: "ReferredBy"
-  description: "ReferredBy"
+  - "auth0|106872520530872168352"
+- type: "general.ScreenedBy"
+  name: "ScreenedBy"
+  title: "ScreenedBy"
+  description: "ScreenedBy"
   contacts:
   - "support@openlattice.com"
   owners:
-  - "auth0|59a985a557d70e1088c0c425"
-  - "auth0|588a2038aa03fb78b0e52307"
-
-
-
+  - "auth0|106872520530872168352"

@@ -8,17 +8,21 @@ plugins {
 
 apply from: "https://raw.githubusercontent.com/kryptnostic/gradles/master/mavenRepos.gradle"
 
-description = "Dane County Wisconsin Data Integrations"
+description = "Demo Health Data Integration"
 group = "com.openlattice"
 version = 'v0.0.1'
 
-mainClassName = "com.openlattice.integrations.mockIntegration.DemoHealth"
-applicationDefaultJvmArgs = ["-Xmx8G", "-Xms8G", "-server"]
+mainClassName = "com.openlattice.integrations.mockHealth.DemoHealth"
+applicationDefaultJvmArgs = ["-Xmx12G", "-Xms12G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 //TODO: Use credentials from environment variables.
-run.args = ["jaildata.csv","username","password"]
+run {
+    if(System.getProperty("exec.args") != null) {
+        args System.getProperty("exec.args").split()
+    }
+}
 
 configurations {
     provided
