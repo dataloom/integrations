@@ -1,5 +1,10 @@
 package com.dataloom.integrations.iowacity;
 
+import static com.dataloom.integrations.iowacity.SharedDataModelConsts.MUGSHOT_FQN;
+import static com.dataloom.integrations.iowacity.SharedDataModelConsts.SUBJECTS_ALIAS;
+import static com.dataloom.integrations.iowacity.SharedDataModelConsts.SUBJECTS_NAME;
+import static com.dataloom.integrations.iowacity.SharedDataModelConsts.SUBJECT_ID_FQN;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,13 +35,6 @@ public class JohnsonCountyMugshots {
     private static final Logger              logger         = LoggerFactory.getLogger( JohnsonCountyMugshots.class );
     private static final Map<String, String> imageIdToMni   = new HashMap<>( 130486 );
     private static final Base64.Encoder      encoder        = Base64.getEncoder();
-
-    public static String                     SUBJECT_ID_FQN = "nc.SubjectIdentification";
-
-    public static String                     SUBJECTS_NAME  = "jcsubjects";
-    public static String                     SUBJECTS_ALIAS = "subject";
-
-    public static String                     MUGSHOT_FQN    = "publicsafety.mugshot";
     public static Environment                environment    = RetrofitFactory.Environment.LOCAL;
 
     public static void main( String[] args ) throws InterruptedException {

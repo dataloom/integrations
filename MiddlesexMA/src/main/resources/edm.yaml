@@ -205,6 +205,9 @@ propertyTypes:
   piiField: false
   analyzer: "STANDARD"
   properties:
+  - type: "nc.PersonNameSuffixText"
+    title: "Suffix Name for a person"
+    description: "Suffix for a person."
   - type: "nc.PersonSex"
     title: "Person Sex"
     description: "A data concept for a gender or sex of a person."
@@ -442,6 +445,17 @@ propertyTypes:
   - type: "visit.reason"
     title: "Visit reason"
     description: "Visit reason"
+  - type: "mock.symptoms"
+    title: "Mock symptoms"
+    description: "Mock symptoms"
+  - type: "mock.drugpresent"
+    title: "Drug present"
+    description: "Drug present"
+  - type: "mock.temp"
+    title: "mock.temp"
+    description: "Mock temp"
+
+
 
 entityTypes:
 - type: "justice.agency"
@@ -460,6 +474,7 @@ entityTypes:
   - "nc.PersonGivenName"
   - "nc.PersonMiddleName"
   - "nc.PersonSurName"
+  - "nc.PersonNameSuffixText"
   - "im.PersonNickName"
   - "nc.PersonSex"
   - "nc.PersonRace"
@@ -717,7 +732,7 @@ entityTypes:
   - "general.stringid"
   properties:
   - "general.stringid"
-  - "mock.reason"
+  - "visit.reason"
   - "mock.symptoms"
   - "mock.drugpresent"
   - "mock.temp"

@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2017. OpenLattice, Inc
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * You can contact the owner of the copyright at support@openlattice.com
+ */
+
 plugins {
     id "application"
     id "java"
@@ -6,20 +25,20 @@ plugins {
     id "jacoco"
 }
 
-apply from: "https://raw.githubusercontent.com/kryptnostic/gradles/master/mavenRepos.gradle"
+apply from: "https://raw.githubusercontent.com/openlattice/gradles/master/repos.gradle"
 
-description = "Iowa City Jail Data"
+description = "Johnson County Dispatch Data Integrations"
 group = "com.openlattice"
 version = 'v0.0.1'
 
 mainClassName = "com.openlattice.integrations.jcDispatch.Dispatch"
-applicationDefaultJvmArgs = ["-Xmx12G", "-Xms12G", "-server"]
+
+applicationDefaultJvmArgs = ["-Xmx1G", "-Xms1G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-//TODO: Use credentials from environment variables.
 run {
-    if(System.getProperty("exec.args") != null) {
+    if (System.getProperty("exec.args")) {
         args System.getProperty("exec.args").split()
     }
 }
@@ -28,9 +47,6 @@ configurations {
     provided
 }
 
-configurations.all {
-    exclude module: 'slf4j-log4j12'
-}
 
 sourceSets {
     main.compileClasspath += configurations.provided
@@ -38,35 +54,31 @@ sourceSets {
     test.runtimeClasspath += configurations.provided
 }
 
+jar {
+    doFirst {
+        manifest {
+            attributes "Class-Path": configurations.runtime.files.collect { it.getName() }.join(" ")
+        }
+    }
+}
+
 dependencies {
     if (project.hasProperty('developmentMode') && project.developmentMode) {
         logger.quiet(project.name + " using project dependencies.")
         compile project(":shuttle")
-        /*compile project(":loom-api")
 
-        testCompile( project(path: ":loom-api", configuration: "tests"))
-        testCompile( project(path: ":rhizome", configuration: "tests"))
-        te stCompile( project(path: ":rhizome-client", configuration: "tests"))*/
     } else {
         logger.quiet(project.name + " using jar dependencies.")
-        compile 'com.kryptnostic:shuttle:0.1.8-SNAPSHOT'
-
-        /*compile "com.kryptnostic:rhizome:${rhizome_version}"
-        compile "com.kryptnostic:loom-api:${loom_api_version}"
-        compile "com.kryptnostic:kindling:${kindling_version}"
-
-        testCompile "com.kryptnostic:loom-api:${loom_api_version}:tests"
-        testCompile "com.kryptnostic:rhizome:${rhizome_version}:tests"
-        testCompile "com.kryptnostic:rhizome-client:${rhizome_client_version}:tests"*/
+        compile "com.openlattice:shuttle:0.0.0-SNAPSHOT"
     }
 
     compile fileTree(dir: "lib/", include: "*.jar")
+}
 
-    /*
-     * TESTING
-     */
-    testCompile "junit:junit:4.12"
-    testCompile "org.mockito:mockito-core:2.2.7";
+
+
+startScripts {
+    classpath = files(jar.archivePath)
 }
 
 eclipse {
@@ -76,5 +88,6 @@ eclipse {
     ext.sourceCompatibility = JavaVersion.VERSION_1_8
     ext.targetCompatibility = JavaVersion.VERSION_1_8
 }
+
 
 eclipse.classpath.plusConfigurations += [configurations.provided]

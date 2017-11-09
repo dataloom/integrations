@@ -20,6 +20,8 @@
 
 package com.openlattice.middlesex;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
@@ -27,6 +29,7 @@ import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableSet;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
@@ -35,10 +38,14 @@ import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.dates.TimeZones;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -46,6 +53,7 @@ import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
+import java.io.File;
 
 /**
  * @author Matthew Tamayo-Rios &lt;matthew@openlattice.com&gt;
@@ -108,10 +116,9 @@ public class MiddlesexCharges2 {
 
         Flight flight = Flight.newFlight()
                 .createEntities()
+
                 .addEntity( "suspect" )
                 .to( "LPDArrestSuspects" )
-                .ofType( new FullQualifiedName( "general.person" ) )
-                .key( new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
                 .value( MiddlesexCharges2::getSubjectIdentification ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
@@ -120,6 +127,8 @@ public class MiddlesexCharges2 {
                 .value( MiddlesexCharges2::getMiddleName ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
                 .value( MiddlesexCharges2::getLastName ).ok()
+                .addProperty( new FullQualifiedName( "nc.PersonNameSuffixText" ) )
+                .value( MiddlesexCharges2::getSuffixes ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
                 .value( MiddlesexCharges2::getRace ).ok()
                 .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
@@ -129,10 +138,9 @@ public class MiddlesexCharges2 {
                 .addProperty( "nc.PersonHeightMeasure" ).value( MiddlesexCharges2::getHeight ).ok()
                 .addProperty( "nc.PersonWeightMeasure" ).value( MiddlesexCharges2::getWeight ).ok()
                 .endEntity()
+
                 .addEntity( "arrest" )
                 .to( "LPDArrest" )
-                .ofType( new FullQualifiedName( "lawenforcement.arrest" ) )
-                .key( new FullQualifiedName( "j.ArrestSequenceID" ) )
                 .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
                 .value( row -> dtHelper.parse( ( row.getAs( "arr_date" ) + " " + row.getAs( "Time" ) ).trim() ) )
                 .ok()
@@ -140,85 +148,85 @@ public class MiddlesexCharges2 {
                 .addProperty( "j.ArrestCategory", "type_charge" )
                 .addProperty( "j.ArrestSequenceID" ).value( MiddlesexCharges2::getArrestSequenceID ).ok()
                 .endEntity()
+
                 .addEntity( "charge" )
-                .to( "LPDCharge" ).ofType( "justice.ChargeDetails" ).key( "j.ChargeSequenceID" )
+                .to( "LPDCharge" )
                 .addProperty( "j.ChargeSequenceID", "Case Number" )
                 .addProperty( "j.OffenseViolatedStatute" )
                 .value( MiddlesexCharges2::getOffenseViolatedStatute ).ok()
                 .addProperty( "j.OffenseQualifierText" )
                 .value( MiddlesexCharges2::getOffenseQualifierText ).ok()
                 .endEntity()
+
                 .addEntity( "arrestAddress" )
                 .to( "MSOAddresses" )
-                .ofType( new FullQualifiedName( "general.address" ) )
-                .key( new FullQualifiedName( "location.address" ) )
+                .useCurrentSync()
                 .addProperty( new FullQualifiedName( "location.street" ) )
                 .value( MiddlesexCharges2::getArrestAddress ).ok()
                 .endEntity()
+
                 .addEntity( "incidentAddress" )
                 .to( "MSOAddresses" )
-                .ofType( new FullQualifiedName( "general.address" ) )
-                .key( new FullQualifiedName( "location.address" ) )
+                .useCurrentSync()
                 .addProperty( new FullQualifiedName( "location.street" ) )
                 .value( MiddlesexCharges2::getIncidentAddress ).ok()
                 .endEntity()
-                .ok()
+
+                .endEntities()
                 .createAssociations()
+
                 .addAssociation( "arrestedin" )
-                .ofType( "lawenforcement.arrestedin" ).to( "LPDArrestedIn" )
+                .to( "LPDArrestedIn" )
                 .fromEntity( "suspect" )
                 .toEntity( "arrest" )
-                .key( "nc.SubjectIdentification", "j.ArrestSequenceID" )
                 .addProperty( "nc.SubjectIdentification" ).value( MiddlesexCharges2::getSubjectIdentification )
                 .ok()
                 .addProperty( "j.ArrestSequenceID" ).value( MiddlesexCharges2::getArrestSequenceID )
-                .ok().endAssociation()
+                .ok()
+                .endAssociation()
+
                 .addAssociation( "chargedwith" )
-                .ofType( "justice.chargedwith" ).to( "LPDChargedWith" )
+                .to( "LPDChargedWith" )
                 .fromEntity( "suspect" )
                 .toEntity( "charge" )
-                .key( "general.stringid" )
                 .addProperty( "general.stringid" )
                 .value( row -> MoreObjects.firstNonNull( row.getAs( "bookingnum" ), "" ) + MoreObjects
                         .firstNonNull( row.getAs( "Case Number" ), "" ) ).ok()
                 .endAssociation()
+
                 .addAssociation( "chargeappears" )
-                .ofType( "general.appearsin" ).to( "LPDChargeAppearsIn" )
+                .to( "LPDChargeAppearsIn" )
                 .fromEntity( "charge" )
                 .toEntity( "arrest" )
-                .key( "general.stringid" )
                 .addProperty( "general.stringid" )
                 .value( row -> MoreObjects.firstNonNull( row.getAs( "Case Number" ), "" ) + MoreObjects
                         .firstNonNull( row.getAs( "Charge" ), "" ) ).ok()
                 .endAssociation()
+
                 .addAssociation( "arrestedat" )
-                .ofType( new FullQualifiedName( "justice.occurredat" ) )
                 .to( "LPDOccurredAt" )
-                .key( "general.stringid", "location.address" )
                 .fromEntity( "arrest" )
                 .toEntity( "arrestAddress" )
                 .addProperty( "general.stringid", "Case Number" )
                 .addProperty( "location.address" ).value( MiddlesexCharges2::getArrestAddress ).ok()
                 .endAssociation()
+
                 .addAssociation( "occurredat" )
-                .ofType( new FullQualifiedName( "justice.occurredat" ) )
                 .to( "LPDOccurredAt" )
-                .key( "general.stringid", "location.address" )
                 .fromEntity( "charge" )
                 .toEntity( "incidentAddress" )
                 .addProperty( "general.stringid", "Case Number" )
                 .addProperty( "location.address" ).value( MiddlesexCharges2::getIncidentAddress ).ok()
                 .endAssociation()
+
                 .endAssociations()
                 .done();
 
         Flight charges = Flight.newFlight()
                 .createEntities()
                 .addEntity( "charge" )
-                .useCurrentSync()
                 .to( "LPDCharge" )
-                .ofType( new FullQualifiedName( "justice.ChargeDetails" ) )
-                .key( new FullQualifiedName( "j.ChargeSequenceID" ) )
+                .useCurrentSync()
                 .addProperty( "j.ChargeSequenceID", "Case # Off. Seq." )
                 .addProperty( "justice.ReportedDate" )
                 .value( MiddlesexCharges2::getChargeReportedDate ).ok()
@@ -230,9 +238,10 @@ public class MiddlesexCharges2 {
                 .addProperty( "j.ChargeNarrative", "comments" )
                 .addProperty( "justice.CaseStatus", "Case Status" )
                 .endEntity()
+
                 .addEntity( "address" )
-                .useCurrentSync()
                 .to( "MSOAddresses" )
+                .useCurrentSync()
                 .ofType( "general.Address" )
                 .key( "location.address" )
                 .addProperty( "location.address", "Location" )
@@ -241,9 +250,9 @@ public class MiddlesexCharges2 {
                 .endEntities().done();
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
-        Map<Flight, Dataset<Row>> flights = new HashMap<>( 2 );
+        Map<Flight, Dataset<Row>> flights = new LinkedHashMap<>( 2 );
         flights.put( flight, payload );
-        //flights.put( charges, chargeData );
+        flights.put( charges, chargeData );
 
         shuttle.launch( flights );
     }
@@ -281,17 +290,69 @@ public class MiddlesexCharges2 {
         return null;
     }
 
+    static class PersonName {
+        String first;
+        String last;
+        String middle;
+        Set<String> suffixes;
+    }
+
+    //Double spaces below are important and specific to MA.
+    static Set<String> suffixes = ImmutableSet.<String>builder()
+            .add( " JR.", " SR.", " JR", " SR", " IV", " V", " VI", " III", " II", " I" )
+            .add( "  JR.", "  SR.", "  JR", "  SR", "  IV", "  V", "  VI", "  III", "  II", "  I" )
+            .build();
+    public static PersonName splitName( String name ) {
+        PersonName p = new PersonName();
+
+        p.suffixes = new HashSet<>();
+        for( String suffix : suffixes ) {
+            if( name.contains( suffix ) ) {
+                p.suffixes.add( suffix.trim() );
+                name = name.replace( suffix, "");
+            }
+        }
+
+        String[] pieces = StringUtils.split( name, ',');
+
+        checkState( pieces.length >= 2 , "Must have at least two pieces");
+
+        p.last = pieces[ 0 ].replace( "  ", " " ).trim();
+
+        String[] remaining = StringUtils.split( pieces[1], ' ' );
+        p.first = remaining[ 0 ];
+        if( remaining.length > 1 ) {
+            p.middle = StringUtils.join(Arrays.copyOfRange(remaining, 1, remaining.length));
+        }
+        return p;
+    }
+
+    public static Set<String> getSuffixes( Row row ) {
+        String name = row.getAs( "Name" );
+        if ( name == null ) {
+            return null;
+        }
+        PersonName p = splitName( name );
+        logger.info( "Parsed suffixes {} -> {}", name, p.suffixes );
+        return p.suffixes;
+    }
+
     public static String getFirstName( Row row ) {
         String name = row.getAs( "Name" );
         if ( name == null ) {
             return null;
         }
-        Matcher m = nameMatcher.matcher( name );
-        if ( m.matches() ) {
-            logger.info("Parsed first {} into: {}", name , m.group(2));
-            return m.group( 2 );
-        }
-        return null;
+        PersonName p = splitName( name );
+        logger.info("Parsed first {} -> {}", name, p.first);
+        return p.first;
+//        Matcher m = nameMatcher.matcher( name );
+//        if ( m.matches() ) {
+//            logger.info( "Parsed first {} into: {}", name, m.group( 2 ) );
+//            return m.group( 2 );
+//        } else {
+//            logger.info( "Unable to parse name: {}", name );
+//        }
+//        return null;
     }
 
     public static String getMiddleName( Row row ) {
@@ -299,11 +360,18 @@ public class MiddlesexCharges2 {
         if ( name == null ) {
             return null;
         }
-        Matcher m = nameMatcher.matcher( name );
-        if ( m.matches() ) {
-            return m.group( 3 ) + "  " + m.group( 4 );
-        }
-        return null;
+        PersonName p = splitName( name );
+        logger.info("Parsed middle {} -> {}", name, p.middle);
+        return p.middle;
+//        Matcher m = nameMatcher.matcher( name );
+//        if ( m.matches() ) {
+//            String middle = m.group( 3 ) + "  " + m.group( 4 );
+//            logger.info( "Parsed middle {} into: {}", name, middle );
+//            return middle;
+//        } else {
+//            logger.info( "Unable to parse name: {}", name );
+//        }
+//        return null;
     }
 
     public static String getLastName( Row row ) {
@@ -311,18 +379,23 @@ public class MiddlesexCharges2 {
         if ( name == null ) {
             return null;
         }
-        Matcher m;
-        try {
-            m = nameMatcher.matcher( name );
-        } catch ( Exception e ) {
-            logger.error( "Unable to match: {}", name, e );
-            return null;
-        }
-        if ( m.matches() ) {
-            logger.info("Parsed first {} into: {}", name , m.group(1));
-            return m.group( 1 );
-        }
-        return null;
+        PersonName p = splitName( name );
+        logger.info("Parsed last {} -> {}", name, p.last);
+        return p.last;
+//        Matcher m;
+//        try {
+//            m = nameMatcher.matcher( name );
+//        } catch ( Exception e ) {
+//            logger.error( "Unable to match: {}", name, e );
+//            return null;
+//        }
+//        if ( m.matches() ) {
+//            logger.info( "Parsed last {} into: {}", name, m.group( 1 ) );
+//            return m.group( 1 );
+//        } else {
+//            logger.info( "Unable to parse name: {}", name );
+//        }
+//        return null;
     }
 
     public static String getArrestAddress( Row row ) {

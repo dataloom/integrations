@@ -25,45 +25,45 @@ public class DispatchPersonsFlight {
      * PropertyTypes
      */
 
-    private static final Logger            logger                   = LoggerFactory
+    private static final Logger            logger                 = LoggerFactory
             .getLogger( DispatchPersonsFlight.class );
-    public static FullQualifiedName DISPATCH_PERSON_ID_FQN = new FullQualifiedName( "ICDC.DispatchPersonId" );       // Int64
-    public static FullQualifiedName DOB_FQN                = new FullQualifiedName( "ICDC.DOB" );                    // Date
-    public static FullQualifiedName OSQ_FQN                = new FullQualifiedName( "ICDC.OSQ" );                    // Int16
-    public static FullQualifiedName O_NAME_FQN             = new FullQualifiedName( "ICDC.OName" );                  // String
-    public static FullQualifiedName O_ADDRESS_FQN          = new FullQualifiedName( "ICDC.OAddress" );               // String
-    public static FullQualifiedName O_ADDRESS_APT_FQN      = new FullQualifiedName( "ICDC.OAddressApt" );            // String
-    public static FullQualifiedName O_CITY_FQN             = new FullQualifiedName( "ICDC.OCity" );                  // String
-    public static FullQualifiedName O_STATE_FQN            = new FullQualifiedName( "ICDC.OState" );                 // String
-    public static FullQualifiedName O_ZIP_FQN              = new FullQualifiedName( "ICDC.OZip" );                   // String
-    public static FullQualifiedName O_PHONE_FQN            = new FullQualifiedName( "ICDC.OPhone" );                 // String
-    public static FullQualifiedName O_SEX_FQN              = new FullQualifiedName( "ICDC.OSex" );                   // String
-    public static FullQualifiedName O_RACE_FQN             = new FullQualifiedName( "ICDC.ORace" );                  // String
-    public static FullQualifiedName TYPE_FQN               = new FullQualifiedName( "ICDC.Type" );                   // Int16
-    public static FullQualifiedName VEHICLE_MAKE_FQN       = new FullQualifiedName( "ICDC.VehicleMake" );            // String
-    public static FullQualifiedName VEHICLE_MODEL_FQN      = new FullQualifiedName( "ICDC.VehicleModel" );           // String
-    public static FullQualifiedName VEHICLE_YEAR_FQN       = new FullQualifiedName( "ICDC.VehicleYear" );            // String
-    public static FullQualifiedName VEHICLE_VIN_FQN        = new FullQualifiedName( "ICDC.VehicleVIN" );             // String
-    public static FullQualifiedName VEHICLE_COLOR_FQN      = new FullQualifiedName( "ICDC.VehicleColor" );           // String
-    public static FullQualifiedName VEHICLE_STYLE_FQN      = new FullQualifiedName( "ICDC.VehicleStyle" );           // String
-    public static FullQualifiedName LIC_FQN                = new FullQualifiedName( "ICDC.LIC" );                    // String
-    public static FullQualifiedName LIS_FQN                = new FullQualifiedName( "ICDC.LIS" );                    // String
-    public static FullQualifiedName NCIC_FQN               = new FullQualifiedName( "ICDC.NCIC" );                   // Int16
-    public static FullQualifiedName CELL_PHONE_FQN         = new FullQualifiedName( "ICDC.CellPhone" );              // String
-    public static FullQualifiedName CFS_PERSON_ID_FQN      = new FullQualifiedName( "ICDC.CallForServicePersonId" ); // Guid
-    public static FullQualifiedName BADGE_NUM_FQN          = new FullQualifiedName( "ICDC.BadgeNumber" );            // String
-    public static FullQualifiedName AGE_FQN                = new FullQualifiedName( "ICDC.Age" );                    // Int16
-    public static FullQualifiedName HEIGHT_FQN             = new FullQualifiedName( "ICDC.Height" );                 // String
-    public static FullQualifiedName WEIGHT_FQN             = new FullQualifiedName( "ICDC.Weight" );                 // String
-    public static FullQualifiedName EYES_FQN               = new FullQualifiedName( "ICDC.Eyes" );                   // String
-    public static FullQualifiedName HAIR_FQN               = new FullQualifiedName( "ICDC.Hair" );                   // String
-    public static FullQualifiedName ETHNICITY_FQN          = new FullQualifiedName( "ICDC.Ethnicity" );              // String
-    public static FullQualifiedName ADDITIONAL_FQN         = new FullQualifiedName( "ICDC.Additional" );             // String
-    public static FullQualifiedName TRANSFER_VEHICLE_FQN   = new FullQualifiedName( "ICDC.TransferVehicle" );        // Boolean
-    public static FullQualifiedName JUV_FQN                = new FullQualifiedName( "ICDC.Juv" );                    // Boolean
-    public static FullQualifiedName LIT_FQN                = new FullQualifiedName( "ICDC.LIT" );                    // String
-    public static FullQualifiedName LIY_FQN                = new FullQualifiedName( "ICDC.LIY" );                    // String
-    public static FullQualifiedName MNI_NUM_FQN            = new FullQualifiedName( "ICDC.MNINumber" );              // String
+    public static        FullQualifiedName DISPATCH_PERSON_ID_FQN = new FullQualifiedName( "ICDC.DispatchPersonId" );       // Int64
+    public static        FullQualifiedName DOB_FQN                = new FullQualifiedName( "ICDC.DOB" );                    // Date
+    public static        FullQualifiedName OSQ_FQN                = new FullQualifiedName( "ICDC.OSQ" );                    // Int16
+    public static        FullQualifiedName O_NAME_FQN             = new FullQualifiedName( "ICDC.OName" );                  // String
+    public static        FullQualifiedName O_ADDRESS_FQN          = new FullQualifiedName( "ICDC.OAddress" );               // String
+    public static        FullQualifiedName O_ADDRESS_APT_FQN      = new FullQualifiedName( "ICDC.OAddressApt" );            // String
+    public static        FullQualifiedName O_CITY_FQN             = new FullQualifiedName( "ICDC.OCity" );                  // String
+    public static        FullQualifiedName O_STATE_FQN            = new FullQualifiedName( "ICDC.OState" );                 // String
+    public static        FullQualifiedName O_ZIP_FQN              = new FullQualifiedName( "ICDC.OZip" );                   // String
+    public static        FullQualifiedName O_PHONE_FQN            = new FullQualifiedName( "ICDC.OPhone" );                 // String
+    public static        FullQualifiedName O_SEX_FQN              = new FullQualifiedName( "ICDC.OSex" );                   // String
+    public static        FullQualifiedName O_RACE_FQN             = new FullQualifiedName( "ICDC.ORace" );                  // String
+    public static        FullQualifiedName TYPE_FQN               = new FullQualifiedName( "ICDC.Type" );                   // Int16
+    public static        FullQualifiedName VEHICLE_MAKE_FQN       = new FullQualifiedName( "ICDC.VehicleMake" );            // String
+    public static        FullQualifiedName VEHICLE_MODEL_FQN      = new FullQualifiedName( "ICDC.VehicleModel" );           // String
+    public static        FullQualifiedName VEHICLE_YEAR_FQN       = new FullQualifiedName( "ICDC.VehicleYear" );            // String
+    public static        FullQualifiedName VEHICLE_VIN_FQN        = new FullQualifiedName( "ICDC.VehicleVIN" );             // String
+    public static        FullQualifiedName VEHICLE_COLOR_FQN      = new FullQualifiedName( "ICDC.VehicleColor" );           // String
+    public static        FullQualifiedName VEHICLE_STYLE_FQN      = new FullQualifiedName( "ICDC.VehicleStyle" );           // String
+    public static        FullQualifiedName LIC_FQN                = new FullQualifiedName( "ICDC.LIC" );                    // String
+    public static        FullQualifiedName LIS_FQN                = new FullQualifiedName( "ICDC.LIS" );                    // String
+    public static        FullQualifiedName NCIC_FQN               = new FullQualifiedName( "ICDC.NCIC" );                   // Int16
+    public static        FullQualifiedName CELL_PHONE_FQN         = new FullQualifiedName( "ICDC.CellPhone" );              // String
+    public static        FullQualifiedName CFS_PERSON_ID_FQN      = new FullQualifiedName( "ICDC.CallForServicePersonId" ); // Guid
+    public static        FullQualifiedName BADGE_NUM_FQN          = new FullQualifiedName( "ICDC.BadgeNumber" );            // String
+    public static        FullQualifiedName AGE_FQN                = new FullQualifiedName( "ICDC.Age" );                    // Int16
+    public static        FullQualifiedName HEIGHT_FQN             = new FullQualifiedName( "ICDC.Height" );                 // String
+    public static        FullQualifiedName WEIGHT_FQN             = new FullQualifiedName( "ICDC.Weight" );                 // String
+    public static        FullQualifiedName EYES_FQN               = new FullQualifiedName( "ICDC.Eyes" );                   // String
+    public static        FullQualifiedName HAIR_FQN               = new FullQualifiedName( "ICDC.Hair" );                   // String
+    public static        FullQualifiedName ETHNICITY_FQN          = new FullQualifiedName( "ICDC.Ethnicity" );              // String
+    public static        FullQualifiedName ADDITIONAL_FQN         = new FullQualifiedName( "ICDC.Additional" );             // String
+    public static        FullQualifiedName TRANSFER_VEHICLE_FQN   = new FullQualifiedName( "ICDC.TransferVehicle" );        // Boolean
+    public static        FullQualifiedName JUV_FQN                = new FullQualifiedName( "ICDC.Juv" );                    // Boolean
+    public static        FullQualifiedName LIT_FQN                = new FullQualifiedName( "ICDC.LIT" );                    // String
+    public static        FullQualifiedName LIY_FQN                = new FullQualifiedName( "ICDC.LIY" );                    // String
+    public static        FullQualifiedName MNI_NUM_FQN            = new FullQualifiedName( "ICDC.MNINumber" );              // String
 
     /*
      * these columns and their values seem to be references to columns in the other data sets
@@ -104,23 +104,23 @@ public class DispatchPersonsFlight {
     /*
      * EntityTypes
      */
-    public static FullQualifiedName MVI_NUM_FQN            = new FullQualifiedName( "ICDC.MVINumber" );              // String
+    public static FullQualifiedName MVI_NUM_FQN = new FullQualifiedName( "ICDC.MVINumber" );              // String
 
     /*
      * EntitySets
      */
-    public static FullQualifiedName DISPATCH_PERSON_ET_FQN = new FullQualifiedName( "ICDC.DispatchPerson" );
-    public static        FullQualifiedName DISPATCH_PERSON_ES_FQN   = new FullQualifiedName( "ICDC.DispatchPersons" );
-    public static        String            DISPATCH_PERSON_ES_ALIAS = DISPATCH_PERSON_ES_FQN
+    public static FullQualifiedName DISPATCH_PERSON_ET_FQN   = new FullQualifiedName( "ICDC.DispatchPerson" );
+    public static FullQualifiedName DISPATCH_PERSON_ES_FQN   = new FullQualifiedName( "ICDC.DispatchPersons" );
+    public static String            DISPATCH_PERSON_ES_ALIAS = DISPATCH_PERSON_ES_FQN
             .getFullQualifiedNameAsString();
-    public static        String            DISPATCH_PERSON_ES_NAME  = "IowaCityDispatchCenter_DispatchPersons";
+    public static String            DISPATCH_PERSON_ES_NAME  = "IowaCityDispatchCenter_DispatchPersons";
 
     private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
         //        String csvPath = Resources.getResource( "dispatch_persons.csv" ).getPath();
 
         String sql = "(select * from dbo.Dispatch_Persons where Dis_id IN "
-                + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) ) ) Dispatch_Persons";
+                + "( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -90, GETDATE()) ) ) Dispatch_Persons";
         logger.info( "SQL Query for persons: {}", sql );
         Dataset<Row> payload = sparkSession
                 .read()
@@ -155,6 +155,7 @@ public class DispatchPersonsFlight {
                         .to( DISPATCH_PERSON_ES_NAME )
                         .ofType( DISPATCH_PERSON_ET_FQN )
                         .key( DISPATCH_PERSON_ID_FQN )
+                        .useCurrentSync()
                         .addProperty( DISPATCH_PERSON_ID_FQN ).value( row -> getAsString( row.getAs( "ID" ) ) ).ok()
                         .addProperty( DISPATCH_ID_FQN ).value( row -> getAsString( row.getAs( "Dis_ID" ) ) ).ok()
                         .addProperty( OFFICER_ID_FQN ).value( row -> getAsString( row.getAs( "OfficerID" ) ) ).ok()
