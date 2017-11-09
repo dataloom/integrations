@@ -421,7 +421,6 @@ public class Dispatch {
         flights.put( disTypeMapping, disType );
         flights.put( personMapping, person );
 
-
         shuttle.launch( flights );
 
     }

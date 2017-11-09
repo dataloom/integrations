@@ -7,3 +7,8 @@ include 'iowacity'
 include 'niem'
 include 'migration'
 include 'sacramento'
+include 'MockIntegration'
+include 'JohnsonCounty'
+include 'JCDispatch'
+include 'MockHealth'
+

@@ -32,6 +32,7 @@ group = "com.openlattice"
 version = 'v0.0.1'
 
 mainClassName = "com.openlattice.integrations.jcDispatch.Dispatch"
+
 applicationDefaultJvmArgs = ["-Xmx1G", "-Xms1G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -45,6 +46,7 @@ run {
 configurations {
     provided
 }
+
 
 sourceSets {
     main.compileClasspath += configurations.provided
@@ -64,6 +66,7 @@ dependencies {
     if (project.hasProperty('developmentMode') && project.developmentMode) {
         logger.quiet(project.name + " using project dependencies.")
         compile project(":shuttle")
+
     } else {
         logger.quiet(project.name + " using jar dependencies.")
         compile "com.openlattice:shuttle:0.0.0-SNAPSHOT"
@@ -81,8 +84,10 @@ startScripts {
 eclipse {
     ext.downloadSources = true
     ext.downloadJavadoc = true
+
     ext.sourceCompatibility = JavaVersion.VERSION_1_8
     ext.targetCompatibility = JavaVersion.VERSION_1_8
 }
+
 
 eclipse.classpath.plusConfigurations += [configurations.provided]
