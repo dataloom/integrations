@@ -29,7 +29,7 @@ import java.util.Map;
 public class DemoHealth {
     private static final Logger logger = LoggerFactory
             .getLogger(DemoHealth.class);
-    private static final Environment environment = Environment.STAGING;
+    private static final Environment environment = Environment.LOCAL;
 
     private static final DateTimeHelper dateHelper0 = new DateTimeHelper( DateTimeZone.forOffsetHours( -8 ), "MM/dd/yyyy" );
 
