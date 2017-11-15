@@ -56,7 +56,7 @@ public class DemoData {
 
         System.out.println("Hello World");
 
-        final String jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImtpbUBvcGVubGF0dGljZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXBwX21ldGFkYXRhIjp7InJvbGVzIjpbIkF1dGhlbnRpY2F0ZWRVc2VyIiwiYWRtaW4iLCJ1c2VyIl19LCJuaWNrbmFtZSI6ImtpbSIsInJvbGVzIjpbIkF1dGhlbnRpY2F0ZWRVc2VyIiwiYWRtaW4iLCJ1c2VyIl0sInVzZXJfaWQiOiJnb29nbGUtb2F1dGgyfDEwNDg0NjI1NDY0OTE3NTg1OTUwOCIsImlzcyI6Imh0dHBzOi8vbG9vbS5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDQ4NDYyNTQ2NDkxNzU4NTk1MDgiLCJhdWQiOiJQVG15RXhkQmNrSEFpeU9qaDR3Mk1xU0lVR1dXRWRmOCIsImlhdCI6MTUwNjUzMzU3OCwiZXhwIjoxNTA2NTY5NTc4fQ.lUSl6Did-c9pnwHsCEKbasMO96_8Gn_pk5VEQpIIAcU";
+        final String jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImtpbUBvcGVubGF0dGljZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXBwX21ldGFkYXRhIjp7InJvbGVzIjpbIkF1dGhlbnRpY2F0ZWRVc2VyIiwiYWRtaW4iLCJ1c2VyIl19LCJuaWNrbmFtZSI6ImtpbSIsInJvbGVzIjpbIkF1dGhlbnRpY2F0ZWRVc2VyIiwiYWRtaW4iLCJ1c2VyIl0sInVzZXJfaWQiOiJnb29nbGUtb2F1dGgyfDEwNDg0NjI1NDY0OTE3NTg1OTUwOCIsImlzcyI6Imh0dHBzOi8vb3BlbmxhdHRpY2UuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTA0ODQ2MjU0NjQ5MTc1ODU5NTA4IiwiYXVkIjoibzhZMlUyemI1SXdvMDFqZHhNTjFXMmFpTjhQeHdWamgiLCJpYXQiOjE1MTA2ODYyMDAsImV4cCI6MTUxMDcyMjIwMH0.J2C0iL_IxWpgEWdmJ5yjiI2VakwRbLQA0gqEw1PMrF0";
         final SparkSession sparkSession = MissionControl.getSparkSession();
 
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
@@ -68,14 +68,14 @@ public class DemoData {
         /*
          * load edm.yaml and ensure all EDM elements exist
          */
-
-        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
-                .loadConfiguration( RequiredEdmElements.class );
-
-        if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
-            manager.ensureEdmElementsExist( requiredEdmElements );
-        }
+//
+//        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
+//                .loadConfiguration( RequiredEdmElements.class );
+//
+//        if ( requiredEdmElements != null ) {
+//            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
+//            manager.ensureEdmElementsExist( requiredEdmElements );
+//        }
 
         /*
          * all EDM elements should now exist, and we should be safe to proceed with the integration
@@ -159,7 +159,7 @@ public class DemoData {
                             .endEntity()
                     .addEntity("Charge")
                             .to("DemoCharges")
-                            .addProperty("general.ChargeSequenceID", "ChargeID")
+                            .addProperty("justice.ArrestTrackingNumber", "ChargeID")
                             .addProperty("event.OffenseLocalCodeSection", "OffenseLocalStatute")
                             .addProperty("event.OffenseLocalDescription", "OffenseLocalText")
                             .addProperty("event.ChargeLevel", "ChargeLevel")
@@ -178,16 +178,16 @@ public class DemoData {
                             .endEntity()
                     .addEntity("Booking Records")
                             .to("DemoBookingRecords")
-                            .addProperty("general.StringID", "BookingID")
-                            .addProperty("person.AgeAtEvent", "AgeAtBooking")
-                            .addProperty("person.ReleaseOfficer", "ReleaseOfficerBadgeID")
+                            .addProperty("j.CaseNumberText", "BookingID")
+                            .addProperty("person.ageatevent", "AgeAtBooking")
+                            .addProperty("person.releaseofficer", "ReleaseOfficerBadgeID")
                             .endEntity()
-                    .addEntity("Case")
-                            .to("DemoCases")
-                            .addProperty("general.StringID", "CaseID")
+                    .addEntity("Sentence")
+                            .to("DemoSentences")
+                            //.addProperty("j.CaseNumberText", "CaseID")
                             .addProperty("event.ConvictionResults", "ConvictionResults")
-                            .addProperty("event.SentenceTermYears", "SentenceDurationYrs")
-                            .addProperty("event.SentenceTermDays", "SentenceTermDays")
+                            .addProperty("event.SentenceTermYears").value( row -> parseNumber( row.getAs( "SentenceDurationYrs" ) ) ).ok()
+                            .addProperty("publicsafety.SentenceTermDays").value( row -> parseNumber( row.getAs( "SentenceTermDays" ) ) ).ok()
                             .endEntity()
                         .endEntities()
                 .createAssociations()
@@ -195,36 +195,35 @@ public class DemoData {
                             .to("DemoArrestedIn")
                             .fromEntity("Person")       //entity type title
                             .toEntity("Arrest")
-                            .addProperty("general.SubjectIdentification", "SubjectIdentification")
-                            .addProperty("general.ArrestSequenceID", "ArrestNumber")
+                            .addProperty("nc.SubjectIdentification", "SubjectIdentification")
+                            .addProperty("j.ArrestSequenceID", "ArrestNumber")
                             .endAssociation()
                     .addAssociation("Charged With")
                             .to("DemoChargedWith")
                             .fromEntity("Person")
                             .toEntity("Charge")
-                            .addProperty("general.SubjectIdentification", "SubjectIdentification")
-                            .addProperty("general.ChargeSequenceID", "ChargeID")
+                            .addProperty("nc.SubjectIdentification", "SubjectIdentification")
+                            .addProperty("general.stringid", "ChargeID")
                             .endAssociation()
                     .addAssociation("AppearsInIncidents")
                             .to("DemoAppearsIn")
                             .fromEntity("Person")
                             .toEntity("Incident")
-                            .addProperty("general.SubjectIdentification", "SubjectIdentification")
-                            .addProperty("general.StringID", "IncidentID")
+                            .addProperty("nc.SubjectIdentification", "SubjectIdentification")
+                            .addProperty("general.stringid", "IncidentID")
                             .endAssociation()
                     .addAssociation("AppearsInBookings")
                             .to("DemoAppearsIn")
                             .fromEntity("Person")
                             .toEntity("Booking Records")
-                            .addProperty("general.SubjectIdentification", "SubjectIdentification")
-                            .addProperty("general.StringID", "BookingID")
+                            .addProperty("nc.SubjectIdentification", "SubjectIdentification")
+                            .addProperty("general.stringid", "BookingID")
                             .endAssociation()
-                    .addAssociation("AppearsInCases")
-                            .to("DemoAppearsIn")
-                            .fromEntity("Person")
-                            .toEntity("Case")
-                            .addProperty("general.SubjectIdentification", "SubjectIdentification")
-                            .addProperty("general.StringID", "CaseID")
+                    .addAssociation("DemoLeadsTo")
+                            .to("DemoLeadsToSentence")
+                            .fromEntity("Charge")
+                            .toEntity("Sentence")
+                            .addProperty("general.stringid", "SentenceID")
                             .endAssociation()
                     .addAssociation("Demo Arrested By")
                             .to("Demo Arrested By")       //name of entity set belonging to
