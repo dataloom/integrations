@@ -54,17 +54,13 @@ public class BurlingtonPDFlight {
                 .option( "header", "true" )
                 .load( path );
 
-        //another payload, subset of the payload of the entire csv above. Arrest reports only
-        Dataset<Row> arPayload = payload.filter( payload.col( "casenum" ).endsWith( "-AR" ) );
+        //another payload, subset of the payload of the entire csv above. Arrestees only
+        Dataset<Row> arPayload = payload.filter( payload.col("PersonType").equalTo("Arrestee") );
         long arTotal = arPayload.count();
 
-        //offense reports only
-        Dataset<Row> ofPayload = payload.filter( payload.col( "casenum" ).endsWith( "-OF" ) );
-        long ofTotal = ofPayload.count();
-
         //3rd payload - subset of arrests that are arrestees
-        Dataset<Row> ar2Payload = payload.filter( payload.col("PersonType").equalTo("Arrestee"));
-        long ar2Total = ar2Payload.count();
+        Dataset<Row> nonPayload = payload.filter( payload.col("PersonType").notEqual("Arrestee"));
+        long ar2Total = nonPayload.count();
 
 
         Map<Flight, Dataset<Row>> flights = new LinkedHashMap<>( 2 );
@@ -81,25 +77,26 @@ public class BurlingtonPDFlight {
                         .ok()
                     //.addProperty("j.ArrestCategory","TypeOfArrest")
                     .endEntity()
-//                .addEntity("arrest")
-//                    .to("BurlingtonPDArrests")       //name of entity set belonging to
-//                    .addProperty("j.ArrestSequenceID", "casenum")   //arrest report #
-//                    .addProperty("justice.cadnumber")                       //CAD call #
-//                        .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
-//                    .addProperty("justice.offensenibrs", "ibrcode")
-//                    .addProperty("publicsafety.OffenseDate")
-//                        .value( row -> dtHelper.parse( row.getAs( "reporteddate" ) ) )
-//                        .ok()
-//                    .addProperty("j.ArrestCategory","TypeOfArrest")
-//                    .addProperty("location.address")
-//                        .value(row -> {
-//                            return Parsers.getAsString(row.getAs("StreetNum")) + " " + Parsers.getAsString(row.getAs("StreetName")) + " "
-//                                    + Parsers.getAsString(row.getAs("City")) + ", " + Parsers.getAsString(row.getAs("State"));
-//                        })
-//                        .ok()
-//                    .endEntity()
+                .addEntity("arrest")
+                    .to("BurlingtonPDArrests")       //name of entity set belonging to
+                    .addProperty("j.ArrestSequenceID", "casenum")   //arrest report #
+                    .addProperty("justice.cadnumber")                       //CAD call #
+                        .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
+                    .addProperty("justice.offensenibrs", "ibrcode")
+                    .addProperty("publicsafety.OffenseDate")
+                        .value( row -> dtHelper.parse( row.getAs( "reporteddate" ) ) )
+                        .ok()
+                    .addProperty("j.ArrestCategory","TypeOfArrest")
+                    .addProperty("location.address")
+                        .value(row -> {
+                            return Parsers.getAsString(row.getAs("StreetNum")) + " " + Parsers.getAsString(row.getAs("StreetName")) + " "
+                                    + Parsers.getAsString(row.getAs("City")) + ", " + Parsers.getAsString(row.getAs("State"));
+                        })
+                        .ok()
+                    .endEntity()
                 .addEntity("arpeople")
                     .to("BurlingtonPDJusticeInvolvedPeople")
+                    .useCurrentSync()
                     .addProperty("nc.SubjectIdentification", "SSN")
                     .addProperty("nc.SSN", "SSN")
                     .addProperty("nc.PersonSurName", "lastname")
@@ -143,100 +140,19 @@ public class BurlingtonPDFlight {
                     .addProperty("general.stringid")
                         .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
                 .endAssociation()
+                .addAssociation("Arrested In")
+                .to("BurlingtonPDArrestedIn")
+                .fromEntity("arpeople")
+                .toEntity("arrest")
+                .addProperty("j.ArrestSequenceID", "casenum")
+                .addProperty("nc.SubjectIdentification", "SSN")
+                .endAssociation()
             .endAssociations()
             .done();
 
-        Flight ar2Flight = Flight.newFlight()
-                .createEntities()
-                    .addEntity("ar2incident")  //variable name within flight. Doesn't have to match anything anywhere else
-                        .to("Burlington PD Incidents")       //name of entity set belonging to
-                        .useCurrentSync()
-                        .addProperty("general.StringID")
-                        .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
-                        .addProperty("justice.offensereportid", "casenum")           //arrest report number
-                        .addProperty("justice.offensenibrs", "ibrcode")
-                        .addProperty("date.IncidentReportedDateTime")
-                        .value( row -> dtHelper.parse( row.getAs( "reporteddate" ) ) )   //these rows are shorthand for a full function .value as below
-                        .ok()
-                    .endEntity()
-                    .addEntity("ar2arrest")
-                        .to("BurlingtonPDArrests")       //name of entity set belonging to
-                        .addProperty("j.ArrestSequenceID", "casenum")   //arrest report #
-                        .addProperty("justice.cadnumber")                       //CAD call #
-                        .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
-                        .addProperty("justice.offensenibrs", "ibrcode")
-                        .addProperty("publicsafety.OffenseDate")
-                        .value( row -> dtHelper.parse( row.getAs( "reporteddate" ) ) )
-                        .ok()
-                        .addProperty("j.ArrestCategory","TypeOfArrest")
-                        .addProperty("location.address")
-                        .value(row -> {
-                            return Parsers.getAsString(row.getAs("StreetNum")) + " " + Parsers.getAsString(row.getAs("StreetName")) + " "
-                                    + Parsers.getAsString(row.getAs("City")) + ", " + Parsers.getAsString(row.getAs("State"));
-                        })
-                        .ok()
-                    .endEntity()
-                    .addEntity("ar2people")
-                        .to("BurlingtonPDJusticeInvolvedPeople")
-                        .useCurrentSync()
-                        .addProperty("nc.SubjectIdentification", "SSN")
-                        .addProperty("nc.SSN", "SSN")
-                        .addProperty("nc.PersonSurName", "lastname")
-                        .addProperty("nc.PersonGivenName", "firstname")
-                        .addProperty("nc.PersonBirthDate")
-                        .value( row -> bdHelper.parse( row.getAs( "DOB" ) ) )
-                        .ok()
-                        .addProperty("nc.PersonRace", "race")
-                        .addProperty("nc.PersonSex", "Sex")
-                        .addProperty("justice.persontype", "PersonType")
-                    .endEntity()
-                    .addEntity("ar2address")
-                    .to("BurlingtonPDIncidentAddresses")
-                    .useCurrentSync()
-                        .addProperty("location.Address")    //unique ID for address
-                        .value(row -> {
-                            return Parsers.getAsString(row.getAs("StreetNum")) + " " + Parsers.getAsString(row.getAs("StreetName")) + " "
-                                    + Parsers.getAsString(row.getAs("City")) + ", " + Parsers.getAsString(row.getAs("State"));
-                        })
-                        .ok()
-                        .addProperty("location.street")
-                        .value(row -> {
-                            return Parsers.getAsString(row.getAs("StreetNum")) + " " + Parsers.getAsString(row.getAs("StreetName"));
-                        })
-                        .ok()
-                        .addProperty("location.city", "City")
-                        .addProperty("location.state", "State")
-                    .endEntity()
-                .endEntities()
-
-                .createAssociations()
-                    .addAssociation("Appears In2")
-                    .to("BurlingtonPDAppearsIn")
-                        .useCurrentSync()
-                        .fromEntity("ar2people")
-                        .toEntity("ar2incident")
-                        .addProperty("general.stringid").value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
-                    .endAssociation()
-                    .addAssociation("Arrested In")
-                    .to("BurlingtonPDArrestedIn")
-                        .fromEntity("ar2people")
-                        .toEntity("ar2arrest")
-                        .addProperty("j.ArrestSequenceID", "casenum")
-                        .addProperty("nc.SubjectIdentification", "SSN")
-                    .endAssociation()
-                    .addAssociation("Occurred At2")
-                    .to("BurlingtonPDOccurredAt")
-                        .useCurrentSync()
-                        .fromEntity("ar2incident")
-                        .toEntity("ar2address")
-                        .addProperty("general.stringid")
-                        .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
-                    .endAssociation()
-                .endAssociations()
-                .done();
 
 
-        Flight ofFlight = Flight.newFlight()
+        Flight nonFlight = Flight.newFlight()
                 .createEntities()
                     .addEntity("incident")  //variable name within flight. Doesn't have to match anything anywhere else
                         .to("Burlington PD Incidents")       //name of entity set belonging to
@@ -312,8 +228,7 @@ public class BurlingtonPDFlight {
 
         // add all the flights to flights
         flights.put( arFlight, arPayload );
-        flights.put( ar2Flight, ar2Payload );
-        flights.put( ofFlight, ofPayload );
+        flights.put( nonFlight, nonPayload );
 
         // Send your flight plan to Shuttle and complete integration
         Shuttle shuttle = new Shuttle( environment, jwtToken );
