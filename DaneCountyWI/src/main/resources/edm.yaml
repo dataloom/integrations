@@ -283,12 +283,6 @@ propertyTypes:
   - type: "location.city"
     title: "City"
     description: "A city"
-  - type: "location.state"
-    title: "State"
-    description: "A state"
-  - type: "location.zip"
-    title: "Zip"
-    description: "A zip"
   - type: "justice.weapons"
     title: "Weapons"
     description: "Weapons found during an arrest"
@@ -409,15 +403,9 @@ propertyTypes:
   - type: "publicsafety.OffenseViolatedLocalStatute"
     title: "Local Statute"
     description: "Local statute violated."
-  - type: "location.city"
-    title: "City"
-    description: "A city"
   - type: "location.street"
     title: "Street"
     description: "A street address"
-  - type: "location.state"
-    title: "State"
-    description: "A state"
   - type: "location.zip"
     title: "Zip"
     description: "A zip"
@@ -430,6 +418,12 @@ propertyTypes:
   - type: "location.id"
     title: "Location Id"
     description: "The id of a location"
+  - type: "justice.ReleaseComments"
+    title: "Release Comments"
+    description: "Release comments"
+  - type: "justice.Bail"
+    title: "Bail"
+    description: "Bail Information"
 
 entityTypes:
 - type: "justice.agency"
@@ -672,6 +666,23 @@ entityTypes:
   - "location.city"
   - "location.state"
   - "location.zip"
+- type: "justice.booking"
+  title: "Booking"
+  description: "A booking"
+  key:
+  - "j.CaseNumberText"
+  properties:
+  - "j.CaseNumberText"
+  - "justice.CaseStatus"
+  - "justice.ReferralDate"
+  - "justice.ReferralType"
+  - "justice.ReferralAgency"
+  - "publicsafety.ReleaseDate"
+  - "justice.ReleaseType"
+  - "justice.ReleaseComments"
+  - "justice.Bail"
+  - "j.ArrestAgency"
+  - "j.OffenseViolatedStatute"
 
 associationTypes:
 - type:
@@ -1197,6 +1208,8 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"
 - type: "general.Address"
   name: "MSOAddresses"
@@ -1205,6 +1218,8 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"
 - type: "justice.booking"
   name: "MSOBookings"
@@ -1213,14 +1228,18 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"
-- type: "justice.booked"
+- type: "justice.bookedin"
   name: "MSOBooked"
   title: "Appears In Bookings"
   description: "Appears in booking of arrested Middlesex suspect"
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"
 - type: "location.livesat"
   name: "MSOLivesAt"
@@ -1229,4 +1248,6 @@ entitySets:
   contacts:
   - "support@openlattice.com"
   owners:
+  - "google-oauth2|106178747462282285391"
+  - "auth0|588a2038aa03fb78b0e52307"
   - "auth0|59a985a557d70e1088c0c425"

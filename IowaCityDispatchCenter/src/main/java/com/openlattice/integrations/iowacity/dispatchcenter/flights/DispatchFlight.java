@@ -151,17 +151,18 @@ public class DispatchFlight {
     private static Dataset<Row> getPayloadFromCsv( final SparkSession sparkSession, JdbcIntegrationConfig config ) {
 
         //        String csvPath = Resources.getResource( "dispatch.csv" ).getPath();
-        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 2 ).toDate().getTime() );
+        java.sql.Date d = new java.sql.Date( DateTime.now().minusDays( 90 ).toDate().getTime() );
+        String query = "(select * from dbo.Dispatch where CFS_DateTimeJanet >= '" + d.toString() +"') Dispatch";
+
         Dataset<Row> payload = sparkSession
                 .read()
                 .format( "jdbc" )
                 .option( "url", config.getUrl() )
-                .option( "dbtable", "dbo.Dispatch" )
+                .option( "dbtable", query )
                 .option( "password", config.getDbPassword() )
                 .option( "user", config.getDbUser() )
                 .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver" )
-                .load()
-                .filter( col( "CFS_DateTimeJanet" ).geq( d ) );
+                .load();
 
         //payload.createOrReplaceTempView( "Dispatch" );
 
@@ -180,6 +181,7 @@ public class DispatchFlight {
                         .to( DISPATCHES_ES_NAME )
                         .ofType( DISPATCH_ET_FQN )
                         .key( DISPATCH_ID_FQN, DISPATCH_NUM_FQN )
+                        .useCurrentSync()
                         .addProperty( DISPATCH_ID_FQN ).value( row -> getAsString( row.getAs( "Dis_ID" ) ) ).ok()
                         .addProperty( DISPATCH_NUM_FQN ).value( row -> getAsString( row.getAs( "Dis_No" ) ) ).ok()
                         .addProperty( DISPATCH_DATE_FQN ).value( row -> getAsDate( row.getAs( "Dis_Date" ) ) ).ok()

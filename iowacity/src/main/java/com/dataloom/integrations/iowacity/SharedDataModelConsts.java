@@ -154,4 +154,5 @@ public class SharedDataModelConsts {
     public static String LEADS_TO_TYPE                = "justice.leadsto";
     public static String LEADS_TO_ALIAS               = "leadsto";
 
+
 }

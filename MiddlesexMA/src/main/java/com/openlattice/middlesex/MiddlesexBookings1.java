@@ -33,10 +33,11 @@ import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import com.openlattice.shuttle.util.Parsers;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
@@ -56,9 +57,11 @@ public class MiddlesexBookings1 {
             .getLogger( MiddlesexBookings1.class );
     private static final RetrofitFactory.Environment environment = Environment.PRODUCTION;
     private static final DateTimeHelper              dtHelper    = new DateTimeHelper( DateTimeZone
-            .forOffsetHours( -5 ), "MM/dd/YYYY" );
+
+            .forOffsetHours( -5 ), "MM/dd/yy" );
     private static final DateTimeHelper              bdHelper    = new DateTimeHelper( DateTimeZone
-            .forOffsetHours( -5 ), "MM/dd/YYYY" );
+            .forOffsetHours( -5 ), "MM/dd/yy" );
+
 
     public static void main( String[] args ) throws InterruptedException {
         /*
@@ -66,8 +69,10 @@ public class MiddlesexBookings1 {
          * existence of the file, and making sure authentication was successful. A failure in one of these cases
          * will cause the program to exit with an exception.
          */
+
         final String path = args[ 0 ];
         final String jwtToken = args[ 1 ];
+
         final SparkSession sparkSession = MissionControl.getSparkSession();
         //final String jwtToken = MissionControl.getIdToken( username, password );
 
@@ -81,19 +86,11 @@ public class MiddlesexBookings1 {
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
-        //.sample( false, .1 );
-//        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
-//                .loadConfiguration( RequiredEdmElements.class );
-//        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
-//        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
-////        if ( requiredEdmElements != null ) {
-//            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm,
-//                    retrofit.create( PermissionsApi.class ) );
-//            reem.ensureEdmElementsExist( requiredEdmElements );
-//        }
+
 
         Flight flight = Flight.newFlight()
                 .createEntities()
+
                 .addEntity( "suspect" )
                     .to( "MSOSuspects" )
                     .key( new FullQualifiedName( "nc.SubjectIdentification" ) )
@@ -188,7 +185,8 @@ public class MiddlesexBookings1 {
 //                    .value( row -> UUID.randomUUID().toString() )
 //                    .ok()
                 .ok()
-                .ok()
+                .endAssociations()
+
                 .done();
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
@@ -198,12 +196,24 @@ public class MiddlesexBookings1 {
         shuttle.launch( flights );
     }
 
+    public static String safeDateParse( Object obj ) {
+        if ( obj == null ) return null;
+        String date = obj.toString();
+        if ( date.equals( "  -   -" ) ) {
+            return null;
+        }
+        return dtHelper.parse( date );
+    }
+
     public static String safeDOBParse( Row row ) {
         String dob = row.getAs( "dt_ob" );
         if ( dob == null ) {
             return null;
         }
         if ( dob.contains( "#" ) ) {
+            return null;
+        }
+        if ( dob.equals( "  -   -" ) ) {
             return null;
         }
         return bdHelper.parse( dob );

@@ -46,12 +46,13 @@ public class IowaCityDispatchCenter {
 
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edmApi = retrofit.create( EdmApi.class );
-        PermissionsApi permissionApi = permissionApi = retrofit.create( PermissionsApi.class );
+        PermissionsApi permissionsApi = retrofit.create( PermissionsApi.class );
+
         RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
                 .loadConfiguration( RequiredEdmElements.class );
 
         if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
+            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionsApi );
             manager.ensureEdmElementsExist( requiredEdmElements );
         }
 

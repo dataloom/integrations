@@ -59,7 +59,6 @@ public class SystemUserBaseFlight {
                 .option( "password", config.getDbPassword() )
                 .option( "driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver")
                 .load();
-
         return payload;
     }
 
@@ -72,6 +71,7 @@ public class SystemUserBaseFlight {
             .newFlight()
                 .createEntities()
                     .addEntity( EMPLOYEES_ES_ALIAS )
+                    .useCurrentSync()
                         .to( EMPLOYEES_ES_NAME )
                         .ofType( EMPLOYEE_ET_FQN )
                         .key( EMPLOYEE_ID_FQN, OFFICER_ID_FQN )
@@ -80,7 +80,7 @@ public class SystemUserBaseFlight {
                         .addProperty( TITLE_FQN ).value( row -> getAsString( row.getAs( "Title" ) ) ).ok()
                         .addProperty( EMPLOYEE_ID_FQN ).value( row -> getEmployeeId( row.getAs( "EmployeeId" ) ) ).ok()
                         .addProperty( OFFICER_ID_FQN ).value( row -> getAsUUID( row.getAs( "OfficerId" ) ) ).ok()
-                        .addProperty( ORI_FQN ).value( row -> getAsString( row.getAs( "ORI  " ) ) ).ok()
+                        .addProperty( ORI_FQN ).value( row -> getAsString( row.getAs( "ORI" ) ) ).ok()
                         .addProperty( ACTIVE_FQN ).value( row -> getActive( row.getAs( "EmployeeId" ) ) ).ok()
                         .ok()
                     .ok()

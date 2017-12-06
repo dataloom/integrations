@@ -55,6 +55,7 @@ import static com.dataloom.integrations.iowacity.SharedDataModelConsts.WARRANT_N
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -73,6 +74,7 @@ import com.openlattice.shuttle.Shuttle;
 public class JohnsonCountyExtended {
     public static final Environment environment = Environment.LOCAL;
     private static final Logger     logger      = LoggerFactory.getLogger( JohnsonCountyExtended.class );
+    private static final Pattern    dm          = Pattern.compile( "//d//d-//D//D//D-//d//d" );
 
     public static void main( String[] args ) throws InterruptedException {
 
@@ -198,15 +200,8 @@ public class JohnsonCountyExtended {
             return null;
 
         }
-        String checkme = obj.toString();
-        if ( checkme.equals( "0.00" ) || checkme.equals( "_x000C_" ) || checkme.equals( "0" )
-                || checkme.equals( "5202" ) || checkme.equals( "CNTM" ) || checkme.equals( "-1" ) ) {
-            logger.info( "OMG ITS THAT NUMBER -----------------------------" );
-            logger.info( checkme );
-            return null;
-        }
-        if ( obj != null ) {
-            String d = obj.toString();
+        String d = obj.toString();
+        if ( dm.matcher( d ).matches() ) {
             FormattedDateTime date = new FormattedDateTime( d, null, "dd-MMM-yy", "HH:mm:ss" );
             return date.getDateTime();
         }
