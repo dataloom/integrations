@@ -38,7 +38,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
+import com.openlattice.shuttle.util.Parsers;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -57,9 +57,11 @@ public class MiddlesexBookings1 {
             .getLogger( MiddlesexBookings1.class );
     private static final RetrofitFactory.Environment environment = Environment.PRODUCTION;
     private static final DateTimeHelper              dtHelper    = new DateTimeHelper( DateTimeZone
+
             .forOffsetHours( -5 ), "MM/dd/yy" );
     private static final DateTimeHelper              bdHelper    = new DateTimeHelper( DateTimeZone
             .forOffsetHours( -5 ), "MM/dd/yy" );
+
 
     public static void main( String[] args ) throws InterruptedException {
         /*
@@ -67,10 +69,10 @@ public class MiddlesexBookings1 {
          * existence of the file, and making sure authentication was successful. A failure in one of these cases
          * will cause the program to exit with an exception.
          */
-        final String path = args[0];
-        final String jwtToken = args[1];
-        //final String username = args[ 1 ];
-        //final String password = args[ 2 ];
+
+        final String path = args[ 0 ];
+        final String jwtToken = args[ 1 ];
+
         final SparkSession sparkSession = MissionControl.getSparkSession();
         //final String jwtToken = MissionControl.getIdToken( username, password );
 
@@ -84,69 +86,107 @@ public class MiddlesexBookings1 {
                 .format( "com.databricks.spark.csv" )
                 .option( "header", "true" )
                 .load( path );
-        //.sample( false, .1 );
-        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
-                .loadConfiguration( RequiredEdmElements.class );
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
-        //        if ( requiredEdmElements != null ) {
-        //            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm,
-        //                    retrofit.create( PermissionsApi.class ) );
-        //            reem.ensureEdmElementsExist( requiredEdmElements );
-        //        }
+
 
         Flight flight = Flight.newFlight()
                 .createEntities()
 
                 .addEntity( "suspect" )
-                .to( "MSOSuspects" )
-                .addProperty( "nc.PersonGivenName", "f_name" )
-                .addProperty( "nc.PersonMiddleName", "m_name" )
-                .addProperty("nc.PersonSurName", "l_name" )
-                .addProperty("nc.SSN", "ssno" )
-                .addProperty( "nc.PersonRace", "race" )
-                .addProperty( "nc.MaritalStatus", "marit" )
-                .addProperty( "nc.PersonBirthDate" ).value( MiddlesexBookings1::safeDOBParse ).ok()
-                .addProperty( "nc.PersonBirthPlace", "birth" )
-                .addProperty("nc.SubjectIdentification" ).value( MiddlesexBookings1::getSubjectIdentification ).ok()
-                .endEntity()
-
+                    .to( "MSOSuspects" )
+                    .key( new FullQualifiedName( "nc.SubjectIdentification" ) )
+                    .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
+                        .value( row -> row.getAs( "f_name" ) ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonMiddleName" ) )
+                        .value( row -> row.getAs( "m_name" ) ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
+                        .value( row -> row.getAs( "l_name" ) ).ok()
+                    .addProperty( new FullQualifiedName( "nc.SSN" ) )
+                        .value( row -> row.getAs( "ssno" ) ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
+                        .value( row -> row.getAs( "race" ) ).ok()
+                    .addProperty( new FullQualifiedName( "nc.MaritalStatus" ) )
+                        .value( row -> row.getAs( "marit" ) ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
+                        .value( MiddlesexBookings1::safeDOBParse ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonBirthPlace" ) )
+                        .value( row -> row.getAs( "birth" ) ).ok()
+                    .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
+                        .value( MiddlesexBookings1::getSubjectIdentification ).ok()
+                    .ok()
                 .addEntity( "address" )
-                .to( "MSOAddresses" )
-                .addProperty( "location.street", "addr" )
-                .addProperty( "location.city", "city" )
-                .addProperty( "location.state", "state" )
-                .addProperty( "location.zip", "zip" )
-                .endEntity()
-
+                    .to( "MSOAddresses" )
+                    .key( new FullQualifiedName("location.Address"))
+                    .addProperty("location.Address")
+                    .value(row -> {
+                        return Parsers.getAsString(row.getAs("addr")) + " " + Parsers.getAsString(row.getAs("city")) + ", "
+                                + Parsers.getAsString(row.getAs("state")) + " " + Parsers.getAsString(row.getAs("zip"));
+                    })
+                        .ok()
+                    .addProperty( new FullQualifiedName( "location.street" ) )
+                        .value( row -> row.getAs( "addr" ) )
+                        .ok()
+                    .addProperty( new FullQualifiedName( "location.city" ) )
+                        .value( row -> row.getAs( "city" ) )
+                        .ok()
+                    .addProperty( new FullQualifiedName( "location.state" ) )
+                        .value( row -> row.getAs( "state" ) )
+                        .ok()
+                    .addProperty( new FullQualifiedName( "location.zip" ) )
+                        .value( row -> row.getAs( "zip" ) )
+                        .ok()
+                    .ok()
                 .addEntity( "booking" )
-                .to( "MSOBookings" )
-                .addProperty( "justice.ReferralDate" ).value( row -> safeDateParse( row.getAs( "dt_asg" ) ) ).ok()
-                .addProperty( "publicsafety.ReleaseDate" ).value( row -> safeDateParse( row.getAs( "dt_rel" ) ) ).ok()
-                .addProperty( "justice.ReleaseComments", "rel_com" )
-                .addProperty( "justice.Bail", "bail" )
-                .addProperty( "j.OffenseViolatedStatute", "maj_off" )
-                .addProperty( "j.CaseNumberText", "dockno" )
-                .addProperty( "j.ArrestAgency", "ar_agen" )
-                .endEntity()
-                .endEntities()
-
+                    .to( "MSOBookings" )
+                    .key( new FullQualifiedName( "j.CaseNumberText" ) )
+                    .addProperty( new FullQualifiedName( "justice.ReferralDate" ) )
+                        .value( row -> dtHelper.parse( row.getAs( "dt_asg" ) ) )
+                        .ok()
+                    .addProperty( new FullQualifiedName( "publicsafety.ReleaseDate" ) )
+                        .value( row -> dtHelper.parse( row.getAs( "dt_rel" ) ) )
+                        .ok()
+                    .addProperty( new FullQualifiedName( "justice.ReleaseComments" ) )
+                        .value( row -> row.getAs( "rel_com" ) )
+                        .ok()
+                    .addProperty( new FullQualifiedName( "justice.Bail" ) )
+                        .value( row -> row.getAs( "bail" ) )
+                        .ok()
+                    .addProperty( new FullQualifiedName( "j.OffenseViolatedStatute" ) )
+                        .value( row -> row.getAs( "maj_off" ) )
+                        .ok()
+                    .addProperty( new FullQualifiedName( "j.CaseNumberText" ) )
+                        .value( row -> row.getAs( "dockno" ) )
+                        .ok()
+                    .addProperty( new FullQualifiedName( "j.ArrestAgency" ) )
+                        .value( row -> row.getAs( "ar_agen" ) )
+                        .ok()
+                    .ok()
+                .ok()
                 .createAssociations()
                 .addAssociation( "bookedin" )
-                .to( "MSOBooked" )
-                .fromEntity( "suspect" )
-                .toEntity( "booking" )
-                .addProperty( "general.stringid" ).value( row -> "booked in" ).ok()
-                .endAssociation()
-
+                .ofType( new FullQualifiedName( "general.appearsin" ) )
+                    .to( "MSOBooked" )
+                    .fromEntity( "suspect" )
+                    .toEntity( "booking" )
+                    .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
+                        .value( MiddlesexBookings1::getSubjectIdentification )
+                        .ok()
+//                    .addProperty( new FullQualifiedName( "j.CaseNumberText" ) )
+//                    .value( row -> row.getAs( "dockno" ) )
+//                    .ok()
+                .ok()
                 .addAssociation( "livesat" )
-                .to( "MSOLivesAt" )
-                .fromEntity( "suspect" )
-                .toEntity( "address" )
-                .addProperty( "general.stringid" ).value( row -> "lives at" ).ok()
-                .endAssociation()
-
+                    .ofType( new FullQualifiedName( "location.livesat" ) )
+                    .to( "MSOLivesAt" )
+                    .key( new FullQualifiedName( "general.stringid" ) )
+                    .fromEntity( "suspect" )
+                    .toEntity( "address" )
+                    .addProperty( "general.stringid")
+                        .value( MiddlesexBookings1::getSubjectIdentification ).ok()
+//                    .value( row -> UUID.randomUUID().toString() )
+//                    .ok()
+                .ok()
                 .endAssociations()
+
                 .done();
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
