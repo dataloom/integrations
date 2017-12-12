@@ -38,8 +38,8 @@ public class Dispatch {
 
     public static void main( String[] args ) throws InterruptedException {
 
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
+//        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
+//        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
 
         final String personPath = args[ 0 ];
         final String unitPath = args[ 1 ];
@@ -79,13 +79,13 @@ public class Dispatch {
                 .option( "header", "true" )
                 .load( disTypePath );
 
-        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
-                .loadConfiguration( RequiredEdmElements.class );
-
-        if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
-            manager.ensureEdmElementsExist( requiredEdmElements );
-        }
+//        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
+//                .loadConfiguration( RequiredEdmElements.class );
+//
+//        if ( requiredEdmElements != null ) {
+//            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
+//            manager.ensureEdmElementsExist( requiredEdmElements );
+//        }
 
         logger.info( "ER Field names: {}", Arrays.asList( person.schema().fieldNames() ) );
         logger.info( "ER Field names: {}", Arrays.asList( unit.schema().fieldNames() ) );
