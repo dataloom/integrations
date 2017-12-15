@@ -67,32 +67,17 @@ public class BurlingtonPDFlight {
         Flight arFlight = Flight.newFlight()
             .createEntities()
                 .addEntity("arincident")  //variable name within flight. Doesn't have to match anything anywhere else
-                    .to("Burlington PD Incidents")       //name of entity set belonging to
-                    .addProperty("general.StringID")
+                    .to("BurlingtonPDIncidents")       //name of entity set belonging to
+                    .addProperty("criminaljustice.incidentid")
                         .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
-                    .addProperty("justice.offensereportid", "casenum")           //arrest report number
-                    .addProperty("justice.offensenibrs", "ibrcode")
-                    .addProperty("date.IncidentReportedDateTime")
+                    .addProperty("criminaljustice.cadnumber")
+                        .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
+                    .addProperty("criminaljustice.reportnumber", "casenum")           //arrest report number
+                    .addProperty("criminaljustice.nibrs", "ibrcode")
+                    .addProperty("incident.reporteddatetime")
                         .value( row -> dtHelper.parse( row.getAs( "reporteddate" ) ) )   //these rows are shorthand for a full function .value as below
                         .ok()
                     //.addProperty("j.ArrestCategory","TypeOfArrest")
-                    .endEntity()
-                .addEntity("arrest")
-                    .to("BurlingtonPDArrests")       //name of entity set belonging to
-                    .addProperty("j.ArrestSequenceID", "casenum")   //arrest report #
-                    .addProperty("justice.cadnumber")                       //CAD call #
-                        .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
-                    .addProperty("justice.offensenibrs", "ibrcode")
-                    .addProperty("publicsafety.OffenseDate")
-                        .value( row -> dtHelper.parse( row.getAs( "reporteddate" ) ) )
-                        .ok()
-                    .addProperty("j.ArrestCategory","TypeOfArrest")
-                    .addProperty("location.address")
-                        .value(row -> {
-                            return Parsers.getAsString(row.getAs("StreetNum")) + " " + Parsers.getAsString(row.getAs("StreetName")) + " "
-                                    + Parsers.getAsString(row.getAs("City")) + ", " + Parsers.getAsString(row.getAs("State"));
-                        })
-                        .ok()
                     .endEntity()
                 .addEntity("arpeople")
                     .to("BurlingtonPDJusticeInvolvedPeople")
@@ -103,7 +88,7 @@ public class BurlingtonPDFlight {
                     .addProperty("nc.PersonBirthDate")
                         .value( row -> bdHelper.parse( row.getAs( "DOB" ) ) )
                         .ok()
-                    .addProperty("nc.PersonRace", "race")
+                    .addProperty("nc.PersonRace").value( BurlingtonPDFlight::standardRace ).ok()
                     .addProperty("nc.PersonSex", "Sex")
                     .addProperty("justice.persontype", "PersonType")
                     .endEntity()
@@ -143,10 +128,13 @@ public class BurlingtonPDFlight {
                 .addAssociation("Arrested In")
                 .to("BurlingtonPDArrestedIn")
                 .fromEntity("arpeople")
-                .toEntity("arrest")
-                .addProperty("j.ArrestSequenceID", "casenum")
+                .toEntity("arincident")
+                .addProperty("arrestedin.id", "casenum")
                 .addProperty("nc.SubjectIdentification", "SSN")
+                .addProperty("criminaljustice.nibrs", "ibrcode")
+                .addProperty("arrest.category", "TypeOfArrest")
                 .endAssociation()
+
             .endAssociations()
             .done();
 
@@ -155,13 +143,13 @@ public class BurlingtonPDFlight {
         Flight nonFlight = Flight.newFlight()
                 .createEntities()
                     .addEntity("incident")  //variable name within flight. Doesn't have to match anything anywhere else
-                        .to("Burlington PD Incidents")       //name of entity set belonging to
+                        .to("BurlingtonPDIncidents")       //name of entity set belonging to
                         .useCurrentSync()
-                        .addProperty("general.StringID")
+                        .addProperty("criminaljustice.incidentid")
                             .value( row -> getCadFromCasenum( row.getAs( "casenum" ) ) ).ok()
-                        .addProperty("justice.offensereportid", "casenum")           //offense report number
-                        .addProperty("justice.offensenibrs", "ibrcode")
-                        .addProperty("date.IncidentReportedDateTime").value( row -> dtHelper.parse( row.getAs( "reporteddate" ) ) )
+                        .addProperty("criminaljustice.reportnumber", "casenum")           //offense report number
+                        .addProperty("criminaljustice.nibrs", "ibrcode")
+                        .addProperty("incident.reporteddatetime").value( row -> dtHelper.parse( row.getAs( "reporteddate" ) ) )
                         .ok()
                         //.addProperty("j.ArrestCategory","TypeOfArrest")
                     .endEntity()
@@ -182,7 +170,7 @@ public class BurlingtonPDFlight {
                         .addProperty("nc.PersonGivenName", "firstname")
                         .addProperty("nc.PersonBirthDate").value( row -> bdHelper.parse( row.getAs( "DOB" ) ) )
                         .ok()
-                        .addProperty("nc.PersonRace", "race")
+                        .addProperty("nc.PersonRace").value( BurlingtonPDFlight::standardRace ).ok()
                         .addProperty("nc.PersonSex", "Sex")
                         .addProperty("justice.persontype", "PersonType")
                     .endEntity()
@@ -246,6 +234,17 @@ public class BurlingtonPDFlight {
         return names[ 0 ].trim();
         }
 
+    public static String standardRace( Row row ) {
+        String sr = row.getAs("race");
+        if ( sr != null ) {
+            if ( sr.equals("A")) { return "asian"; }
+            else if ( sr.equals("B")) { return "black"; }
+            else if ( sr.equals("I")) { return "asian"; }
+            else if ( sr.equals("W")) { return "white"; }
+            else if ( sr.equals("P")) { return "pacisland"; }
+            else if ( sr.equals("U")) { return ""; }
+        }
+        return null;}
 
         }
 

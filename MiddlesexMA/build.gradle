@@ -26,6 +26,9 @@ configurations {
 }
 
 configurations.all {
+    resolutionStrategy {
+        force 'com.fasterxml.jackson.core:jackson-core:2.6.5','com.fasterxml.jackson.core:jackson-databind:2.6.5','com.fasterxml.jackson.module:jackson-module-afterburner:2.6.5','com.fasterxml.jackson.datatype:jackson-datatype-guava:2.6.5','com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.6.5','com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.6.5','com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.6.5','com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.5'
+    }
     exclude module: 'slf4j-log4j12'
 }
 

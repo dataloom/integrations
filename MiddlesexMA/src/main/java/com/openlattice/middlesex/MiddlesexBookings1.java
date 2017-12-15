@@ -170,7 +170,7 @@ public class MiddlesexBookings1 {
                 .addAssociation( "bookedin" )
                 .ofType( new FullQualifiedName( "general.appearsin" ) )
                     .to( "MSOBooked" )
-                    .fromEntity( "suspect" )
+                    .fromEntity( "arrestee" )
                     .toEntity( "booking" )
                     .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
                         .value( MiddlesexBookings1::getSubjectIdentification )
@@ -183,7 +183,7 @@ public class MiddlesexBookings1 {
                     .ofType( new FullQualifiedName( "location.livesat" ) )
                     .to( "MSOLivesAt" )
                     .key( new FullQualifiedName( "general.stringid" ) )
-                    .fromEntity( "suspect" )
+                    .fromEntity( "arrestee" )
                     .toEntity( "address" )
                     .addProperty( "general.stringid")
                         .value( MiddlesexBookings1::getSubjectIdentification ).ok()
@@ -228,22 +228,25 @@ public class MiddlesexBookings1 {
         return row.getAs( "insno_a" ).toString().trim();
     }
 
-    public static String standardRace( Object obj ) {
-        if ( obj != null ) {
-            String name = obj.toString();
-            if ( name == "ASN") { return "asian"; }
-                else if ( name == "BLA") { return "black"; }
-                   else if ( name == "CAU") { return "white"; }
-                      else if ( name == "IND") { return "amindian"; }
-                         else if ( name == "OTR") { return "other"; }
-                            else if ( name == "") { return ""; }
+    public static String standardRace( Row row ) {
+        String sr = row.getAs("race");
+        if ( sr != null ) {
+            //String name = row.toString();
+            if ( sr.equals("ASN")) { return "asian"; }
+                else if ( sr.equals("BLA")) { return "black"; }
+                   else if ( sr.equals("CAU")) { return "white"; }
+                      else if ( sr.equals("IND")) { return "amindian"; }
+                         else if ( sr.equals("OTR")) { return "other"; }
+                            else if ( sr.equals("")) { return ""; }
+                               else if (sr.equals("HSP")) { return "";}
              }
         return null;}
 
-     public static String standardEthnicity( Object obj ) {
-            if (obj != null) {
-                String name = obj.toString();
-                if (name == "HSP") { return "hispanic"; }
+     public static String standardEthnicity( Row row ) {
+        String sr = row.getAs("race");
+        if (sr != null) {
+                //String name = row.toString();
+                if (sr.equals("HSP")) { return "hispanic"; }
             }
          return null;
       }
