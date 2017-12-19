@@ -23,7 +23,6 @@ package com.openlattice.middlesex;
 import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
-import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
 import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
@@ -31,9 +30,6 @@ import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.dates.DateTimeHelper;
-import com.openlattice.shuttle.edm.RequiredEdmElements;
-import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,7 +87,7 @@ public class MiddlesexBookings1 {
         Flight flight = Flight.newFlight()
                 .createEntities()
 
-                .addEntity( "suspect" )
+                .addEntity( "arrestee" )
                     .to( "MSOSuspects" )
                     .key( new FullQualifiedName( "nc.SubjectIdentification" ) )
                     .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
@@ -103,7 +99,9 @@ public class MiddlesexBookings1 {
                     .addProperty( new FullQualifiedName( "nc.SSN" ) )
                         .value( row -> row.getAs( "ssno" ) ).ok()
                     .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
-                        .value( row -> row.getAs( "race" ) ).ok()
+                        .value( MiddlesexBookings1::standardRace ).ok()
+                    .addProperty("nc.PersonEthnicity")
+                        .value( MiddlesexBookings1::standardEthnicity ).ok()
                     .addProperty( new FullQualifiedName( "nc.MaritalStatus" ) )
                         .value( row -> row.getAs( "marit" ) ).ok()
                     .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
@@ -112,7 +110,12 @@ public class MiddlesexBookings1 {
                         .value( row -> row.getAs( "birth" ) ).ok()
                     .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
                         .value( MiddlesexBookings1::getSubjectIdentification ).ok()
-                    .ok()
+                    .addProperty("nc.PersonEyeColorText", "eyes")
+                    .addProperty("nc.PersonHairColorText", "hair")
+                    .addProperty("nc.PersonWeightMeasure", "wgt")
+                    .addProperty("nc.PersonHeightMeasure", "hgt")
+                    .addProperty("nc.complexion", "cmplx")
+                .endEntity()
                 .addEntity( "address" )
                     .to( "MSOAddresses" )
                     .key( new FullQualifiedName("location.Address"))
@@ -159,13 +162,15 @@ public class MiddlesexBookings1 {
                     .addProperty( new FullQualifiedName( "j.ArrestAgency" ) )
                         .value( row -> row.getAs( "ar_agen" ) )
                         .ok()
-                    .ok()
-                .ok()
+                    .addProperty("justice.ReleaseType", "rel_type")
+                .endEntity()
+                .endEntities()
+
                 .createAssociations()
                 .addAssociation( "bookedin" )
                 .ofType( new FullQualifiedName( "general.appearsin" ) )
                     .to( "MSOBooked" )
-                    .fromEntity( "suspect" )
+                    .fromEntity( "arrestee" )
                     .toEntity( "booking" )
                     .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
                         .value( MiddlesexBookings1::getSubjectIdentification )
@@ -178,7 +183,7 @@ public class MiddlesexBookings1 {
                     .ofType( new FullQualifiedName( "location.livesat" ) )
                     .to( "MSOLivesAt" )
                     .key( new FullQualifiedName( "general.stringid" ) )
-                    .fromEntity( "suspect" )
+                    .fromEntity( "arrestee" )
                     .toEntity( "address" )
                     .addProperty( "general.stringid")
                         .value( MiddlesexBookings1::getSubjectIdentification ).ok()
@@ -222,4 +227,28 @@ public class MiddlesexBookings1 {
     public static String getSubjectIdentification( Row row ) {
         return row.getAs( "insno_a" ).toString().trim();
     }
+
+    public static String standardRace( Row row ) {
+        String sr = row.getAs("race");
+        if ( sr != null ) {
+            //String name = row.toString();
+            if ( sr.equals("ASN")) { return "asian"; }
+                else if ( sr.equals("BLA")) { return "black"; }
+                   else if ( sr.equals("CAU")) { return "white"; }
+                      else if ( sr.equals("IND")) { return "amindian"; }
+                         else if ( sr.equals("OTR")) { return "other"; }
+                            else if ( sr.equals("")) { return ""; }
+                               else if (sr.equals("HSP")) { return "";}
+             }
+        return null;}
+
+     public static String standardEthnicity( Row row ) {
+        String sr = row.getAs("race");
+        if (sr != null) {
+                //String name = row.toString();
+                if (sr.equals("HSP")) { return "hispanic"; }
+            }
+         return null;
+      }
+
 }
