@@ -20,29 +20,30 @@
 
 package com.openlattice.middlesex;
 
-import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.edm.EdmApi;
-import com.dataloom.mappers.ObjectMappers;
-import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
+import com.dataloom.streams.StreamUtil;
+import com.google.common.collect.ImmutableList;
 import com.openlattice.shuttle.Flight;
-import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
+import com.openlattice.shuttle.adapter.Row;
 import com.openlattice.shuttle.dates.DateTimeHelper;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import com.openlattice.shuttle.dates.TimeZones;
+import com.openlattice.shuttle.util.CsvUtil;
 import com.openlattice.shuttle.util.Parsers;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
+
 
 /**
  * @author Matthew Tamayo-Rios &lt;matthew@openlattice.com&gt;
@@ -52,11 +53,10 @@ public class MiddlesexBookings1 {
     private static final Logger                      logger      = LoggerFactory
             .getLogger( MiddlesexBookings1.class );
     private static final RetrofitFactory.Environment environment = Environment.PRODUCTION;
-    private static final DateTimeHelper              dtHelper    = new DateTimeHelper( DateTimeZone
-
-            .forOffsetHours( -5 ), "MM/dd/yy" );
-    private static final DateTimeHelper              bdHelper    = new DateTimeHelper( DateTimeZone
-            .forOffsetHours( -5 ), "MM/dd/yy" );
+    private static final DateTimeHelper              dtHelper    = new DateTimeHelper(  TimeZones.America_NewYork,
+            "MM/dd/yy");
+    private static final DateTimeHelper              bdHelper    = new DateTimeHelper(  TimeZones.America_NewYork,
+            "MM/dd/yy");
 
 
     public static void main( String[] args ) throws InterruptedException {
@@ -69,7 +69,7 @@ public class MiddlesexBookings1 {
         final String path = args[ 0 ];
         final String jwtToken = args[ 1 ];
 
-        final SparkSession sparkSession = MissionControl.getSparkSession();
+        //final SparkSession sparkSession = MissionControl.getSparkSession();
         //final String jwtToken = MissionControl.getIdToken( username, password );
 
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
@@ -77,11 +77,22 @@ public class MiddlesexBookings1 {
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
-        Dataset<Row> payload = sparkSession
-                .read()
-                .format( "com.databricks.spark.csv" )
-                .option( "header", "true" )
-                .load( path );
+        Stream<Map<String, String>> payload = StreamUtil.stream( () -> {
+            try {
+                return CsvUtil.newDefaultMapper()
+                        .readerFor( Map.class )
+                        .with( CsvUtil.newDefaultSchemaFromHeader() )
+                        .readValues( new File( path ) );
+            } catch ( IOException e ) {
+                logger.error( "Unable to read csv file", e );
+                return ImmutableList.<Map<String, String>>of().iterator();
+            }
+        } );
+//        Dataset<Row> payload = sparkSession
+//                .read()
+//                .format( "com.databricks.spark.csv" )
+//                .option( "header", "true" )
+//                .load( path );
 
 
         Flight flight = Flight.newFlight()
@@ -98,6 +109,8 @@ public class MiddlesexBookings1 {
                         .value( row -> row.getAs( "l_name" ) ).ok()
                     .addProperty( new FullQualifiedName( "nc.SSN" ) )
                         .value( row -> row.getAs( "ssno" ) ).ok()
+                    .addProperty( "nc.PersonSex" )
+                        .value(row -> "M" ).ok()
                     .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
                         .value( MiddlesexBookings1::standardRace ).ok()
                     .addProperty("nc.PersonEthnicity")
@@ -195,7 +208,7 @@ public class MiddlesexBookings1 {
                 .done();
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
-        Map<Flight, Dataset<Row>> flights = new HashMap<>( 1 );
+        Map<Flight, Stream<Map<String, String>>>  flights = new HashMap<>( 1 );
         flights.put( flight, payload );
 
         shuttle.launch( flights );
