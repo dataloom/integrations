@@ -20,55 +20,49 @@
 
 package com.openlattice.middlesex;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import com.dataloom.authorization.PermissionsApi;
 import com.dataloom.client.RetrofitFactory;
 import com.dataloom.client.RetrofitFactory.Environment;
-import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
 import com.dataloom.edm.EdmApi;
-import com.dataloom.mappers.ObjectMappers;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
-import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
+import com.google.common.collect.SetMultimap;
 import com.openlattice.shuttle.Flight;
-import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
+import com.openlattice.shuttle.adapter.Row;
 import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.dates.TimeZones;
-import com.openlattice.shuttle.edm.RequiredEdmElements;
-import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.openlattice.shuttle.payload.Payload;
+import com.openlattice.shuttle.payload.SimplePayload;
+import com.openlattice.shuttle.util.Parsers;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
-import java.io.File;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkState;
 
 /**
- * @author Matthew Tamayo-Rios &lt;matthew@openlattice.com&gt;
+ * @author Kim Engie &lt;kim@openlattice.com&gt;
  */
 public class MiddlesexCharges2 {
 
     private static final Logger         logger         = LoggerFactory
             .getLogger( MiddlesexCharges2.class );
-    private static final Environment    environment    = Environment.STAGING;
+    private static final Environment    environment    = Environment.PRODUCTION;
     private static final DateTimeHelper dtHelper       = new DateTimeHelper( TimeZones.America_NewYork,
             "yyyy/MM/dd HH:mm" );
     private static final DateTimeHelper bdHelper       = new DateTimeHelper( TimeZones.America_NewYork,
             "yyyy/MM/dd" );
-    private static final Pattern        nameMatcher    = Pattern.compile( "(.+), (.+) (.*) (.*)" );
-    private static final Pattern        raceMatcher    = Pattern.compile( "(.+) - (.+)" );
+    private static final Pattern        nameMatcher    = Pattern.compile( "(.+), (.+) (.*) (.*)" ); //.* matches all char, even empty string
+    private static final Pattern        raceMatcher    = Pattern.compile( "(.+) - (.+)" ); //.+ matches all char, must be at least 1
     private static final Pattern        addressMatcher = Pattern.compile( "(.+)\\|(.+)" );
     private static final Pattern        chargeMatcher  = Pattern.compile( "(.+) - (.+) (.+)" );
     private static final Pattern        heightMatcher  = Pattern.compile( "([0-9])'([0-9]+)'' - ([0-9]+) LBS." );
@@ -80,11 +74,15 @@ public class MiddlesexCharges2 {
          * will cause the program to exit with an exception.
          */
         final String arrestsPath = args[ 0 ];
-        final String chargesPath = args[ 1 ];
-        final String jwtToken = args[ 2 ];
-        //final String username = args[ 1 ];
-        //final String password = args[ 2 ];
-        final SparkSession sparkSession = MissionControl.getSparkSession();
+        final String incidents2016Path = args[ 1 ];
+        final String incidents2017Path = args[ 2 ];
+        final String jwtToken = args[ 3 ];
+
+        //final SparkSession sparkSession = MissionControl.getSparkSession();
+        SimplePayload payload = new SimplePayload( arrestsPath );
+        SimplePayload incident16Data = new SimplePayload( incidents2016Path );
+        SimplePayload incident17Data = new SimplePayload( incidents2017Path );
+
         //final String jwtToken = MissionControl.getIdToken( username, password );
 
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
@@ -92,155 +90,177 @@ public class MiddlesexCharges2 {
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
-        Dataset<Row> payload = sparkSession
-                .read()
-                .format( "com.databricks.spark.csv" )
-                .option( "header", "true" )
-                .load( arrestsPath );
+//        Dataset<Row> payload = sparkSession
+//                .read()
+//                .format( "com.databricks.spark.csv" )
+//                .option( "header", "true" )
+//                .load( arrestsPath );
+//
+//        Dataset<Row> incident16Data = sparkSession
+//                .read()
+//                .format( "com.databricks.spark.csv" )
+//                .option( "header", "true" )
+//                .load( incidents2016Path );
+//
+//        Dataset<Row> incident17Data = sparkSession
+//                .read()
+//                .format( "com.databricks.spark.csv" )
+//                .option( "header", "true" )
+//                .load( incidents2017Path );
 
-        Dataset<Row> chargeData = sparkSession
-                .read()
-                .format( "com.databricks.spark.csv" )
-                .option( "header", "true" )
-                .load( chargesPath );
-
-        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
-                .loadConfiguration( RequiredEdmElements.class );
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getYamlMapper() );
-        FullQualifedNameJacksonDeserializer.registerWithMapper( ObjectMappers.getJsonMapper() );
-        if ( requiredEdmElements != null ) {
-            RequiredEdmElementsManager reem = new RequiredEdmElementsManager( edm,
-                    retrofit.create( PermissionsApi.class ) );
-            reem.ensureEdmElementsExist( requiredEdmElements );
-        }
 
         Flight flight = Flight.newFlight()
                 .createEntities()
 
-                .addEntity( "suspect" )
-                .to( "LPDArrestSuspects" )
-                .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
-                .value( MiddlesexCharges2::getSubjectIdentification ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
-                .value( MiddlesexCharges2::getFirstName ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonMiddleName" ) )
-                .value( MiddlesexCharges2::getMiddleName ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
-                .value( MiddlesexCharges2::getLastName ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonNameSuffixText" ) )
-                .value( MiddlesexCharges2::getSuffixes ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
-                .value( MiddlesexCharges2::getRace ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
-                .value( MiddlesexCharges2::safeDOBParse ).ok()
-                .addProperty( new FullQualifiedName( "nc.PersonSex" ) )
-                .value( MiddlesexCharges2::getSex ).ok()
-                .addProperty( "nc.PersonHeightMeasure" ).value( MiddlesexCharges2::getHeight ).ok()
-                .addProperty( "nc.PersonWeightMeasure" ).value( MiddlesexCharges2::getWeight ).ok()
+                .addEntity( "arrestee" )
+                .to( "LPDArrestSuspects" ) //for name/DOB unique IDs
+                //.to("LPDArrestees")  //for UUID unique IDs
+                    .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
+    //                .value( row -> UUID.randomUUID().toString() )
+    //                    .ok()
+                    .value(row -> {
+                        return Parsers.getAsString(row.getAs("Name")) + " " + Parsers.getAsString(row.getAs("DOB"));
+                        }).ok()
+                    //.value( MiddlesexCharges2::getSubjectIdentification ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
+                    .value( MiddlesexCharges2::getFirstName ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonMiddleName" ) )
+                    .value( MiddlesexCharges2::getMiddleName ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
+                    .value( MiddlesexCharges2::getLastName ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonNameSuffixText" ) )
+                    .value( MiddlesexCharges2::getSuffixes ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
+                    .value( MiddlesexCharges2::getRace ).ok()
+                    .addProperty("nc.PersonEthnicity")
+                       .value( MiddlesexCharges2::getEthnicity ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
+                    .value( MiddlesexCharges2::safeDOBParse ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonSex" ) )
+                    .value( MiddlesexCharges2::getSex ).ok()
+                    .addProperty( "nc.PersonHeightMeasure" ).value( MiddlesexCharges2::getHeight ).ok()
+                    .addProperty( "nc.PersonWeightMeasure" ).value( MiddlesexCharges2::getWeight ).ok()
                 .endEntity()
 
-                .addEntity( "arrest" )
-                .to( "LPDArrest" )
-                .addProperty( new FullQualifiedName( "publicsafety.ArrestDate" ) )
-                .value( row -> dtHelper.parse( ( row.getAs( "arr_date" ) + " " + row.getAs( "Time" ) ).trim() ) )
-                .ok()
-                .addProperty( "j.CaseNumberText", "Case Number" )
-                .addProperty( "j.ArrestCategory", "type_charge" )
-                .addProperty( "j.ArrestSequenceID" ).value( MiddlesexCharges2::getArrestSequenceID ).ok()
-                .endEntity()
-
-                .addEntity( "charge" )
-                .to( "LPDCharge" )
-                .addProperty( "j.ChargeSequenceID", "Case Number" )
-                .addProperty( "j.OffenseViolatedStatute" )
-                .value( MiddlesexCharges2::getOffenseViolatedStatute ).ok()
-                .addProperty( "j.OffenseQualifierText" )
-                .value( MiddlesexCharges2::getOffenseQualifierText ).ok()
-                .endEntity()
-
-                .addEntity( "arrestAddress" )
-                .to( "MSOAddresses" )
-                .useCurrentSync()
-                .addProperty( new FullQualifiedName( "location.street" ) )
-                .value( MiddlesexCharges2::getArrestAddress ).ok()
-                .endEntity()
+//                .addEntity( "arrestAddress" )
+//                .to( "LPDAddresses" )
+//                .addProperty( new FullQualifiedName( "location.address" ) )
+//                .value( MiddlesexCharges2::getArrestAddress ).ok()
+//                .endEntity()
 
                 .addEntity( "incidentAddress" )
-                .to( "MSOAddresses" )
-                .useCurrentSync()
-                .addProperty( new FullQualifiedName( "location.street" ) )
-                .value( MiddlesexCharges2::getIncidentAddress ).ok()
+                .to( "LPDAddresses" )
+                    .addProperty( new FullQualifiedName( "location.Address" ) )
+                    .value( MiddlesexCharges2::getIncidentAddress ).ok()
+                    .endEntity()
+
+                    .addEntity("incident")
+                    .to("LPDIncidents")
+                         .addProperty( "location.address" ).value( MiddlesexCharges2::getIncidentAddress ).ok()
+                         .addProperty("criminaljustice.incidentid").value( MiddlesexCharges2::getIncidentID ).ok()
                 .endEntity()
+
+                .addEntity("offense")
+                    .to("LPDOffenses")
+                        .addProperty("criminaljustice.offenseid").value( MiddlesexCharges2::getArrestSequenceID ).ok()
+                        .addProperty("criminaljustice.localstatute", "Charge")
+                .endEntity()
+
+//                .addEntity( "charge" )
+//                .to( "LPDCharge" )
+//                .addProperty( "j.ChargeSequenceID", "Case Number" )
+//                .addProperty( "j.OffenseViolatedStatute" )
+//                .value( MiddlesexCharges2::getOffenseViolatedStatute ).ok()
+//                .addProperty( "j.OffenseQualifierText" )
+//                .value( MiddlesexCharges2::getOffenseQualifierText ).ok()
+//                .endEntity()
 
                 .endEntities()
                 .createAssociations()
 
                 .addAssociation( "arrestedin" )
-                .to( "LPDArrestedIn" )
-                .fromEntity( "suspect" )
-                .toEntity( "arrest" )
-                .addProperty( "nc.SubjectIdentification" ).value( MiddlesexCharges2::getSubjectIdentification )
-                .ok()
-                .addProperty( "j.ArrestSequenceID" ).value( MiddlesexCharges2::getArrestSequenceID )
-                .ok()
+                    .to( "LPDArrestedIn" )
+                    .fromEntity( "arrestee" )
+                    .toEntity( "incident" )
+                    .addProperty( "nc.SubjectIdentification" )
+//                       .value( row -> UUID.randomUUID().toString() )
+//                         .ok()
+                       .value(row -> {
+                       return Parsers.getAsString(row.getAs("Name")) + " " + Parsers.getAsString(row.getAs("DOB"));
+                          }).ok()
+                    .addProperty( "arrestedin.id" ).value( MiddlesexCharges2::getIncidentID )
+                       .ok()
+                    .addProperty( new FullQualifiedName( "arrest.date" ) )
+                       .value( row -> dtHelper.parse( ( row.getAs( "arr_date" ) + " " + row.getAs( "Time" ) ).trim() ) )
+                       .ok()
+                    .addProperty( "criminaljustice.bookingnumber", "bookingnum" )
+                    .addProperty( "arrest.category", "type_charge" )
+                    .addProperty("criminaljustice.localstatute", "Charge")
+                    .addProperty( "location.address" ).value( MiddlesexCharges2::getArrestAddress ).ok()
                 .endAssociation()
 
-                .addAssociation( "chargedwith" )
-                .to( "LPDChargedWith" )
-                .fromEntity( "suspect" )
-                .toEntity( "charge" )
-                .addProperty( "general.stringid" )
-                .value( row -> MoreObjects.firstNonNull( row.getAs( "bookingnum" ), "" ) + MoreObjects
-                        .firstNonNull( row.getAs( "Case Number" ), "" ) ).ok()
-                .endAssociation()
-
-                .addAssociation( "chargeappears" )
-                .to( "LPDChargeAppearsIn" )
-                .fromEntity( "charge" )
-                .toEntity( "arrest" )
-                .addProperty( "general.stringid" )
-                .value( row -> MoreObjects.firstNonNull( row.getAs( "Case Number" ), "" ) + MoreObjects
-                        .firstNonNull( row.getAs( "Charge" ), "" ) ).ok()
-                .endAssociation()
-
+                //incident occurred at address
                 .addAssociation( "arrestedat" )
                 .to( "LPDOccurredAt" )
-                .fromEntity( "arrest" )
-                .toEntity( "arrestAddress" )
-                .addProperty( "general.stringid", "Case Number" )
-                .addProperty( "location.address" ).value( MiddlesexCharges2::getArrestAddress ).ok()
+                    .fromEntity( "incident" )
+                    .toEntity( "incidentAddress" )
+                    .addProperty( "general.stringid").value( MiddlesexCharges2::getIncidentID ).ok()
+                    .addProperty( "location.address" ).value( MiddlesexCharges2::getIncidentAddress ).ok()
                 .endAssociation()
 
-                .addAssociation( "occurredat" )
-                .to( "LPDOccurredAt" )
-                .fromEntity( "charge" )
-                .toEntity( "incidentAddress" )
-                .addProperty( "general.stringid", "Case Number" )
-                .addProperty( "location.address" ).value( MiddlesexCharges2::getIncidentAddress ).ok()
-                .endAssociation()
+//                .addAssociation( "occurredat" )
+//                .to( "LPDOccurredAt" )
+//                .fromEntity( "charge" )
+//                .toEntity( "incidentAddress" )
+//                .addProperty( "general.stringid", "Case Number" )
+//                .addProperty( "location.address" ).value( MiddlesexCharges2::getIncidentAddress ).ok()
+//                .endAssociation()
+
+//                .addAssociation( "chargedwith" )
+//                .to( "LPDChargedWith" )
+//                .fromEntity( "suspect" )
+//                .toEntity( "charge" )
+//                .addProperty( "general.stringid" )
+//                .value( row -> MoreObjects.firstNonNull( row.getAs( "bookingnum" ), "" ) + MoreObjects
+//                        .firstNonNull( row.getAs( "Case Number" ), "" ) ).ok()
+//                .endAssociation()
+//
+//                .addAssociation( "chargeappears" ) //change to offense appears in arrest
+//                .to( "LPDChargeAppearsIn" )
+//                .fromEntity( "offense" )
+//                .toEntity( "arrest" )
+//                .addProperty( "general.stringid" )
+//                .value( row -> MoreObjects.firstNonNull( row.getAs( "Case Number" ), "" ) + MoreObjects
+//                        .firstNonNull( row.getAs( "Charge" ), "" ) ).ok()
+//                .endAssociation()
 
                 .endAssociations()
                 .done();
 
-        Flight charges = Flight.newFlight()
+        Flight incidents = Flight.newFlight()
                 .createEntities()
-                .addEntity( "charge" )
-                .to( "LPDCharge" )
-                .useCurrentSync()
-                .addProperty( "j.ChargeSequenceID", "Case # Off. Seq." )
-                .addProperty( "justice.ReportedDate" )
-                .value( MiddlesexCharges2::getChargeReportedDate ).ok()
-                .addProperty( "publicsafety.OffenseStartDate" )
-                .value( MiddlesexCharges2::getOffenseStartDate ).ok()
-                .addProperty( "publicsafety.OffenseEndDate" )
-                .value( MiddlesexCharges2::getOffenseEndDate ).ok()
-                .addProperty( "justice.EventType", "Class" )
-                .addProperty( "j.ChargeNarrative", "comments" )
-                .addProperty( "justice.CaseStatus", "Case Status" )
+                .addEntity("incident")
+                .to("LPDIncidents")
+                    .useCurrentSync()
+                    .addProperty( "location.address" ).value( MiddlesexCharges2::getIncidentAddress ).ok()
+                    .addProperty("criminaljustice.incidentid").value( MiddlesexCharges2::getIncidentflightID ).ok()
+                    .addProperty( "incident.reporteddatetime" )
+                       .value( MiddlesexCharges2::getChargeReportedDate ).ok()
+                    .addProperty( "incident.startdatetime" )
+                       .value( MiddlesexCharges2::getOffenseStartDate ).ok()
+                    .addProperty( "incident.enddatetime" )
+                       .value( MiddlesexCharges2::getOffenseEndDate ).ok()
+                    .addProperty( "criminaljustice.localstatute", "Class" )
+                    .addProperty("criminaljustice.nibrs", "IBR Code Counts")
+                    .addProperty("criminaljustice.incidentflag", "Flags")
+                    .addProperty( "incident.narrative", "comments" )
+                    .addProperty( "criminaljustice.casestatus", "Case Status" )
+                    .addProperty( "location.address", "Location" )
+                    .addProperty( "criminaljustice.beatsector", "Beat Sector Neighborhood" )
                 .endEntity()
 
                 .addEntity( "address" )
-                .to( "MSOAddresses" )
+                .to( "LPDAddresses" )
                 .useCurrentSync()
                 .ofType( "general.Address" )
                 .key( "location.address" )
@@ -250,11 +270,12 @@ public class MiddlesexCharges2 {
                 .endEntities().done();
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
-        Map<Flight, Dataset<Row>> flights = new LinkedHashMap<>( 2 );
+        SetMultimap<Flight, Payload> flights = HashMultimap.create();
         flights.put( flight, payload );
-        flights.put( charges, chargeData );
+        flights.put( incidents, incident16Data );
+        flights.put( incidents, incident17Data );
 
-        shuttle.launch( flights );
+        shuttle.launchPayloadFlight( flights );
     }
 
     public static String safeDOBParse( Row row ) {
@@ -266,14 +287,21 @@ public class MiddlesexCharges2 {
     }
 
     public static String getSex( Row row ) {
-        String sr = row.getAs( "sex_race" );
-        if ( sr == null ) {
+        String sr = row.getAs("sex_race");
+        if (sr == null) {
             return null;
         }
 
-        Matcher m = raceMatcher.matcher( sr );
-        if ( m.matches() ) {
-            return m.group( 1 );
+        Matcher m = raceMatcher.matcher(sr);
+        if (m.matches()) {
+            String sex = m.group(1).trim();
+            if (sex.equals("MALE")) {
+                return "M";
+            } else if (sex.equals("FEMALE")) {
+                return "F";
+            } else if (sex.equals("N.A.")) {
+                return "";
+            }
         }
         return null;
     }
@@ -283,12 +311,42 @@ public class MiddlesexCharges2 {
         if ( sr == null ) {
             return null;
         }
+
         Matcher m = raceMatcher.matcher( sr );
         if ( m.matches() ) {
-            return m.group( 2 );
+            String race = m.group( 2 ).trim(); //capturing the race string. The .trim ensures that if there are any spaces around N.A., they will be trimmed.
+            if (race.equals("N.A.")||race.equals("HISPANIC")) {
+                return "";
+            }
+            else if ( race.equals("BLACK")) { return "black"; }
+            else if ( race.equals("WHITE")) { return "white"; }
+            else if ( race.equals("ASIAN")) { return "asian"; }
+            else {
+                return "";
+            }
         }
         return null;
     }
+
+    public static String getEthnicity( Row row ) {
+        String sr = row.getAs( "sex_race" );
+        if ( sr == null ) {
+            return null;
+        }
+
+        Matcher m = raceMatcher.matcher( sr );
+        if ( m.matches() ) {
+            String race = m.group( 2 ).trim(); //capturing the race string. The .trim ensures that if there are any spaces around N.A., they will be trimmed.
+            if (race.equals("HISPANIC")) {
+                return "hispanic";
+            }
+            else {
+                return "";
+            }
+        }
+        return null;
+    }
+
 
     static class PersonName {
         String first;
@@ -333,7 +391,7 @@ public class MiddlesexCharges2 {
             return null;
         }
         PersonName p = splitName( name );
-        logger.info( "Parsed suffixes {} -> {}", name, p.suffixes );
+   //     logger.info( "Parsed suffixes {} -> {}", name, p.suffixes );
         return p.suffixes;
     }
 
@@ -343,7 +401,7 @@ public class MiddlesexCharges2 {
             return null;
         }
         PersonName p = splitName( name );
-        logger.info("Parsed first {} -> {}", name, p.first);
+ //       logger.info("Parsed first {} -> {}", name, p.first);
         return p.first;
 //        Matcher m = nameMatcher.matcher( name );
 //        if ( m.matches() ) {
@@ -361,7 +419,7 @@ public class MiddlesexCharges2 {
             return null;
         }
         PersonName p = splitName( name );
-        logger.info("Parsed middle {} -> {}", name, p.middle);
+  //      logger.info("Parsed middle {} -> {}", name, p.middle);
         return p.middle;
 //        Matcher m = nameMatcher.matcher( name );
 //        if ( m.matches() ) {
@@ -380,7 +438,7 @@ public class MiddlesexCharges2 {
             return null;
         }
         PersonName p = splitName( name );
-        logger.info("Parsed last {} -> {}", name, p.last);
+   //     logger.info("Parsed last {} -> {}", name, p.last);
         return p.last;
 //        Matcher m;
 //        try {
@@ -481,19 +539,19 @@ public class MiddlesexCharges2 {
     }
 
     public static String getChargeReportedDate( Row row ) {
-        String time = MoreObjects.firstNonNull( row.getString( 11 ), "12:00" );
+        String time = MoreObjects.firstNonNull( row.getAs("OLrep-time" ), "12:00" );
         String reportedDate = row.getAs( "Rpt. Date Rpt. Time Rpt. Day" ) + " " + time;
         return dtHelper.parse( reportedDate.trim() );
     }
 
     public static String getOffenseStartDate( Row row ) {
-        String time = MoreObjects.firstNonNull( row.getString( 11 ), "12:00" );
+        String time = MoreObjects.firstNonNull( row.getAs( "OLstart-time" ), "12:00" );
         String reportedDate = row.getAs( "From Date From Time From Day" ) + " " + time;
         return dtHelper.parse( reportedDate.trim() );
     }
 
     public static String getOffenseEndDate( Row row ) {
-        String time = MoreObjects.firstNonNull( row.getString( 11 ), "12:00" );
+        String time = MoreObjects.firstNonNull( row.getAs( "OLend-time" ), "12:00" );
         String reportedDate = row.getAs( "To Date To Time To Day" ) + " " + time;
         return dtHelper.parse( reportedDate.trim() );
     }
@@ -502,7 +560,16 @@ public class MiddlesexCharges2 {
         return "LPD-" + row.getAs( "bookingnum" ).toString().trim();
     }
 
-    public static String getSubjectIdentification( Row row ) {
-        return "LPD-" + row.getAs( "bookingnum" );
+    public static String getIncidentID( Row row ) {
+        return "LPD-" + row.getAs( "Case Number" ).toString().trim();
     }
+
+    public static String getIncidentflightID( Row row ) {
+        return "LPD-" + row.getAs( "Case # Off. Seq." ).toString().trim();
+    }
+
+// the booking number was not unique to a person (if they were arrested more than once.
+// public static String getSubjectIdentification( Row row ) {
+//        return "LPD-" + row.getAs( "bookingnum" );
+//    }
 }
