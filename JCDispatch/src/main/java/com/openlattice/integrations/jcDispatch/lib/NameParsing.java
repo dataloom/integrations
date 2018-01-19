@@ -27,7 +27,7 @@ public class NameParsing {
     }
 
     public static final Pattern p = Pattern
-            .compile( "\\b(UNIVERSITY|EMS|HONDA|LP|REHABILITATION|INC|IOWA|ADT|VERIZON|SPRINT|SANDWICHES|AT&T|BLDG|CENTER|CELLULAR|INTERNATIONAL|SCIENCES)\\b" , Pattern.CASE_INSENSITIVE );
+            .compile( "\\b(UNIVERSITY|EMS|ENGINE|RESCUE|HONDA|LP|REHABILITATION|INC|IOWA|ADT|VERIZON|SPRINT|SANDWICHES|AT&T|BLDG|CENTER|CELLULAR|INTERNATIONAL|SCIENCES)\\b" , Pattern.CASE_INSENSITIVE );
 
     public static String getFirstName( Object obj ) {
         String name = removeDigits( obj );
@@ -38,13 +38,15 @@ public class NameParsing {
                 return "";
             }
 
+            //for if entry is like DOE, JOHN
             String[] strNames = name.split( "," );
             if ( strNames.length > 1 ) {
                 String fName = strNames[ 1 ].trim();
-                String[] fNames = fName.split( " " );
+                String[] fNames = fName.split( " " );  //this split is for parsing out middle names if they are there
                 return fNames[ 0 ].trim();
             }
 
+            //for if entry is like JOHN DOE
             String[] fullNames = strNames[ 0 ].split( " " );
             return fullNames[ 0 ].trim();
         }
@@ -98,7 +100,7 @@ public class NameParsing {
             }
             String[] middleNames = strNames[ 0 ].split( " " );   //for if entry is like John Middle Doe
             if ( middleNames.length > 2 ) {
-                List<String> mNames = Arrays.asList(middleNames)
+                List<String> mNames = Arrays.asList(middleNames);
                 return mNames.subList( 1, mNames.size() -1 );
             }
         }

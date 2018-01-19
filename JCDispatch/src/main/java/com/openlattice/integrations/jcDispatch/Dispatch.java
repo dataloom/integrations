@@ -11,19 +11,24 @@ import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.adapter.Row;
+import com.openlattice.shuttle.config.IntegrationConfig;
 import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.edm.RequiredEdmElements;
 import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
 import com.openlattice.shuttle.payload.FilterablePayload;
+import com.openlattice.shuttle.payload.JdbcPayload;
 import com.openlattice.shuttle.payload.Payload;
 import com.openlattice.shuttle.payload.SimplePayload;
 import com.openlattice.shuttle.util.Parsers;
+import com.zaxxer.hikari.HikariDataSource;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.openlattice.shuttle.dates.TimeZones;
 import retrofit2.Retrofit;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -39,15 +44,15 @@ public class Dispatch {
     private static final Environment environment = Environment.STAGING;
 
     private static final DateTimeHelper dateHelper0 = new DateTimeHelper( TimeZones.America_Chicago,
-            "MM/dd/yyyy HH:mm:ss.S" );
+            "YYYY-MM-DD HH:mm:ss", "YYYY-MM-DD HH:mm:ss.S" );
 
-    public static void main( String[] args ) throws InterruptedException {
+    public static void main( String[] args ) throws InterruptedException, IOException {
 
-        final String personPath = args[ 0 ];
-        final String sysuserbasePath = args[ 1 ];
-        final String dispatchPath = args[ 2 ];
-        final String disTypePath = args[ 3 ];
-        final String jwtToken = args[ 4 ];
+//        final String personPath = args[ 0 ];
+//        final String sysuserbasePath = args[ 1 ];
+//        final String dispatchPath = args[ 2 ];
+//        final String disTypePath = args[ 3 ];
+        final String jwtToken = args[ 0 ];
 
         //final SparkSession sparkSession = MissionControl.getSparkSession();
         //logger.info( "Using the following idToken: Bearer {}", jwtToken );
@@ -56,13 +61,29 @@ public class Dispatch {
         //        EdmApi edmApi = retrofit.create( EdmApi.class );
         //        PermissionsApi permissionApi = retrofit.create( PermissionsApi.class );
 
-        Payload personPayload = new SimplePayload( personPath );  // includes vehicle info
-        Payload sysuserbasePayload = new SimplePayload( sysuserbasePath );
-        Payload dispatchPayload = new FilterablePayload( dispatchPath ); //has correct dates
-        Payload disTypePayload = new SimplePayload( disTypePath );
+        HikariDataSource hds=
+        ObjectMappers.getYamlMapper()
+                .readValue( new File( "/Users/kimengie/integration.yaml" ), IntegrationConfig.class )
+        .getHikariDatasource( "jciowa" );
 
-        Map<String, String> caseIdToTime = dispatchPayload.getPayload()
-                .collect( Collectors.toMap( row -> row.get( "Dis_ID" ), row -> ( dateHelper0.parse( row.get( "CFS_DateTimeJanet" ) )) ) );
+        // includes vehicle info, need date from dispatch table for association.
+        Payload personPayload = new JdbcPayload( hds,
+                "SELECT 'dispatch.CFS_DateTimeJanet', 'dispatch_person.ID', 'dispatch_person.OName', 'dispatch_person.DOB', 'dispatch_person.SSN', 'dispatch_person.OSQ', "
+                        + "'dispatch_person.OAddress', 'dispatch_person.OCity', 'dispatch_person.OState', 'dispatch_person.OZip', 'dispatch_person.OPhone', 'dispatch_person.OSex', "
+                        + "'dispatch_person.Type', 'dispatch_person.MAKE', 'dispatch_person.MODEL', 'dispatch_person.LIC', 'dispatch_person.LIS', 'dispatch_person.OAddress_Apt', "
+                        + "'dispatch_person.DL_No', 'dispatch_person.DL_State', 'dispatch_person.NCIC', 'dispatch_person.ORace', 'dispatch_person.VIN', 'dispatch_person.CellPhone', "
+                        + "'dispatch_person.VehYear', 'dispatch_person.CallForServicePersonId', 'dispatch_person.BadgeNumber', 'dispatch_person.Style', 'dispatch_person.OfficerID', "
+                        + "'dispatch_person.Height', 'dispatch_person.Weight', 'dispatch_person.Eyes', 'dispatch_person.Hair', 'dispatch_person.Age', 'dispatch_person.TransferVehicle', "
+                        + "'dispatch_person.Ethnicity', 'dispatch_person.Juv', 'dispatch_person.LIT', 'dispatch_person.LIY' "
+                        + "FROM dispatch INNER JOIN dispatch_person ON 'dispatch.Dis_ID' = 'dispatch_person.Dis_ID'");
+
+        //Payload sysuserbasePayload = new JdbcPayload( hds, "select * from dispatch_person" ) ; //TABLE NOT INCLUDED IN TEST RUN
+        Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch limit 100000" ); //has correct dates
+        Payload disTypePayload = new JdbcPayload( hds, "select * from dispatch_type limit 100000" ) ;
+
+        //Payload dispatchPayload = new FilterablePayload( dispatchPath );
+//        Map<String, String> caseIdToTime = dispatchPayload.getPayload()
+//                .collect( Collectors.toMap( row -> row.get( "Dis_ID" ), row -> ( dateHelper0.parse( row.get( "CFS_DateTimeJanet" ) )) ) );
 
         //        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
         //                .loadConfiguration( RequiredEdmElements.class );
@@ -78,39 +99,39 @@ public class Dispatch {
         //        logger.info( "ER Field names: {}", Arrays.asList( disType.schema().fieldNames() ) );
 
         // @formatter:off
-        Flight sysuserbaseMapping = Flight     //entities = personnel, person. associations = person is personnel
-                .newFlight()
-                    .createEntities()
-                        .addEntity("Personnelsysuserbase")
-                            .to("JohnsonCoJusticeInvolvedPersonnel")
-                            .useCurrentSync()
-                            .addProperty("personnel.id", "officerid")
-                            .addProperty("personnel.title", "Title")
-                            .addProperty("criminaljustice.agencyid", "ori")
-                            .addProperty("personnel.status")
-                               .value( row -> getActive( row.getAs( "employeeid" ) ) ).ok()
-                            .addProperty("criminaljustice.employeeid")
-                               .value( row -> getEmployeeId( row.getAs( "employeeid" ) ) ).ok()
-                        .endEntity()
-                        .addEntity( "Peoplesysuserbase" )   //REVISIT
-                        .to("JohnsonCoPeople")
-                        .useCurrentSync()
-                        .addProperty("nc.PersonGivenName")
-                            .value( row -> getFirstName( row.getAs( "FirstName" ) ) ).ok()       //REVISIT
-                            .addProperty("nc.PersonSurName")
-                            .value( row -> getLastName( row.getAs( "LastName" ) ) ).ok()
-                        .endEntity()
-                    .endEntities()
-                .createAssociations()
-                    .addAssociation( "WorksAsCJemployee" )
-                    .useCurrentSync()
-                    .to("JohnsonCoWorksAsCJemployee")
-                    .fromEntity( "Peoplesysuserbase" )
-                    .toEntity( "Personnelsysuserbase" )
-                    .addProperty( "general.stringid", "officerid" )
-                    .endAssociation()
-                .endAssociations()
-                .done();
+//        Flight sysuserbaseMapping = Flight     //entities = personnel, person. associations = person is personnel
+//                .newFlight()
+//                    .createEntities()
+//                        .addEntity("Personnelsysuserbase")
+//                            .to("JohnsonCoJusticeInvolvedPersonnel")
+//                            .useCurrentSync()
+//                            .addProperty("personnel.id", "officerid")
+//                            .addProperty("personnel.title", "Title")
+//                            .addProperty("criminaljustice.agencyid", "ori")
+//                            .addProperty("personnel.status")
+//                               .value( row -> getActive( row.getAs( "employeeid" ) ) ).ok()
+//                            .addProperty("criminaljustice.employeeid")
+//                               .value( row -> getEmployeeId( row.getAs( "employeeid" ) ) ).ok()
+//                        .endEntity()
+//                        .addEntity( "Peoplesysuserbase" )
+//                        .to("JohnsonCoPeople")
+//                        .useCurrentSync()
+//                        .addProperty("nc.PersonGivenName")
+//                            .value( row -> getFirstName( row.getAs( "FirstName" ) ) ).ok()       //REVISIT
+//                            .addProperty("nc.PersonSurName")
+//                            .value( row -> getLastName( row.getAs( "LastName" ) ) ).ok()
+//                        .endEntity()
+//                    .endEntities()
+//                .createAssociations()
+//                    .addAssociation( "WorksAsCJemployee" )
+//                    .useCurrentSync()
+//                    .to("JohnsonCoWorksAsCJemployee")
+//                    .fromEntity( "Peoplesysuserbase" )
+//                    .toEntity( "Personnelsysuserbase" )
+//                    .addProperty( "general.stringid", "officerid" )
+//                    .endAssociation()
+//                .endAssociations()
+//                .done();
         // @formatter:on
 
         // @formatter:off
@@ -131,7 +152,7 @@ public class Dispatch {
                             .addProperty("datetime.alerted")
                                 .value( row -> dateHelper0.parse( row.getAs( "AlertedTime" ) ) ).ok()
                             .addProperty( "date.dayofweek" )
-                                .value( row -> getDayOfWeek( ( dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).substring( 0, 10 ) ) )
+                                .value( row -> getDayOfWeek( ( dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ) ) )
                                 .ok()
                             .addProperty( "cad.masterbusinessnumber", "MBI_No" )
                             .addProperty("dispatch.911callnumber", "CallNumber_911")
@@ -161,15 +182,40 @@ public class Dispatch {
                             .addProperty("dispatch.firedistrictname", "FireDistrict")
                             .addProperty("dispatch.firedistrictcode", "ESN")
                         .endEntity()
-                        .addEntity("JohnsonCoPeople")
-                            .to("Operators")
+                         .addEntity( "Officers" )
+                            .to("JohnsonCoPeople")
+                            .addProperty( "nc.SubjectIdentification" )
+                               .value( row -> UUID.randomUUID().toString() ).ok()
+                            .addProperty("nc.PersonGivenName")
+                                .value( row -> getFirstName( row.getAs( "ASSIGNED_OFFICER" ) ) ).ok()       //CHECK FOR MIDDLE NAMES
+                            .addProperty("nc.PersonSurName")
+                                .value( row -> getLastName( row.getAs( "ASSIGNED_OFFICER" ) ) ).ok()
+                        .endEntity()
+                        .addEntity("Operator")
+                            .to("JohnsonCoPeople")
                             .useCurrentSync()
                             .addProperty( "nc.SubjectIdentification" )
                                .value( row -> UUID.randomUUID().toString() ).ok()
                             .addProperty("nc.PersonGivenName")
-                                .value( row -> getFirstName( row.getAs( "Operator" ) ) ).ok()       //CHECK FOR MIDDLE NAMES
+                                .value( row -> getFirstName( row.getAs( "Operator" ) ) ).ok()
                             .addProperty("nc.PersonSurName")
                                 .value( row -> getLastName( row.getAs( "Operator" ) ) ).ok()
+                            .addProperty( "nc.PersonMiddleName" )
+                                .value( row -> getMiddleName( row.getAs( "Operator" ) ) ).ok()
+                        .endEntity()
+
+                        .addEntity("Personneldispatch")
+                            .to("JohnsonCoJusticeInvolvedPersonnel")
+                            .useCurrentSync()
+                            .addProperty( "personnel.id" , "AssignedOfficerID")
+                            .addProperty( "criminaljustice.officerbadgeid" ).value( row -> getBadgeNumber( row.getAs("ASSIGNED_OFFICER") ) ).ok()
+                            .addProperty( "personnel.title" ).value(row -> "Officer" ).ok()
+                //add operators - later?
+                        .endEntity()
+                        .addEntity("Origindispatch")
+                            .to("JohnsonCoCFSOrigin")
+                            .useCurrentSync()
+                            .addProperty( "criminaljustice.cfsoriginid" , "Dis_ID")
                         .endEntity()
                         .addEntity( "Address" )
                             .to("JohnsonCoAddresses")
@@ -193,18 +239,8 @@ public class Dispatch {
                         .addEntity( "contactinfo" )
                             .to("JohnsonCoCFSContactInfo")
                             .addProperty( "contact.id", "Dis_ID" )
-                            .addProperty("contact.PhoneNumber")
+                            .addProperty("contact.phonenumber")
                                 .value( row -> getPhoneNumber( row.getAs( "LPhone" ) ) ).ok()
-                        .endEntity()
-                        .addEntity("Personneldispatch")
-                            .to("JohnsonCoJusticeInvolvedPersonnel")
-                            .useCurrentSync()
-                            .addProperty( "personnel.id" , "AssignedOfficerID")
-                        .endEntity()
-                        .addEntity("Origindispatch")
-                            .to("JohnsonCoCFSOrigin")
-                            .useCurrentSync()
-                            .addProperty( "criminaljustice.cfsoriginid" , "Dis_ID")
                         .endEntity()
                     .endEntities()
 
@@ -213,7 +249,7 @@ public class Dispatch {
                     .createAssociations()
                         .addAssociation("OccurredAtdispatch")
                             .ofType("justice.occurredat").to("JohnsonOccurredAt")
-                            .useCurrentSync()
+                           .useCurrentSync()
                             .fromEntity("CallForService")
                             .toEntity("Address")
                             .addProperty("general.stringid", "Dis_ID")
@@ -241,22 +277,25 @@ public class Dispatch {
                             .useCurrentSync()
                             .fromEntity("Origindispatch")
                             .toEntity("CallForService")
-                            .addProperty("datetime.received", "CFS_DateTimeJanet")
+                            .addProperty("datetime.received").value( row -> dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).ok()
+                        .endAssociation()
+                        .addAssociation( "worksas" )
+                            .ofType( "criminaljustice.worksas" ).to("JohnsonCoWorksAsCJemployee")
+                            .useCurrentSync()
+                            .fromEntity( "Officers" )
+                            .toEntity( "Personneldispatch" )
+                            .addProperty( "general.stringid", "AssignedOfficerID" )
                         .endAssociation()
                         .addAssociation( "callreceivedby" )
                             .to("JohnsonReceivedBy")
                             .useCurrentSync()
                             .fromEntity( "CallForService" )
-                            .to("Personneldispatch")
-                            .addProperty( "datetime.received", "CFS_DateTimeJanet" )
+                            .toEntity("Operator")
+                            .addProperty( "datetime.received" ).value( row -> dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).ok()
                         .endAssociation()
-                        .addAssociation( "worksas" )
-                            .ofType( "criminaljustice.worksas" ).to("JohnsonCoWorksAsCJemployee")
-                            .useCurrentSync()
-                            .fromEntity( "Operators" )
-                            .toEntity( "Personneldispatch" )
-                            .addProperty( "general,stringid", "AssignedOfficerID" )
-                        .endAssociation()
+
+                //Operators are filled in with job title
+
 //                         .addAssociation("OccurredAt1")
 //                            .ofType("general.occurredat").to("OccurredAt")
 //                            .useCurrentSync()
@@ -284,9 +323,9 @@ public class Dispatch {
                             .useCurrentSync()
                             .addProperty( "criminaljustice.cfsid" , "Dis_ID")
                             .addProperty("datetime.enroute")
-                                .value( row -> dateHelper0.parse( row.getAs( "TimeEnroute" ) ) ).ok()
+                                .value( row -> dateHelper0.parseTime( row.getAs( "TimeEnroute" ) ) ).ok()
                             .addProperty("date.completeddatetime")
-                                .value( row -> dateHelper0.parse( row.getAs( "TimeComp" ) ) ).ok()
+                                .value( row -> dateHelper0.parseTime( row.getAs( "TimeComp" ) ) ).ok()
                             .addProperty("dispatch.typeid", "Dispatch_Type_ID")
                             .addProperty("dispatch.type", "Type_ID")
                             .addProperty("dispatch.typepriority", "Type_Priority")
@@ -371,7 +410,6 @@ public class Dispatch {
                             .addProperty( "criminaljustice.cfsoriginid", "Dis_ID" )
                             .addProperty( "event.comments", "OSQ" )
                             .addProperty( "dispatch.persontype", "Type" )
-                            .addProperty("dispatch.personType", "Type")
                             .addProperty( "criminaljustice.officerbadgeid", "BadgeNumber" )
                             .addProperty( "person.ageatevent", "Age" )
                             .addProperty( "person.juvenile", "Juv" )
@@ -380,8 +418,8 @@ public class Dispatch {
                             .to("JohnsonCoAddresses")
                             .useCurrentSync()
                             .addProperty("location.Address")
-                                .value( row -> getAddressID( getStreet( row.getAs( "OAddress" ) ) + row.getAs( "OAddress_Apt" )
-                                        + addSpaceAfterCommaUpperCase( row.getAs( "OCity" ) ) + row.getAs( "OState" )
+                                .value( row -> getAddressID( getStreet( row.getAs( "OAddress" ) ) + " " + row.getAs( "OAddress_Apt" )
+                                        + ", " + addSpaceAfterCommaUpperCase( row.getAs( "OCity" ) ) + ", " + row.getAs( "OState" ) + " "
                                         + row.getAs( "OZip" ) ) )
                                 .ok()
                             .addProperty("location.street")
@@ -427,6 +465,7 @@ public class Dispatch {
                             .addProperty("vehicle.year")
                                 .value( row -> getStrYear( row.getAs( "VehYear" ) ) ).ok()
                             .addProperty("vehicle.color", "Color")
+                            .addProperty( "vehicle.secondarycolor", "ColorSecondary" )
                             .addProperty("vehicle.style", "Style")
                             .addProperty("vehicle.licenseplatetype", "LIT")
                             .addProperty("vehicle.licenseyear")
@@ -442,14 +481,16 @@ public class Dispatch {
                             .useCurrentSync()
                             .fromEntity("Vehicle")
                             .toEntity("CallForServiceperson")
-                            .addProperty("datetime.received").value( row -> caseIdToTime.get( row.getAs( "Dis_ID" ) ) ).ok()
+                            .addProperty("datetime.received").value( row -> dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).ok()
+                                //.value( row -> caseIdToTime.get( row.getAs( "Dis_ID" ) ) ).ok()
                         .endAssociation()
                         .addAssociation("Initiatedperson")
                             .ofType("criminaljustice.initiated").to("JohnsonInitiated")
                             .useCurrentSync()
                             .fromEntity("Originperson")
                             .toEntity("CallForServiceperson")
-                            .addProperty("datetime.received").value( row -> caseIdToTime.get( row.getAs( "Dis_ID" ) ) ).ok()
+                            .addProperty("datetime.received").value( row -> dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).ok()
+                                //.value( row -> caseIdToTime.get( row.getAs( "Dis_ID" ) ) ).ok()
                         .endAssociation()
 
                 .addAssociation("contactedatPerson1")
@@ -457,14 +498,16 @@ public class Dispatch {
                             .useCurrentSync()
                             .fromEntity("Originperson")
                             .toEntity("ContactPerson1")
-                            .addProperty( "date.completeddatetime").value( row -> caseIdToTime.get( row.getAs( "Dis_ID" ) ) ).ok()
+                            .addProperty( "date.completeddatetime").value( row -> dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).ok()
+                                //.value( row -> caseIdToTime.get( row.getAs( "Dis_ID" ) ) ).ok()
                         .endAssociation()
                         .addAssociation("contactedatPerson2")
                             .ofType("geo.contactedat").to("JohnsonCFSContactedAt")
                             .useCurrentSync()
                             .fromEntity("Originperson")
                             .toEntity("ContactPerson2")
-                            .addProperty( "date.completeddatetime").value( row -> caseIdToTime.get( row.getAs( "Dis_ID" ) ) ).ok()
+                            .addProperty( "date.completeddatetime").value( row -> dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).ok()
+                                //.value( row -> caseIdToTime.get( row.getAs( "Dis_ID" ) ) ).ok()
                             .addProperty( "contact.cellphone" ).value(Dispatch::isCellphone).ok()
                         .endAssociation()
                         .addAssociation("OccurredAtperson")
@@ -473,9 +516,9 @@ public class Dispatch {
                             .fromEntity("Originperson")
                             .toEntity("Addressperson")
                             .addProperty( "general.stringid" , "ID")
-                            .addProperty( "location.address" ).value( row -> getAddressID( getStreet( row.getAs( "OAddress" ) ) + row.getAs( "OAddress_Apt" )
-                                        + addSpaceAfterCommaUpperCase( row.getAs( "OCity" ) ) + row.getAs( "OState" )
-                                        + row.getAs( "OZip" ) ) )
+                            .addProperty( "location.address" ).value( row -> getAddressID( getStreet( row.getAs( "OAddress" ) ) + "," + row.getAs( "OAddress_Apt" )
+                                        + ", " + addSpaceAfterCommaUpperCase( row.getAs( "OCity" ) ) + ", " + row.getAs( "OState" )
+                                        + " " + row.getAs( "OZip" ) ) )
                                 .ok()
                         .endAssociation()
                         .addAssociation( "becomes" )
@@ -492,7 +535,7 @@ public class Dispatch {
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
         Map<Flight, Payload> flights = new HashMap<>();
-        flights.put( sysuserbaseMapping, sysuserbasePayload );
+        //flights.put( sysuserbaseMapping, sysuserbasePayload );
         flights.put( dispatchMapping, dispatchPayload );
         flights.put( disTypeMapping, disTypePayload );
         flights.put( personMapping, personPayload );
@@ -512,13 +555,13 @@ public class Dispatch {
 
     public static String getBadgeNumber( Object obj ) {
         String badgerow = Parsers.getAsString( obj );
-        if ( badgerow != null ) {
-            if Character.isDigit( badgerow.charAt( 0 ) ) {
+        if ( badgerow != null && badgerow.length() > 0 ) {
+            if ( Character.isDigit( badgerow.charAt( 0 ) )) {
                 String[] strBadge = badgerow.split( " " );
                 return strBadge[ 0 ].trim();
             }
-            return null;
         }
+        return null;
     }
 
     public static Integer getHeightInch( Object obj ) {
@@ -613,8 +656,8 @@ public class Dispatch {
     public static String getPhoneNumber( Object obj ) {
         String str = Parsers.getAsString( obj );
         if ( str != null ) {
-            str = str.replaceAll( "[()-]", "" );
-            str = str.substring( 0, 10 );
+            str = str.replaceAll( "[()\\- ]", "" );
+            //str = str.substring( 0, 10 );
             return str;
         }
         return null;
