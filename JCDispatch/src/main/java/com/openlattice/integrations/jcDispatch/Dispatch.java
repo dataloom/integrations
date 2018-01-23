@@ -69,11 +69,11 @@ public class Dispatch {
         .getHikariDatasource( "jciowa" );
 
         // includes vehicle info, need date from dispatch table for association.
-        Payload personPayload = new JdbcPayload( hds,"SELECT * from dispatch_person limit 500" );
+        Payload personPayload = new JdbcPayload( hds,"select * from dbo.Dispatch_Persons where 'Dis_id' IN ( select distinct ('Dis_Id') from Dispatch where 'CFS_DateTimeJanet' > DateADD(d, -7, GETDATE()) )" );
 
         Payload sysuserbasePayload = new JdbcPayload( hds, "select * from sys_usr_base" ) ; //TABLE NOT INCLUDED IN TEST RUN
-        Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch limit 500" ); //has correct dates
-       Payload disTypePayload = new JdbcPayload( hds, "select * from dispatch_type limit 500" ) ;
+        Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch WHERE 'CFS_DateTimeJanet' > DateADD(d, -7, GETDATE())" ); //has correct dates
+       Payload disTypePayload = new JdbcPayload( hds, "select * from dispatch_type" ) ;
 
         //Payload dispatchPayload = new FilterablePayload( dispatchPath );
 //        Map<String, String> caseIdToTime = dispatchPayload.getPayload()
