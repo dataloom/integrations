@@ -1,40 +1,35 @@
 package com.openlattice.integrations.jcDispatch;
 
-import com.dataloom.authorization.PermissionsApi;
-import com.dataloom.client.RetrofitFactory;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.addSpaceAfterCommaUpperCase;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getFirstName;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getLastName;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getMiddleName;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getName;
+
 import com.dataloom.client.RetrofitFactory.Environment;
-import com.dataloom.data.serializers.FullQualifedNameJacksonDeserializer;
-import com.dataloom.edm.EdmApi;
 import com.dataloom.mappers.ObjectMappers;
-import com.kryptnostic.rhizome.configuration.service.ConfigurationService;
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.adapter.Row;
 import com.openlattice.shuttle.config.IntegrationConfig;
 import com.openlattice.shuttle.dates.DateTimeHelper;
-import com.openlattice.shuttle.edm.RequiredEdmElements;
-import com.openlattice.shuttle.edm.RequiredEdmElementsManager;
-import com.openlattice.shuttle.payload.FilterablePayload;
+import com.openlattice.shuttle.dates.TimeZones;
 import com.openlattice.shuttle.payload.JdbcPayload;
 import com.openlattice.shuttle.payload.Payload;
-import com.openlattice.shuttle.payload.SimplePayload;
 import com.openlattice.shuttle.util.Parsers;
 import com.zaxxer.hikari.HikariDataSource;
-import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.openlattice.shuttle.dates.TimeZones;
-import retrofit2.Retrofit;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.stream.Collectors;
-
-import static com.openlattice.integrations.jcDispatch.lib.NameParsing.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Dispatch {
 
@@ -48,14 +43,14 @@ public class Dispatch {
 
     public static void main( String[] args ) throws InterruptedException, IOException {
 
-//        final String personPath = args[ 0 ];
-//        final String sysuserbasePath = args[ 1 ];
-//        final String dispatchPath = args[ 2 ];
-//        final String disTypePath = args[ 3 ];
-        final String username = args[0];
-        final String password = args[1];
+        //        final String personPath = args[ 0 ];
+        //        final String sysuserbasePath = args[ 1 ];
+        //        final String dispatchPath = args[ 2 ];
+        //        final String disTypePath = args[ 3 ];
+        final String username = args[ 0 ];
+        final String password = args[ 1 ];
         final String jwtToken = MissionControl.getIdToken( username, password );
-        final String integrationFile = args[2];
+        final String integrationFile = args[ 2 ];
         //final SparkSession sparkSession = MissionControl.getSparkSession();
         //logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
@@ -63,21 +58,37 @@ public class Dispatch {
         //        EdmApi edmApi = retrofit.create( EdmApi.class );
         //        PermissionsApi permissionApi = retrofit.create( PermissionsApi.class );
 
-        HikariDataSource hds=
-        ObjectMappers.getYamlMapper()
-                .readValue( new File( integrationFile ), IntegrationConfig.class )
-        .getHikariDatasource( "jciowa" );
+        HikariDataSource hds =
+                ObjectMappers.getYamlMapper()
+                        .readValue( new File( integrationFile ), IntegrationConfig.class )
+                        .getHikariDatasource( "jciowa" );
 
         // includes vehicle info, need date from dispatch table for association.
+<<<<<<< HEAD
         Payload personPayload = new JdbcPayload( hds,"select * from dbo.Dispatch_Persons where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -2, GETDATE()) )" );
 
         Payload sysuserbasePayload = new JdbcPayload( hds, "select * from systemuserbase" ) ; //TABLE NOT INCLUDED IN TEST RUN
         Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch WHERE CFS_DateTimeJanet > DateADD(d, -2, GETDATE())" ); //has correct dates
         Payload disTypePayload = new JdbcPayload( hds, "select * from dbo.Dispatch_Type where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -2, GETDATE()) )" ) ;
+=======
+        Payload personPayload = new JdbcPayload( hds,
+                "select * from dbo.Dispatch_Persons where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) )",
+                20 );
+
+        Payload sysuserbasePayload = new JdbcPayload( hds,
+                "select * from systemuserbase",
+                20 ); //TABLE NOT INCLUDED IN TEST RUN
+        Payload dispatchPayload = new JdbcPayload( hds,
+                "select * from dispatch WHERE CFS_DateTimeJanet > DateADD(d, -7, GETDATE())",
+                20 ); //has correct dates
+        Payload disTypePayload = new JdbcPayload( hds,
+                "select * from dbo.Dispatch_Type where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) )",
+                20 );
+>>>>>>> cab611eebb8edb1a4adc39767d27bfc1d0341995
 
         //Payload dispatchPayload = new FilterablePayload( dispatchPath );
-//        Map<String, String> caseIdToTime = dispatchPayload.getPayload()
-//                .collect( Collectors.toMap( row -> row.get( "Dis_ID" ), row -> ( dateHelper0.parse( row.get( "CFS_DateTimeJanet" ) )) ) );
+        //        Map<String, String> caseIdToTime = dispatchPayload.getPayload()
+        //                .collect( Collectors.toMap( row -> row.get( "Dis_ID" ), row -> ( dateHelper0.parse( row.get( "CFS_DateTimeJanet" ) )) ) );
 
         // @formatter:off
         Flight sysuserbaseMapping = Flight     //entities = personnel, person. associations = person is personnel
@@ -517,18 +528,17 @@ public class Dispatch {
     }
 
     public static Boolean isCellphone( Row row ) {
-       String cellrow = row.getAs ( "CellPhone");
-       if ( cellrow == null) {
-           return false;
-       }
-       return true;
+        String cellrow = row.getAs( "CellPhone" );
+        if ( cellrow == null ) {
+            return false;
+        }
+        return true;
     }
-
 
     public static String getBadgeNumber( Object obj ) {
         String badgerow = Parsers.getAsString( obj );
         if ( badgerow != null && badgerow.length() > 0 ) {
-            if ( Character.isDigit( badgerow.charAt( 0 ) )) {
+            if ( Character.isDigit( badgerow.charAt( 0 ) ) ) {
                 String[] strBadge = badgerow.split( " " );
                 return strBadge[ 0 ].trim();
             }
@@ -540,18 +550,17 @@ public class Dispatch {
         String ty = row.getAs( "Type" );
         if ( ty == null ) {
             return null;
-        }
-        else if ( ty.equals("0")) { return "Victim"; }
-        else if ( ty.equals("1")) { return "Witness"; }
-        else if ( ty.equals("2")) { return "Suspect"; }
-        else if ( ty.equals("3")) { return "Reported By"; }
-        else if ( ty.equals("4")) { return "Other"; }
-        else if ( ty.equals("5")) { return "Passenger"; }
-        else if ( ty.equals("6")) { return "Driver"; }
-        else if ( ty.equals("7")) { return "Driver Secured"; }
-        else if ( ty.equals("8")) { return "Passenger Secured"; }
-        else if ( ty.equals("9")) { return "Secured Person"; }
-        else {
+        } else if ( ty.equals( "0" ) ) { return "Victim"; } else if ( ty.equals( "1" ) ) {
+            return "Witness";
+        } else if ( ty.equals( "2" ) ) { return "Suspect"; } else if ( ty.equals( "3" ) ) {
+            return "Reported By";
+        } else if ( ty.equals( "4" ) ) { return "Other"; } else if ( ty.equals( "5" ) ) {
+            return "Passenger";
+        } else if ( ty.equals( "6" ) ) { return "Driver"; } else if ( ty.equals( "7" ) ) {
+            return "Driver Secured";
+        } else if ( ty.equals( "8" ) ) { return "Passenger Secured"; } else if ( ty.equals( "9" ) ) {
+            return "Secured Person";
+        } else {
             return "";
         }
     }
@@ -563,7 +572,7 @@ public class Dispatch {
                 String three = height.substring( 0, 3 );
                 Integer feet = Parsers.parseInt( String.valueOf( three.substring( 0, 1 ) ) );
                 Integer inch = Parsers.parseInt( String.valueOf( three.substring( 1 ) ) );
-                if (feet != null && inch  != null) return ( feet * 12 ) + inch;
+                if ( feet != null && inch != null ) { return ( feet * 12 ) + inch; }
             }
 
             return Parsers.parseInt( String.valueOf( height ) );
@@ -615,7 +624,7 @@ public class Dispatch {
         String s = Parsers.getAsString( obj );
         if ( s != null ) {
             Double d = Parsers.parseDouble( s );
-            if ( d != null ) return d.intValue();
+            if ( d != null ) { return d.intValue(); }
         }
         return null;
     }
@@ -624,7 +633,7 @@ public class Dispatch {
         String s = Parsers.getAsString( obj );
         if ( s != null ) {
             Integer d = getIntFromDouble( s );
-            if ( d != null ) return d.toString();
+            if ( d != null ) { return d.toString(); }
         }
         return null;
     }
@@ -661,13 +670,13 @@ public class Dispatch {
             String[] strDate = str.split( "/" );
             if ( strDate.length > 1 ) {
                 String doubleStr = getStringFromDouble( strDate[ strDate.length - 1 ] );
-                if (doubleStr != null) return doubleStr.trim();
+                if ( doubleStr != null ) { return doubleStr.trim(); }
             }
             if ( str.contains( "DOB" ) ) {
                 return "";
             }
             String doubleStr = getStringFromDouble( strDate[ 0 ] );
-            if (doubleStr != null) return doubleStr.trim();
+            if ( doubleStr != null ) { return doubleStr.trim(); }
         }
         return null;
     }
