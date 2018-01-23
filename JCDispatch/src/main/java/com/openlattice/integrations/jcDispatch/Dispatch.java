@@ -69,11 +69,11 @@ public class Dispatch {
         .getHikariDatasource( "jciowa" );
 
         // includes vehicle info, need date from dispatch table for association.
-        Payload personPayload = new JdbcPayload( hds,"select * from dbo.Dispatch_Persons where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) )" );
+        Payload personPayload = new JdbcPayload( hds,"select * from dbo.Dispatch_Persons where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -2, GETDATE()) )" );
 
         Payload sysuserbasePayload = new JdbcPayload( hds, "select * from systemuserbase" ) ; //TABLE NOT INCLUDED IN TEST RUN
-        Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch WHERE CFS_DateTimeJanet > DateADD(d, -7, GETDATE())" ); //has correct dates
-       Payload disTypePayload = new JdbcPayload( hds, "select * from dbo.Dispatch_Type where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) )" ) ;
+        Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch WHERE CFS_DateTimeJanet > DateADD(d, -2, GETDATE())" ); //has correct dates
+        Payload disTypePayload = new JdbcPayload( hds, "select * from dbo.Dispatch_Type where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -2, GETDATE()) )" ) ;
 
         //Payload dispatchPayload = new FilterablePayload( dispatchPath );
 //        Map<String, String> caseIdToTime = dispatchPayload.getPayload()
@@ -456,14 +456,16 @@ public class Dispatch {
                             .ofType("general.appearsin")
                             .to("JohnsonCFSAppearsIn")
                             .useCurrentSync()
+                            .entityIdGenerator( row -> row.get("Dis_ID") + row.get("ID")  )
                             .fromEntity("Personperson")
                             .toEntity("CallForServiceperson")
                             .addProperty( "general.stringid", "Dis_ID" )
+                            .addProperty( "nc.SubjectIdentification", "ID" )
                             .addProperty( "person.juvenile", "Juv" )
                             .addProperty( "person.age")
                                 .value( row -> getIntFromDouble( row.getAs( "Age" ) ) ).ok()
                             .addProperty( "dispatch.persontype", "Type" )
-                            .addProperty( "event.comments" ).value( Dispatch::getType ).ok()
+                            .addProperty( "dispatch.persontypedescription" ).value( Dispatch::getType ).ok()
                         .endAssociation()
 
                 .addAssociation("contactedatPerson1")
