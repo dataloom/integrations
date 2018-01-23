@@ -64,27 +64,11 @@ public class Dispatch {
                         .getHikariDatasource( "jciowa" );
 
         // includes vehicle info, need date from dispatch table for association.
-<<<<<<< HEAD
         Payload personPayload = new JdbcPayload( hds,"select * from dbo.Dispatch_Persons where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -2, GETDATE()) )" );
 
         Payload sysuserbasePayload = new JdbcPayload( hds, "select * from systemuserbase" ) ; //TABLE NOT INCLUDED IN TEST RUN
         Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch WHERE CFS_DateTimeJanet > DateADD(d, -2, GETDATE())" ); //has correct dates
         Payload disTypePayload = new JdbcPayload( hds, "select * from dbo.Dispatch_Type where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -2, GETDATE()) )" ) ;
-=======
-        Payload personPayload = new JdbcPayload( hds,
-                "select * from dbo.Dispatch_Persons where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) )",
-                20 );
-
-        Payload sysuserbasePayload = new JdbcPayload( hds,
-                "select * from systemuserbase",
-                20 ); //TABLE NOT INCLUDED IN TEST RUN
-        Payload dispatchPayload = new JdbcPayload( hds,
-                "select * from dispatch WHERE CFS_DateTimeJanet > DateADD(d, -7, GETDATE())",
-                20 ); //has correct dates
-        Payload disTypePayload = new JdbcPayload( hds,
-                "select * from dbo.Dispatch_Type where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) )",
-                20 );
->>>>>>> cab611eebb8edb1a4adc39767d27bfc1d0341995
 
         //Payload dispatchPayload = new FilterablePayload( dispatchPath );
         //        Map<String, String> caseIdToTime = dispatchPayload.getPayload()
