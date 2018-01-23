@@ -52,8 +52,10 @@ public class Dispatch {
 //        final String sysuserbasePath = args[ 1 ];
 //        final String dispatchPath = args[ 2 ];
 //        final String disTypePath = args[ 3 ];
-        final String jwtToken = args[ 0 ];
-
+        final String username = args[0];
+        final String password = args[1];
+        final String jwtToken = MissionControl.getIdToken( username, password )
+        final String integrationFile = args[2];
         //final SparkSession sparkSession = MissionControl.getSparkSession();
         //logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
@@ -63,7 +65,7 @@ public class Dispatch {
 
         HikariDataSource hds=
         ObjectMappers.getYamlMapper()
-                .readValue( new File( "/Users/kimengie/integration.yaml" ), IntegrationConfig.class )
+                .readValue( new File( integrationFile ), IntegrationConfig.class )
         .getHikariDatasource( "jciowa" );
 
         // includes vehicle info, need date from dispatch table for association.
