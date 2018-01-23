@@ -43,11 +43,14 @@ public class NameParsing {
             if ( strNames.length > 1 ) {
                 String fName = strNames[ 1 ].trim();
                 String[] fNames = fName.split( " " );  //this split is for parsing out middle names if they are there
+                if ( fNames.length == 0 ) return null;
                 return fNames[ 0 ].trim();
             }
 
             //for if entry is like JOHN DOE
+            if (strNames.length == 0 ) return null;
             String[] fullNames = strNames[ 0 ].split( " " );
+            if (fullNames.length == 0 ) return null;
             return fullNames[ 0 ].trim();
         }
         return null;
@@ -99,6 +102,7 @@ public class NameParsing {
                 }
                 return null;
             }
+            else if (strNames.length == 0) return null;
             String[] middleNames = strNames[ 0 ].split( " " );   //for if entry is like John Middle Doe
             if ( middleNames.length > 2 ) {
                 List<String> mNames = Arrays.asList(middleNames);

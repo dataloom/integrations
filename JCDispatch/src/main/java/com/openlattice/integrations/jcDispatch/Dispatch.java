@@ -79,19 +79,6 @@ public class Dispatch {
 //        Map<String, String> caseIdToTime = dispatchPayload.getPayload()
 //                .collect( Collectors.toMap( row -> row.get( "Dis_ID" ), row -> ( dateHelper0.parse( row.get( "CFS_DateTimeJanet" ) )) ) );
 
-        //        RequiredEdmElements requiredEdmElements = ConfigurationService.StaticLoader
-        //                .loadConfiguration( RequiredEdmElements.class );
-        //
-        //        if ( requiredEdmElements != null ) {
-        //            RequiredEdmElementsManager manager = new RequiredEdmElementsManager( edmApi, permissionApi );
-        //            manager.ensureEdmElementsExist( requiredEdmElements );
-        //        }
-        //
-        //        logger.info( "ER Field names: {}", Arrays.asList( person.schema().fieldNames() ) );
-        //        logger.info( "ER Field names: {}", Arrays.asList( unit.schema().fieldNames() ) );
-        //        logger.info( "ER Field names: {}", Arrays.asList( dispatch.schema().fieldNames() ) );
-        //        logger.info( "ER Field names: {}", Arrays.asList( disType.schema().fieldNames() ) );
-
         // @formatter:off
         Flight sysuserbaseMapping = Flight     //entities = personnel, person. associations = person is personnel
                 .newFlight()
@@ -164,7 +151,7 @@ public class Dispatch {
                             .addProperty("dispatch.emsflag", "CFS_EMS")
                             .addProperty("dispatch.lea", "CFS_LEA")
                             .addProperty("dispatch.firelevel", "FireDispatchLevel")
-                            .addProperty( "event.comments" ).value(row -> "A" ).ok()
+                            //.addProperty( "event.comments" ).value(row -> "A" ).ok()
                         .endEntity()
                         .addEntity("DispatchZone")
                             .to("JohnsonDispatchZone")
@@ -316,7 +303,7 @@ public class Dispatch {
                             .addProperty( "callforservice.casenumber", "Case_Num" )
                             .addProperty( "callforservice.caseid", "Case_ID" )
                             .addProperty( "criminaljustice.disposition", "Disposition" )
-                            .addProperty( "event.comments" ).value(row -> "B" ).ok()
+                            //.addProperty( "event.comments" ).value(row -> "B" ).ok()
                         .endEntity()
                         .addEntity( "PersonnelDistype" )
                             .to( "JohnsonCoJusticeInvolvedPersonnel" )
