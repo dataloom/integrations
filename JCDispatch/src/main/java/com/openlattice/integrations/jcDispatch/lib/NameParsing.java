@@ -63,12 +63,12 @@ public class NameParsing {
             }
 
             String[] strNames = name.split( "," );
-            if ( strNames.length > 0 ) {
+            if ( strNames.length > 1 ) {
                 return strNames[ 0 ].trim();
             }
 
             // for if entry is like John Doe
-            String[] fullNames = strNames[ 0 ].split( " " );
+            String[] fullNames = strNames[ 0 ].trim().split( " " );
             return fullNames[ fullNames.length - 1 ].trim();
         }
         return null;
