@@ -71,7 +71,7 @@ public class Dispatch {
         // includes vehicle info, need date from dispatch table for association.
         Payload personPayload = new JdbcPayload( hds,"select * from dbo.Dispatch_Persons where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) )" );
 
-        Payload sysuserbasePayload = new JdbcPayload( hds, "select * from sys_usr_base" ) ; //TABLE NOT INCLUDED IN TEST RUN
+        Payload sysuserbasePayload = new JdbcPayload( hds, "select * from systemuserbase" ) ; //TABLE NOT INCLUDED IN TEST RUN
         Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch WHERE CFS_DateTimeJanet > DateADD(d, -7, GETDATE())" ); //has correct dates
        Payload disTypePayload = new JdbcPayload( hds, "select * from dbo.Dispatch_Type where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -7, GETDATE()) )" ) ;
 
