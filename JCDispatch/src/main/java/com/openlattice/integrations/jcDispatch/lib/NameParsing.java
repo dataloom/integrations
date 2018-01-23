@@ -66,9 +66,10 @@ public class NameParsing {
             if ( strNames.length > 1 ) {
                 return strNames[ 0 ].trim();
             }
-
+            else if (strNames.length == 0) return null;
             // for if entry is like John Doe
             String[] fullNames = strNames[ 0 ].trim().split( " " );
+            if (fullNames.length == 0 ) return null;
             return fullNames[ fullNames.length - 1 ].trim();
         }
         return null;

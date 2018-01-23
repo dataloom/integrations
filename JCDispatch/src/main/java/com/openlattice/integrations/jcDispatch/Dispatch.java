@@ -240,7 +240,7 @@ public class Dispatch {
                         .endEntity()
                     .endEntities()
 
-                //6 assns. CFS occurred at address, CFS contacted at contactinfo, origin initiated service, CFS call received by operator,
+                //6 assns. CFS occurred at address, CFS contacted at contactinfo, CFS call received by operator,
                 // person works as JI-employee (Operator), CFS located at zone
                     .createAssociations()
                         .addAssociation("OccurredAtdispatch")
