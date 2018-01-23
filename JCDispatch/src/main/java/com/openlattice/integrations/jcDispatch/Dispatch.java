@@ -65,7 +65,7 @@ public class Dispatch {
 
         HikariDataSource hds=
         ObjectMappers.getYamlMapper()
-                .readValue( new File( integrationFile ), IntegrationConfig.class )
+                .readValue( new File( integrationFile ), IntegrationConfig.class );
         .getHikariDatasource( "jciowa" );
 
         // includes vehicle info, need date from dispatch table for association.
