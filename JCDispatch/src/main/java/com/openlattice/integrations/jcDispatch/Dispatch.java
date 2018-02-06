@@ -43,10 +43,6 @@ public class Dispatch {
 
     public static void main( String[] args ) throws InterruptedException, IOException {
 
-        //        final String personPath = args[ 0 ];
-        //        final String sysuserbasePath = args[ 1 ];
-        //        final String dispatchPath = args[ 2 ];
-        //        final String disTypePath = args[ 3 ];
         final String username = args[ 0 ];
         final String password = args[ 1 ];
         final String jwtToken = MissionControl.getIdToken( username, password );
@@ -64,11 +60,10 @@ public class Dispatch {
                         .getHikariDatasource( "jciowa" );
 
         // includes vehicle info, need date from dispatch table for association.
-        Payload personPayload = new JdbcPayload( hds,"select * from dbo.Dispatch_Persons where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -2, GETDATE()) )" );
-
-        Payload sysuserbasePayload = new JdbcPayload( hds, "select * from systemuserbase" ) ; //TABLE NOT INCLUDED IN TEST RUN
-        Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch WHERE CFS_DateTimeJanet > DateADD(d, -2, GETDATE())" ); //has correct dates
-        Payload disTypePayload = new JdbcPayload( hds, "select * from dbo.Dispatch_Type where Dis_id IN ( select distinct (Dis_Id) from Dispatch where CFS_DateTimeJanet > DateADD(d, -2, GETDATE()) )" ) ;
+        Payload personPayload = new JdbcPayload( hds,"select * from dispatch_person_15m" );
+        Payload sysuserbasePayload = new JdbcPayload( hds, "select * from systemuserbase_table" ) ; //TABLE NOT INCLUDED IN TEST RUN
+        Payload dispatchPayload = new JdbcPayload( hds, "select * from dispatch_15m" );
+        Payload distypePayload = new JdbcPayload( hds, "select * from dispatch_type_15m" ) ;
 
         //Payload dispatchPayload = new FilterablePayload( dispatchPath );
         //        Map<String, String> caseIdToTime = dispatchPayload.getPayload()
@@ -276,7 +271,7 @@ public class Dispatch {
         // @formatter:on
 
         // @formatter:off
-        Flight disTypeMapping = Flight     //entities = CFS, personnel, person. associations = appear in (personnel in CFS), person works as JI personnel
+        Flight distypeMapping = Flight     //entities = CFS, personnel, person. associations = appear in (personnel in CFS), person works as JI personnel
                 .newFlight()
                     .createEntities()
                         .addEntity("CallForServiceDistype")
@@ -504,7 +499,7 @@ public class Dispatch {
         Map<Flight, Payload> flights = new HashMap<>();
         flights.put( sysuserbaseMapping, sysuserbasePayload );
         flights.put( dispatchMapping, dispatchPayload );
-        flights.put( disTypeMapping, disTypePayload );
+        flights.put( distypeMapping, distypePayload );
         flights.put( personMapping, personPayload );
 
         shuttle.launchPayloadFlight( flights );
