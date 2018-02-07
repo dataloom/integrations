@@ -27,12 +27,12 @@ plugins {
 
 apply from: "https://raw.githubusercontent.com/openlattice/gradles/master/repos.gradle"
 
-description = "Johnson County Dispatch Data Integrations"
+description = "Baltimore historical behavioral health report (BHR) Integrations"
 group = "com.openlattice"
 version = 'v0.0.1'
 
-mainClassName = "com.openlattice.integrations.jcDispatch.Dispatch"
-applicationDefaultJvmArgs = ["-Xmx2G", "-Xms2G", "-server"]
+mainClassName = "com.openlattice.integrations.baltimore.HistoricalBHR"
+applicationDefaultJvmArgs = ["-Xmx1G", "-Xms1G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -61,6 +61,7 @@ jar {
 }
 
 dependencies {
+    compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
     if (project.hasProperty('developmentMode') && project.developmentMode) {
         logger.quiet(project.name + " using project dependencies.")
         compile project(":shuttle")
@@ -86,3 +87,4 @@ eclipse {
 }
 
 eclipse.classpath.plusConfigurations += [configurations.provided]
+
