@@ -1,11 +1,13 @@
 package com.openlattice.integrations.jcDispatch;
 
+import com.dataloom.authorization.PermissionsApi;
+import com.dataloom.client.RetrofitFactory;
 import static com.openlattice.integrations.jcDispatch.lib.NameParsing.addSpaceAfterCommaUpperCase;
 import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getFirstName;
 import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getLastName;
 import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getMiddleName;
 import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getName;
-
+import static com.openlattice.shuttle.util.Parsers.getAsString;
 import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.mappers.ObjectMappers;
 import com.openlattice.shuttle.Flight;
@@ -146,7 +148,7 @@ public class Dispatch {
                         .addEntity("DispatchZone")
                             .to("JohnsonDispatchZone")
                             .useCurrentSync()
-                            .addProperty("dispatch.zoneid", "ZONE_ID")
+                            .addProperty("dispatch.zoneid").value( row -> Parsers.parseInt( "ZONE_ID" ) ).ok()
                             .addProperty("dispatch.zonename", "Dis_Zone")
                             .addProperty("dispatch.subzone", "SubZone")
                             .addProperty("dispatch.medicalzone", "Medical_Zone")
@@ -205,8 +207,8 @@ public class Dispatch {
                             .addProperty("location.state", "LState")
                             .addProperty("location.zip", "LZip" )
                             .addProperty( "location.name", "Location" )
-                            .addProperty( "location.latitude", "Latitude" )
-                            .addProperty( "location.longitude", "Longitude" )
+                            .addProperty( "location.latitude").value( row -> Parsers.parseDouble( "Latitude" ) ).ok()
+                            .addProperty( "location.longitude").value( row -> Parsers.parseDouble( "Longitude" ) ).ok()
                         .endEntity()
                         .addEntity( "contactinfo" )
                             .to("JohnsonCoCFSContactInfo")
@@ -288,7 +290,7 @@ public class Dispatch {
                                 .value( row -> dateHelper0.parseTime( row.getAs( "TimeComp" ) ) ).ok()
                             .addProperty("dispatch.typeid", "Dispatch_Type_ID")
                             .addProperty("dispatch.type", "Type_ID")
-                            .addProperty("dispatch.typepriority", "Type_Priority")
+                            .addProperty("dispatch.typepriority").value( row -> Parsers.parseInt( "Type_Priority" ) ).ok()
                             .addProperty("dispatch.tripnumber", "TripNumber")
                             .addProperty( "callforservice.casenumber", "Case_Num" )
                             .addProperty( "callforservice.caseid", "Case_ID" )
@@ -364,7 +366,7 @@ public class Dispatch {
                                 .value( row -> getHeightInch( row.getAs( "Height" ) ) ).ok()
                             .addProperty( "nc.PersonWeightMeasure" )
                                 .value( row -> getIntFromDouble( row.getAs( "Weight" ) ) ).ok()
-                            .addProperty( "person.StateIdentificationNumber", "MNI_No" )
+                            .addProperty( "person.stateidumber", "MNI_No" )
                        .endEntity()
                        .addEntity( "Personnelperson" )
                             .to( "JohnsonCoJusticeInvolvedPersonnel" )
@@ -413,8 +415,8 @@ public class Dispatch {
                             .useCurrentSync()
                             .addProperty("vehicle.id")
                                 .value( row ->  {
-                        return Parsers.getAsString(row.getAs( "MAKE" )) + Parsers.getAsString( row.getAs( "MODEL" ))
-                                        + Parsers.getAsString(row.getAs( "LIC" ))  + Parsers.getAsString(row.getAs( "LIS" ) );
+                        return getAsString(row.getAs( "MAKE" )) + getAsString( row.getAs( "MODEL" ))
+                                        + getAsString(row.getAs( "LIC" ))  + getAsString(row.getAs( "LIS" ) );
                                     }).ok()
                             .addProperty("vehicle.make", "MAKE")
                             .addProperty("vehicle.model", "MODEL")
@@ -429,7 +431,7 @@ public class Dispatch {
                             .addProperty("vehicle.licenseplatetype", "LIT")
                             .addProperty("vehicle.licenseyear")
                                 .value( row -> getStrYear( row.getAs( "LIY" ) ) ).ok()
-                            .addProperty("dispatch.transfervehicle", "TransferVehicle")
+                            .addProperty("dispatch.transfervehicle").value( row -> parseBool( row.getAs("TransferVehicle" ) )).ok()
                         .endEntity()
                     .endEntities()
 
@@ -449,9 +451,11 @@ public class Dispatch {
                             .entityIdGenerator( row -> row.get("Dis_ID") + row.get("ID")  )
                             .fromEntity("Personperson")
                             .toEntity("CallForServiceperson")
+                            .addProperty("datetime.received").value( row -> dateHelper0.parse( row.getAs( "CFS_DateTimeJanet" ) ) ).ok()
+                                //.value( row -> caseIdToTime.get( row.getAs( "Dis_ID" ) ) ).ok()
                             .addProperty( "general.stringid", "Dis_ID" )
                             .addProperty( "nc.SubjectIdentification", "ID" )
-                            .addProperty( "person.juvenile", "Juv" )
+                            .addProperty( "person.juvenile").value( row -> parseBool( row.getAs( "Juv" ) ) ).ok()
                             .addProperty( "person.age")
                                 .value( row -> getIntFromDouble( row.getAs( "Age" ) ) ).ok()
                             .addProperty( "dispatch.persontype", "Type" )
@@ -514,8 +518,21 @@ public class Dispatch {
         return true;
     }
 
+ //for strings that say "true" or "false"
+    public static Boolean parseBool( Object obj ) {
+        String boolStr = getAsString( obj );
+        if ( boolStr != null ) {
+            try {
+                return Boolean.valueOf( boolStr );
+            } catch ( IllegalArgumentException e ) {
+                logger.error( "Unable to parse boolean from value {}", boolStr );
+            }
+        }
+        return null;
+    }
+
     public static String getBadgeNumber( Object obj ) {
-        String badgerow = Parsers.getAsString( obj );
+        String badgerow = getAsString( obj );
         if ( badgerow != null && badgerow.length() > 0 ) {
             if ( Character.isDigit( badgerow.charAt( 0 ) ) ) {
                 String[] strBadge = badgerow.split( " " );
@@ -545,7 +562,7 @@ public class Dispatch {
     }
 
     public static Integer getHeightInch( Object obj ) {
-        String height = Parsers.getAsString( obj );
+        String height = getAsString( obj );
         if ( height != null ) {
             if ( height.length() > 2 ) {
                 String three = height.substring( 0, 3 );
@@ -560,7 +577,7 @@ public class Dispatch {
     }
 
     public static String getEmployeeId( Object obj ) {
-        String employeeId = Parsers.getAsString( obj );
+        String employeeId = getAsString( obj );
         if ( employeeId != null ) {
             if ( employeeId.toLowerCase().startsWith( "x_" ) ) {
                 return employeeId.substring( 2 ).trim();
@@ -571,7 +588,7 @@ public class Dispatch {
     }
 
     public static String getActive( Object obj ) {
-        String active = Parsers.getAsString( obj );
+        String active = getAsString( obj );
         if ( active != null ) {
             if ( active.toLowerCase().startsWith( "x_" ) ) {
                 return "inactive";
@@ -584,7 +601,7 @@ public class Dispatch {
     public static String getDayOfWeek( Object obj ) {
         List<String> days = Arrays
                 .asList( "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" );
-        String dateStr = Parsers.getAsString( obj );
+        String dateStr = getAsString( obj );
         if ( dateStr != null ) {
             SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
             Date date;
@@ -600,7 +617,7 @@ public class Dispatch {
     }
 
     public static Integer getIntFromDouble( Object obj ) {
-        String s = Parsers.getAsString( obj );
+        String s = getAsString( obj );
         if ( s != null ) {
             Double d = Parsers.parseDouble( s );
             if ( d != null ) { return d.intValue(); }
@@ -609,7 +626,7 @@ public class Dispatch {
     }
 
     public static String getStringFromDouble( Object obj ) {
-        String s = Parsers.getAsString( obj );
+        String s = getAsString( obj );
         if ( s != null ) {
             Integer d = getIntFromDouble( s );
             if ( d != null ) { return d.toString(); }
@@ -634,7 +651,7 @@ public class Dispatch {
     //    }
 
     public static String getPhoneNumber( Object obj ) {
-        String str = Parsers.getAsString( obj );
+        String str = getAsString( obj );
         if ( str != null ) {
             str = str.replaceAll( "[()\\- ]", "" );
             //str = str.substring( 0, 10 );
@@ -644,7 +661,7 @@ public class Dispatch {
     }
 
     public static String getStrYear( Object obj ) {
-        String str = Parsers.getAsString( obj );
+        String str = getAsString( obj );
         if ( str != null ) {
             String[] strDate = str.split( "/" );
             if ( strDate.length > 1 ) {
@@ -661,7 +678,7 @@ public class Dispatch {
     }
 
     public static String getStreet( Object obj ) {
-        String address = Parsers.getAsString( obj );
+        String address = getAsString( obj );
         if ( address != null ) {
             if ( !( address.contains( "/" ) ) ) {
                 return addSpaceAfterCommaUpperCase( address );
@@ -672,7 +689,7 @@ public class Dispatch {
     }
 
     public static String getAddressID( Object obj ) {
-        String address = Parsers.getAsString( obj );
+        String address = getAsString( obj );
         if ( address != null ) {
             if ( address.contains( "null" ) ) {
                 address = address.replace( "null", "" );
@@ -684,7 +701,7 @@ public class Dispatch {
     }
 
     public static String getIntersection( Object obj ) {
-        String address = Parsers.getAsString( obj );
+        String address = getAsString( obj );
         if ( address != null ) {
             if ( address.contains( "/" ) ) {
                 return address.replace( "/", " & " );
