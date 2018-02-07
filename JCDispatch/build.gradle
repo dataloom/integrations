@@ -61,15 +61,9 @@ jar {
 }
 
 dependencies {
-<<<<<<< Updated upstream
-    compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
-=======
-<<<<<<< Updated upstream
-=======
     compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
     compile 'org.postgresql:postgresql:42.1.4'
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+
     if (project.hasProperty('developmentMode') && project.developmentMode) {
         logger.quiet(project.name + " using project dependencies.")
         compile project(":shuttle")
