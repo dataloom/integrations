@@ -1,5 +1,6 @@
 package com.openlattice.integrations.jcDispatch.lib;
 
+import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.util.Parsers;
 
 import java.util.Arrays;
@@ -27,7 +28,10 @@ public class NameParsing {
     }
 
     public static final Pattern p = Pattern
-            .compile( "\\b(UNIVERSITY|EMS|ENGINE|RESCUE|HONDA|LP|REHABILITATION|INC|IOWA|ADT|VERIZON|SPRINT|SANDWICHES|AT&T|BLDG|CENTER|CELLULAR|INTERNATIONAL|SCIENCES)\\b" , Pattern.CASE_INSENSITIVE );
+            .compile( "\\b(UNIVERSITY|EMS|ENGINE|FIRE|RESCUE|JCAS|AMB|JCSO|UNITS|UI|DPS|HONDA|LP|REHABILITATION|INC|IOWA|ADT|VERIZON|SPRINT|SANDWICHES|AT&T|BLDG|CENTER|CELLULAR|INTERNATIONAL|SCIENCES)\\b" , Pattern.CASE_INSENSITIVE );
+
+
+
 
     public static String getFirstName( Object obj ) {
         String name = removeDigits( obj );
