@@ -32,7 +32,7 @@ group = "com.openlattice"
 version = 'v0.0.1'
 
 mainClassName = "com.openlattice.integrations.jcDispatch.Dispatch"
-applicationDefaultJvmArgs = ["-Xmx1G", "-Xms1G", "-server"]
+applicationDefaultJvmArgs = ["-Xmx2G", "-Xms2G", "-server"]
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -61,12 +61,15 @@ jar {
 }
 
 dependencies {
+    compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
+    compile 'org.postgresql:postgresql:42.1.4'
+
     if (project.hasProperty('developmentMode') && project.developmentMode) {
         logger.quiet(project.name + " using project dependencies.")
         compile project(":shuttle")
     } else {
         logger.quiet(project.name + " using jar dependencies.")
-        compile "com.openlattice:shuttle:0.0.0-SNAPSHOT"
+        compile "com.openlattice:shuttle:0.0.2-SNAPSHOT"
     }
 
     compile fileTree(dir: "lib/", include: "*.jar")

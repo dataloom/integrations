@@ -1,5 +1,6 @@
 package com.openlattice.integrations.jcDispatch.lib;
 
+import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.util.Parsers;
 
 import java.util.Arrays;
@@ -27,11 +28,13 @@ public class NameParsing {
     }
 
     public static final Pattern p = Pattern
-            .compile( "\\b(UNIVERSITY|EMS|HONDA|LP|REHABILITATION|INC|IOWA|ADT|VERIZON|SPRINT|SANDWICHES|AT&T|BLDG|CENTER|CELLULAR|INTERNATIONAL|SCIENCES)\\b" , Pattern.CASE_INSENSITIVE );
+            .compile( "\\b(UNIVERSITY|EMS|ENGINE|FIRE|RESCUE|JCAS|AMB|JCSO|UNITS|UI|DPS|HONDA|LP|REHABILITATION|INC|IOWA|ADT|VERIZON|SPRINT|SANDWICHES|AT&T|BLDG|CENTER|CELLULAR|INTERNATIONAL|SCIENCES)\\b" , Pattern.CASE_INSENSITIVE );
+
+
+
 
     public static String getFirstName( Object obj ) {
-        String name = addSpaceAfterCommaUpperCase( obj );
-        name = removeDigits( name );
+        String name = removeDigits( obj );
         if ( name != null ) {
             Matcher m = p.matcher( name );
 
@@ -39,22 +42,26 @@ public class NameParsing {
                 return "";
             }
 
+            //for if entry is like DOE, JOHN
             String[] strNames = name.split( "," );
             if ( strNames.length > 1 ) {
                 String fName = strNames[ 1 ].trim();
-                String[] fNames = fName.split( " " );
+                String[] fNames = fName.split( " " );  //this split is for parsing out middle names if they are there
+                if ( fNames.length == 0 ) return null;
                 return fNames[ 0 ].trim();
             }
 
+            //for if entry is like JOHN DOE
+            if (strNames.length == 0 ) return null;
             String[] fullNames = strNames[ 0 ].split( " " );
+            if (fullNames.length == 0 ) return null;
             return fullNames[ 0 ].trim();
         }
         return null;
     }
 
     public static String getLastName( Object obj ) {
-        String name = addSpaceAfterCommaUpperCase( obj );
-        name = removeDigits( name );
+        String name = removeDigits( obj );
         if ( name != null ) {
             Matcher m = p.matcher( name );
 
@@ -66,15 +73,19 @@ public class NameParsing {
             if ( strNames.length > 1 ) {
                 return strNames[ 0 ].trim();
             }
-            String[] fullNames = strNames[ 0 ].split( " " );
+            else if (strNames.length == 0) return null;
+            // for if entry is like John Doe
+            String[] fullNames = strNames[ 0 ].trim().split( " " );
+            if (fullNames.length == 0 ) return null;
             return fullNames[ fullNames.length - 1 ].trim();
         }
         return null;
     }
 
-    public static String getMiddleName( Object obj ) {
-        String name = addSpaceAfterCommaUpperCase( obj );
-        name = removeDigits( name );
+
+    public static Object getMiddleName( Object obj ) {
+        //String name = addSpaceAfterCommaUpperCase( obj );
+        String name = removeDigits( obj );
         if ( name != null ) {
             Matcher m = p.matcher( name );
 
@@ -87,17 +98,19 @@ public class NameParsing {
                 String fName = strNames[ 1 ].trim();
                 List<String> fNames = Arrays.asList( fName.split( " " ) );
                 if ( fNames.size() > 2 ) {
-                    List<String> mNames = fNames.subList( 1, fNames.size() );
-                    return String.join( " ", mNames ).trim();
+                    return fNames.subList( 1, fNames.size() );
+
                 }
                 if ( fNames.size() == 2 ) {
                     return fNames.get( fNames.size() - 1 ).trim();
                 }
-                return "";
+                return null;
             }
-            String[] middleNames = strNames[ 0 ].split( " " );
+            else if (strNames.length == 0) return null;
+            String[] middleNames = strNames[ 0 ].split( " " );   //for if entry is like John Middle Doe
             if ( middleNames.length > 2 ) {
-                return middleNames[ 1 ].trim();
+                List<String> mNames = Arrays.asList(middleNames);
+                return mNames.subList( 1, mNames.size() -1 );
             }
         }
         return null;
