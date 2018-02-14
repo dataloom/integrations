@@ -49,9 +49,9 @@ public class Dispatch {
 
     public static void main( String[] args ) throws InterruptedException, IOException {
 
-        //final String username = args[ 0 ];
-        //final String password = args[ 1 ];
-        final String jwtToken = args[ 0 ];
+        final String username = args[ 0 ];
+        final String password = args[ 1 ];
+        //final String jwtToken = args[ 0 ];
         final String integrationFile = args[ 1 ];
 
         HikariDataSource hds =
