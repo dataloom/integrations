@@ -51,7 +51,7 @@ public class Dispatch {
 
         final String username = args[ 0 ];
         final String password = args[ 1 ];
-        //final String jwtToken = args[ 0 ];
+        final String jwtToken = MissionControl.getIdToken( username, password );
         final String integrationFile = args[ 1 ];
 
         HikariDataSource hds =
