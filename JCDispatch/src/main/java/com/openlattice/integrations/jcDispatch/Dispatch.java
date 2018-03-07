@@ -1,12 +1,12 @@
 package com.openlattice.integrations.jcDispatch;
 
-import com.dataloom.authorization.PermissionsApi;
-import com.dataloom.client.RetrofitFactory;
+import com.openlattice.authorization.PermissionsApi;
+import com.openlattice.client.RetrofitFactory;
 
 import static com.openlattice.integrations.jcDispatch.lib.NameParsing.*;
 import static com.openlattice.shuttle.util.Parsers.getAsString;
 
-import com.dataloom.client.RetrofitFactory.Environment;
+import com.openlattice.client.RetrofitFactory.Environment;
 import com.dataloom.mappers.ObjectMappers;
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.MissionControl;
@@ -42,13 +42,13 @@ public class Dispatch {
     private static final Logger logger = LoggerFactory
             .getLogger( Dispatch.class );
 
-    private static final Environment environment = Environment.LOCAL;
+    private static final Environment environment = Environment.PRODUCTION;
 
     private static final DateTimeHelper dateHelper0 = new DateTimeHelper( TimeZones.America_Chicago,
             "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S" );
 
     public static void main( String[] args ) throws InterruptedException, IOException {
-        
+
         final String jwtToken = MissionControl.getIdToken( username, password );      //for running on Athena
         final String integrationFile = args[ 2 ];                                     //for running on Athena
 //        final String jwtToken = args[ 0 ];              //for local testing
