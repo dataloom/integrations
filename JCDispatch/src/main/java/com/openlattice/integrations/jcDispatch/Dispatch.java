@@ -42,17 +42,17 @@ public class Dispatch {
     private static final Logger logger = LoggerFactory
             .getLogger( Dispatch.class );
 
-    private static final Environment environment = Environment.PRODUCTION;
+    private static final Environment environment = Environment.LOCAL;
 
     private static final DateTimeHelper dateHelper0 = new DateTimeHelper( TimeZones.America_Chicago,
             "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S" );
 
     public static void main( String[] args ) throws InterruptedException, IOException {
-
-        final String username = args[ 0 ];
-        final String password = args[ 1 ];
-        final String jwtToken = MissionControl.getIdToken( username, password );
-        final String integrationFile = args[ 2 ];
+        
+        final String jwtToken = MissionControl.getIdToken( username, password );      //for running on Athena
+        final String integrationFile = args[ 2 ];                                     //for running on Athena
+//        final String jwtToken = args[ 0 ];              //for local testing
+//        final String integrationFile = args[ 1 ];       //for local testing
 
         HikariDataSource hds =
                 ObjectMappers.getYamlMapper()
@@ -162,7 +162,8 @@ public class Dispatch {
                         .addEntity("DispatchZone")
                             .to("JohnsonDispatchZone")
                             .useCurrentSync()
-                            .addProperty("dispatch.zoneid").value( row -> Parsers.parseInt( row.getAs( "ZONE_ID" ) ) ).ok()
+                            //.addProperty("dispatch.zoneid").value( row -> Parsers.parseInt( row.getAs( "ZONE_ID" ) ) ).ok()
+                            .addProperty( "dispatch.zoneid", "ZONE_ID" )
                             .addProperty("dispatch.zonename", "Dis_Zone")
                             .addProperty("dispatch.subzone", "SubZone")
                             .addProperty("dispatch.medicalzone", "Medical_Zone")
