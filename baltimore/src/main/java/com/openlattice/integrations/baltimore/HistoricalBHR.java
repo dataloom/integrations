@@ -20,9 +20,9 @@
 
 package com.openlattice.integrations.baltimore;
 
-import com.dataloom.client.RetrofitFactory;
-import com.dataloom.client.RetrofitFactory.Environment;
-import com.dataloom.edm.EdmApi;
+import com.openlattice.client.RetrofitFactory;
+import com.openlattice.client.RetrofitFactory.Environment;
+import com.openlattice.edm.EdmApi;
 import com.openlattice.shuttle.Flight;
 import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.adapter.Row;
@@ -46,7 +46,9 @@ public class HistoricalBHR {
 
     private static final Logger         logger      = LoggerFactory
             .getLogger( HistoricalBHR.class );
-    private static final Environment    environment = RetrofitFactory.Environment.STAGING;
+
+    private static final Environment    environment = RetrofitFactory.Environment.PRODUCTION;
+
     private static final DateTimeHelper dtHelper    = new DateTimeHelper( TimeZones.America_NewYork,
             "MM/dd/YY HHmm 'hrs'", "MM/dd/YY HHmm 'Hrs'", "MM/dd/YY HHmm 'hrs.'", "MM/dd/YY HHmm 'hr.'", "MM/dd/YY HHmm 'h'", "MM/dd/YY HHmm'hrs'", "MM/dd/YY HHmm'hrs.'",
             "MM/dd/YY HHmm", "MM/dd/YY HHmm 'Hrs.'", "MM/dd/YY HHmm 'hr.s'", "MM/dd/YY HHmm 'hr'", "MM-dd-YY HHmm'hr'", "MM/dd/YY HHmm'hr.'", "MM/dd/YY HHmm'h'",
@@ -63,10 +65,13 @@ public class HistoricalBHR {
          */
         final String bhrPath = args[ 0 ];
         final String testPath = args[ 1 ];
-        final String jwtToken = args[ 2 ];
+        final String followupPath = args[ 2 ];
+        final String jwtToken = args[ 3 ];
 
         SimplePayload payload = new SimplePayload( bhrPath );
         SimplePayload tpayload = new SimplePayload( testPath );
+        SimplePayload fpayload = new SimplePayload( followupPath );
+
 
         logger.info( "Using the following idToken: Bearer {}", jwtToken );
 
@@ -78,7 +83,7 @@ public class HistoricalBHR {
 
                 .addEntity( "historicalbhr" )
                    // .to( "BaltimoreHistoricalBHR" )     //test run
-                    .to("Baltimore_app_bhr")
+                    .to("baltimore_city_pd_bhr")
                         .addProperty( "nc.SubjectIdentification", "ConsumerID" )
                         .addProperty( "bhr.dispatchReason", "X1.Reason" )
                         .addProperty( "bhr.complaintNumber", "X2.CC" )
@@ -158,7 +163,7 @@ public class HistoricalBHR {
                 .endEntity()
                 .addEntity( "people" )
                     //.to("Baltimore_ppl_test")       //test run
-                      .to("Baltimore_app_people")
+                      .to("baltimore_city_pd_people")
                         .addProperty( "nc.SubjectIdentification", "ConsumerID" )
                 //.value( row -> UUID.randomUUID().toString() ).ok()
                         .addProperty("nc.PersonGivenName", "firstname")
@@ -166,7 +171,8 @@ public class HistoricalBHR {
                         .addProperty( "nc.PersonSuffix", "suffix" )
                         .addProperty( "nc.PersonMiddleName" )
                            .value( row -> getMiddleName( row.getAs( "X13.Name" ))).ok()
-                        .addProperty( "nc.PersonSex", "X14a.Gender" )
+                        .addProperty( "nc.PersonSex")
+                            .value( HistoricalBHR::standardSex ).ok()
                         .addProperty( "nc.PersonRace", "X14b.Race" )
                         .addProperty( "nc.PersonBirthDate" )
                             .value( row -> bdHelper.parseDate( row.getAs( "X14d.DOB" )) ).ok()
@@ -176,7 +182,7 @@ public class HistoricalBHR {
                 .createAssociations()
                 .addAssociation( "appearsin" )
                     //.to("baltimore_appearsin_test")     //test run
-                      .to("Baltimore_app_appearsin")
+                      .to("baltimore_city_pd_appearsin")
                     .fromEntity( "people" )
                     .toEntity( "historicalbhr" )
                     .addProperty( "general.stringid", "X2.CC" )
@@ -188,7 +194,7 @@ public class HistoricalBHR {
         Flight testflight = Flight.newFlight()
                 .createEntities()
                 .addEntity( "testperson" )
-                .to("Baltimore_app_people")
+                .to("baltimore_city_pd_people")
                 .useCurrentSync()
                     .addProperty( "nc.SubjectIdentification", "nc.SubjectIdentification" )
                     .addProperty( "nc.PersonGivenName" , "nc.PersonGivenName")
@@ -202,11 +208,44 @@ public class HistoricalBHR {
                 .endEntities()
                 .done();
 
+        Flight followupflight = Flight.newFlight()
+                .createEntities()
+                .addEntity( "followup" )
+                .to("baltimore_city_pd_followup")
+                .useCurrentSync()
+                    .addProperty( "bhr.dateReported")
+                        .value(  row -> dtHelper.parseTime( row.getAs( "bhr.dateReported" ) ) ).ok()
+                    .addProperty( "bhr.complaintNumber", "bhr.complaintNumber" )
+                    .addProperty( "bhr.officerName", "bhr.officerName" )
+                    .addProperty( "bhr.officerSeqID", "bhr.officerSeqID" )
+                    .addProperty( "health.staff", "health.staff" )
+                    .addProperty( "bhr.followupreason", "bhr.followupreason" )
+                    .addProperty( "event.comments", "event.comments" )
+                .endEntity()
+                .addEntity( "followupperson" )
+                .to("baltimore_city_pd_people")
+                .useCurrentSync()
+                    .addProperty( "nc.SubjectIdentification", "nc.SubjectIdentification" )
+                .endEntity()
+                .endEntities()
+
+                .createAssociations()
+                .addAssociation( "fappearsin" )
+                    .to("baltimore_city_pd_appearsin")
+                    .useCurrentSync()
+                    .fromEntity( "followupperson" )
+                    .toEntity( "followup" )
+                    .addProperty( "general.stringid", "bhr.complaintNumber" )
+                .endAssociation()
+                .endAssociations()
+
+                .done();
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
         Map<Flight, Payload>  flights = new LinkedHashMap<>( 1 );
         flights.put( bhrflight, payload );
-       flights.put( testflight, tpayload );
+        flights.put( testflight, tpayload );
+        flights.put( followupflight, fpayload );
 
         shuttle.launchPayloadFlight( flights );
 
@@ -324,6 +363,20 @@ public class HistoricalBHR {
                 }
                 return null;
             }
+
+    public static String standardSex( Row row) {
+        String sex = row.getAs( "X14a.Gender" );
+        //if (StringUtils.isBlank( sex )) return null;
+
+        if ( sex != null ) {
+            if (sex.equals( "Male" )) {return "M"; };
+            if (sex.equals( "Female" )) {return "F"; };
+            if ( sex.equals( "" )) { return null; };
+
+        }
+        return null;
+
+    }
 
     }
 
