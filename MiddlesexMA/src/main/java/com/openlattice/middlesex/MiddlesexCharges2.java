@@ -20,9 +20,9 @@
 
 package com.openlattice.middlesex;
 
-import com.dataloom.client.RetrofitFactory;
-import com.dataloom.client.RetrofitFactory.Environment;
-import com.dataloom.edm.EdmApi;
+import com.openlattice.client.RetrofitFactory;
+import com.openlattice.client.RetrofitFactory.Environment;
+import com.openlattice.edm.EdmApi;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -90,29 +90,36 @@ public class MiddlesexCharges2 {
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
-//        Dataset<Row> payload = sparkSession
-//                .read()
-//                .format( "com.databricks.spark.csv" )
-//                .option( "header", "true" )
-//                .load( arrestsPath );
-//
-//        Dataset<Row> incident16Data = sparkSession
-//                .read()
-//                .format( "com.databricks.spark.csv" )
-//                .option( "header", "true" )
-//                .load( incidents2016Path );
-//
-//        Dataset<Row> incident17Data = sparkSession
-//                .read()
-//                .format( "com.databricks.spark.csv" )
-//                .option( "header", "true" )
-//                .load( incidents2017Path );
 
 
         Flight flight = Flight.newFlight()
                 .createEntities()
 
-                .addEntity( "arrestee" )
+                .addEntity( "people" )
+                .to("LPDpeople")                      //CREATE
+                    .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
+                    .value(row -> {
+                        return Parsers.getAsString(row.getAs("Name")) + " " + Parsers.getAsString(row.getAs("DOB"));
+                    }).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
+                        .value( MiddlesexCharges2::getFirstName ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonMiddleName" ) )
+                        .value( MiddlesexCharges2::getMiddleName ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
+                        .value( MiddlesexCharges2::getLastName ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonNameSuffixText" ) )
+                        .value( MiddlesexCharges2::getSuffixes ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
+                        .value( MiddlesexCharges2::getRace ).ok()
+                    .addProperty("nc.PersonEthnicity")
+                        .value( MiddlesexCharges2::getEthnicity ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
+                        .value( MiddlesexCharges2::safeDOBParse ).ok()
+                    .addProperty( new FullQualifiedName( "nc.PersonSex" ) )
+                        .value( MiddlesexCharges2::getSex ).ok()
+                .endEntity()
+
+                .addEntity( "arrestee" )          //RECREATE, CRIMINALJUSTICE.PERSON
                 .to( "LPDArrestSuspects" ) //for name/DOB unique IDs
                 //.to("LPDArrestees")  //for UUID unique IDs
                     .addProperty( new FullQualifiedName( "nc.SubjectIdentification" ) )
@@ -122,31 +129,15 @@ public class MiddlesexCharges2 {
                         return Parsers.getAsString(row.getAs("Name")) + " " + Parsers.getAsString(row.getAs("DOB"));
                         }).ok()
                     //.value( MiddlesexCharges2::getSubjectIdentification ).ok()
-                    .addProperty( new FullQualifiedName( "nc.PersonGivenName" ) )
-                    .value( MiddlesexCharges2::getFirstName ).ok()
-                    .addProperty( new FullQualifiedName( "nc.PersonMiddleName" ) )
-                    .value( MiddlesexCharges2::getMiddleName ).ok()
-                    .addProperty( new FullQualifiedName( "nc.PersonSurName" ) )
-                    .value( MiddlesexCharges2::getLastName ).ok()
-                    .addProperty( new FullQualifiedName( "nc.PersonNameSuffixText" ) )
-                    .value( MiddlesexCharges2::getSuffixes ).ok()
-                    .addProperty( new FullQualifiedName( "nc.PersonRace" ) )
-                    .value( MiddlesexCharges2::getRace ).ok()
-                    .addProperty("nc.PersonEthnicity")
-                       .value( MiddlesexCharges2::getEthnicity ).ok()
-                    .addProperty( new FullQualifiedName( "nc.PersonBirthDate" ) )
-                    .value( MiddlesexCharges2::safeDOBParse ).ok()
-                    .addProperty( new FullQualifiedName( "nc.PersonSex" ) )
-                    .value( MiddlesexCharges2::getSex ).ok()
                     .addProperty( "nc.PersonHeightMeasure" ).value( MiddlesexCharges2::getHeight ).ok()
                     .addProperty( "nc.PersonWeightMeasure" ).value( MiddlesexCharges2::getWeight ).ok()
                 .endEntity()
 
-//                .addEntity( "arrestAddress" )
-//                .to( "LPDAddresses" )
-//                .addProperty( new FullQualifiedName( "location.address" ) )
-//                .value( MiddlesexCharges2::getArrestAddress ).ok()
-//                .endEntity()
+                .addEntity( "arrestAddress" )
+                .to( "LPDArrestAddresses" )                //CREATE
+                .addProperty( new FullQualifiedName( "location.address" ) )
+                .value( MiddlesexCharges2::getArrestAddress ).ok()
+                .endEntity()
 
                 .addEntity( "incidentAddress" )
                 .to( "LPDAddresses" )
@@ -176,8 +167,8 @@ public class MiddlesexCharges2 {
 //                .endEntity()
 
                 .endEntities()
-                .createAssociations()
 
+                .createAssociations()
                 .addAssociation( "arrestedin" )
                     .to( "LPDArrestedIn" )
                     .fromEntity( "arrestee" )
@@ -200,7 +191,7 @@ public class MiddlesexCharges2 {
                 .endAssociation()
 
                 //incident occurred at address
-                .addAssociation( "arrestedat" )
+                .addAssociation( "incidentat" )
                 .to( "LPDOccurredAt" )
                     .fromEntity( "incident" )
                     .toEntity( "incidentAddress" )
@@ -216,15 +207,38 @@ public class MiddlesexCharges2 {
 //                .addProperty( "location.address" ).value( MiddlesexCharges2::getIncidentAddress ).ok()
 //                .endAssociation()
 
-//                .addAssociation( "chargedwith" )
-//                .to( "LPDChargedWith" )
-//                .fromEntity( "suspect" )
-//                .toEntity( "charge" )
-//                .addProperty( "general.stringid" )
-//                .value( row -> MoreObjects.firstNonNull( row.getAs( "bookingnum" ), "" ) + MoreObjects
-//                        .firstNonNull( row.getAs( "Case Number" ), "" ) ).ok()
-//                .endAssociation()
-//
+                //arrest occured at address
+                .addAssociation( "arrestedat" )
+                .to( "LPDArrestedAt" )                //CREATE
+                    .fromEntity( "arrestee" )
+                    .toEntity( "arrestAddress" )
+                    .addProperty( "general.stringid")
+                        .value(row -> {
+                            return Parsers.getAsString(row.getAs("Name")) + " " + Parsers.getAsString(row.getAs("DOB"));
+                        }).ok()
+                    .addProperty( "location.address" ).value( MiddlesexCharges2::getArrestAddress ).ok()
+                .endAssociation()
+
+                .addAssociation( "chargedwith" )
+                .to( "LPDChargedWith" )
+                    .fromEntity( "suspect" )
+                    .toEntity( "offense" )
+                    .addProperty( "general.stringid" )
+                    .value( row -> MoreObjects.firstNonNull( row.getAs( "bookingnum" ), "" ) + MoreObjects
+                            .firstNonNull( row.getAs( "Case Number" ), "" ) ).ok()
+                .endAssociation()
+
+                .addAssociation( "becomes" )
+                .to("LPDbecomes")                    //CREATE
+                    .fromEntity( "people" )
+                    .toEntity( "arrestee" )
+                    .addProperty( "nc.SubjectIdentification" )
+                        .value(row -> {
+                            return Parsers.getAsString(row.getAs("Name")) + " " + Parsers.getAsString(row.getAs("DOB"));
+                        }).ok()
+                .endAssociation()
+
+
 //                .addAssociation( "chargeappears" ) //change to offense appears in arrest
 //                .to( "LPDChargeAppearsIn" )
 //                .fromEntity( "offense" )
