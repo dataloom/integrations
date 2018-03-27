@@ -83,7 +83,7 @@ public class HistoricalBHR {
 
                 .addEntity( "historicalbhr" )
                    // .to( "BaltimoreHistoricalBHR" )     //test run
-                    .to("baltimore_city_pd_bhr")
+                    .to("baltimore_city_pd_app_bhr")
                         .addProperty( "nc.SubjectIdentification", "ConsumerID" )
                         .addProperty( "bhr.dispatchReason", "X1.Reason" )
                         .addProperty( "bhr.complaintNumber", "X2.CC" )
@@ -163,7 +163,7 @@ public class HistoricalBHR {
                 .endEntity()
                 .addEntity( "people" )
                     //.to("Baltimore_ppl_test")       //test run
-                      .to("baltimore_city_pd_people")
+                      .to("baltimore_city_pd_app_people")
                         .addProperty( "nc.SubjectIdentification", "ConsumerID" )
                 //.value( row -> UUID.randomUUID().toString() ).ok()
                         .addProperty("nc.PersonGivenName", "firstname")
@@ -182,7 +182,7 @@ public class HistoricalBHR {
                 .createAssociations()
                 .addAssociation( "appearsin" )
                     //.to("baltimore_appearsin_test")     //test run
-                      .to("baltimore_city_pd_appearsin")
+                      .to("baltimore_city_pd_app_appearsin")
                     .fromEntity( "people" )
                     .toEntity( "historicalbhr" )
                     .addProperty( "general.stringid", "X2.CC" )
@@ -194,7 +194,7 @@ public class HistoricalBHR {
         Flight testflight = Flight.newFlight()
                 .createEntities()
                 .addEntity( "testperson" )
-                .to("baltimore_city_pd_people")
+                .to("baltimore_city_pd_app_people")
                 .useCurrentSync()
                     .addProperty( "nc.SubjectIdentification", "nc.SubjectIdentification" )
                     .addProperty( "nc.PersonGivenName" , "nc.PersonGivenName")
@@ -211,7 +211,7 @@ public class HistoricalBHR {
         Flight followupflight = Flight.newFlight()
                 .createEntities()
                 .addEntity( "followup" )
-                .to("baltimore_city_pd_followup")
+                .to("baltimore_city_pd_app_followup")
                 .useCurrentSync()
                     .addProperty( "bhr.dateReported")
                         .value(  row -> dtHelper.parseTime( row.getAs( "bhr.dateReported" ) ) ).ok()
@@ -223,7 +223,7 @@ public class HistoricalBHR {
                     .addProperty( "event.comments", "event.comments" )
                 .endEntity()
                 .addEntity( "followupperson" )
-                .to("baltimore_city_pd_people")
+                .to("baltimore_city_pd_app_people")
                 .useCurrentSync()
                     .addProperty( "nc.SubjectIdentification", "nc.SubjectIdentification" )
                 .endEntity()
@@ -231,7 +231,7 @@ public class HistoricalBHR {
 
                 .createAssociations()
                 .addAssociation( "fappearsin" )
-                    .to("baltimore_city_pd_appearsin")
+                    .to("baltimore_city_pd_app_appearsin")
                     .useCurrentSync()
                     .fromEntity( "followupperson" )
                     .toEntity( "followup" )
