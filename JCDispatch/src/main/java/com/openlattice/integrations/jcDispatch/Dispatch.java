@@ -1,26 +1,20 @@
 package com.openlattice.integrations.jcDispatch;
 
-import com.dataloom.authorization.PermissionsApi;
-import com.dataloom.client.RetrofitFactory;
-
-import static com.openlattice.integrations.jcDispatch.lib.NameParsing.*;
-import static com.openlattice.shuttle.util.Parsers.getAsString;
-
-import com.dataloom.client.RetrofitFactory.Environment;
 import com.dataloom.mappers.ObjectMappers;
+import com.openlattice.client.RetrofitFactory.Environment;
 import com.openlattice.shuttle.Flight;
-import com.openlattice.shuttle.MissionControl;
 import com.openlattice.shuttle.Shuttle;
 import com.openlattice.shuttle.adapter.Row;
 import com.openlattice.shuttle.config.IntegrationConfig;
 import com.openlattice.shuttle.dates.DateTimeHelper;
 import com.openlattice.shuttle.dates.TimeZones;
-import com.openlattice.shuttle.payload.FilterablePayload;
 import com.openlattice.shuttle.payload.JdbcPayload;
 import com.openlattice.shuttle.payload.Payload;
 import com.openlattice.shuttle.payload.SimplePayload;
 import com.openlattice.shuttle.util.Parsers;
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,12 +24,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.addSpaceAfterCommaUpperCase;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getFirstName;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getLastName;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getMiddleName;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.getName;
+import static com.openlattice.integrations.jcDispatch.lib.NameParsing.p;
+import static com.openlattice.shuttle.util.Parsers.getAsString;
 
 public class Dispatch {
 
