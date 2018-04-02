@@ -66,10 +66,12 @@ public class HistoricalBHR {
         final String bhrPath = args[ 0 ];
         final String testPath = args[ 1 ];
         final String followupPath = args[ 2 ];
-        final String jwtToken = args[ 3 ];
+        final String bhrMarchPath = args[ 3 ];
+        final String jwtToken = args[ 4 ];
 
         SimplePayload payload = new SimplePayload( bhrPath );
         SimplePayload tpayload = new SimplePayload( testPath );
+        SimplePayload b2payload = new SimplePayload( bhrMarchPath );
         SimplePayload fpayload = new SimplePayload( followupPath );
 
 
@@ -120,7 +122,8 @@ public class HistoricalBHR {
                         .addProperty( "bhr.takingMedication", "X17a.Taking" )
                         .addProperty( "bhr.prevPsychAdmission", "X18.PrevPsych" )
                         .addProperty( "bhr.selfDiagnosis", "X19.SelfDiags" )
-                        .addProperty( "bhr.selfDiagnosisOther", "X19a.Other" )
+                        .addProperty( "bhr.selfDiagnosisOther")
+                            .value( row -> getSelfDiagnosisOther(row)).ok()
                         .addProperty( "bhr.armedWithWeapon")
                             .value( row -> stringtoBool(  row.getAs("X20.Weapon"))).ok()
                         .addProperty( "bhr.armedWeaponType", "X20a.WeaponType" )
@@ -173,7 +176,8 @@ public class HistoricalBHR {
                            .value( row -> getMiddleName( row.getAs( "X13.Name" ))).ok()
                         .addProperty( "nc.PersonSex")
                             .value( HistoricalBHR::standardSex ).ok()
-                        .addProperty( "nc.PersonRace", "X14b.Race" )
+                        .addProperty( "nc.PersonRace" )
+                            .value( HistoricalBHR::standardRace ).ok()
                         .addProperty( "nc.PersonBirthDate" )
                             .value( row -> bdHelper.parseDate( row.getAs( "X14d.DOB" )) ).ok()
                 .endEntity()
@@ -187,6 +191,124 @@ public class HistoricalBHR {
                     .toEntity( "historicalbhr" )
                     .addProperty( "general.stringid", "X2.CC" )
                     .endAssociation()
+                .endAssociations()
+
+                .done();
+
+        Flight bhrMarchflight = Flight.newFlight()
+                .createEntities()
+
+                .addEntity( "historicalbhr" )
+                // .to( "BaltimoreHistoricalBHR" )     //test run
+                .to("baltimore_city_pd_app_bhr")
+                .useCurrentSync()
+                    .addProperty( "nc.SubjectIdentification", "ConsumerID" )
+                    .addProperty( "bhr.dispatchReason", "X1.Reason" )
+                    .addProperty( "bhr.complaintNumber", "X2.CC" )
+                    .addProperty( "bhr.companionOffenseReport" )
+                        .value( row -> stringtoBool(  row.getAs("X3.Companion"))).ok()
+                    .addProperty( "bhr.incident", "X4.Crime" )
+                    .addProperty( "bhr.locationOfIncident", "X5.Address" )
+                    .addProperty( "bhr.unit", "X6.Unit" )
+                    .addProperty( "bhr.postOfOccurrence", "X7.Post" )     //change from int to string
+                    .addProperty( "bhr.cadNumber").value( row -> Parsers.parseInt( row.getAs( "X8.CAD" ) )).ok()
+                    .addProperty( "bhr.onView")
+                        .value( row -> stringtoBool(  row.getAs("X9.OnView"))).ok()
+                    .addProperty( "bhr.timeOccurred" )
+                        .value(  row -> dtHelper.parseTime( row.getAs( "X10.Occurred" ) ) ).ok()
+                    .addProperty( "bhr.dateOccurred" )
+                        .value(  row -> dtHelper.parseDate( row.getAs( "X10.Occurred" ) ) ).ok()
+                    .addProperty( "bhr.timeReported" )
+                        .value(  row -> dtHelper.parseTime( row.getAs( "X11.Reported" ) ) ).ok()
+                    .addProperty( "bhr.dateReported" )
+                        .value(  row -> dtHelper.parseDate( row.getAs( "X11.Reported" ) ) ).ok()
+                    .addProperty( "bhr.address", "X13a.Address" )
+                    .addProperty( "bhr.phone")
+                        .value( row -> getPhoneNumber( row.getAs( "X13b.Phone" )) ).ok()
+                    .addProperty( "bhr.militaryStatus", "X14.Military" )
+                    .addProperty( "bhr.gender", "X14a.Gender" )
+                    .addProperty( "bhr.age").value( row -> Parsers.parseInt( row.getAs( "X14c.Age" ) ) ).ok()
+                    .addProperty( "bhr.homeless")
+                        .value( row -> stringtoBool(  row.getAs("X15.Homeless"))).ok()
+                    .addProperty( "bhr.homelessLocation", "X15a.Location" )
+                    .addProperty( "bhr.drugsAlcohol", "X16.Substances" )
+                    .addProperty( "bhr.drugType")
+                        .value( row -> getDrugs( row.getAs(  "X16a.Drugs"  ))).ok()
+                    .addProperty( "bhr.prescribedMedication", "X17.Meds" )
+                    .addProperty( "bhr.takingMedication", "X17a.Taking" )
+                    .addProperty( "bhr.prevPsychAdmission", "X18.PrevPsych" )
+                    .addProperty( "bhr.selfDiagnosis", "X19.SelfDiags" )
+                    .addProperty( "bhr.selfDiagnosisOther")
+                        .value( row -> getSelfDiagnosisOther(row)).ok()
+                    .addProperty( "bhr.armedWithWeapon")
+                        .value( row -> stringtoBool(  row.getAs("X20.Weapon"))).ok()
+                    .addProperty( "bhr.armedWeaponType", "X20a.WeaponType" )
+                    .addProperty( "bhr.accessToWeapons")
+                        .value( row -> stringtoBool( row.getAs ( "X21.Access") ) ).ok()
+                    .addProperty( "bhr.accessibleWeaponType", "X21a.WeaponType" )
+                    .addProperty( "bhr.observedBehaviors", "X22.Behaviors" )
+                    .addProperty( "bhr.observedBehaviorsOther", "X22a.Other" )
+                    .addProperty( "bhr.emotionalState", "X22b.EmotionalState" )
+                    .addProperty( "bhr.emotionalStateOther")
+                        .value( row -> getemotionalStateOther(row)).ok()
+                    .addProperty( "bhr.photosTakenOf", "X23.Photos" )
+                    .addProperty( "bhr.injuries", "X24.Injuries" )
+                    .addProperty( "bhr.injuriesOther", "X24a.Other" )
+                    .addProperty( "bhr.suicidal")
+                        .value( row -> stringtoBool( row.getAs( "X25.Suicidal" ) ) ).ok()
+                    .addProperty( "bhr.suicidalActions", "X25a.Type" )
+                    .addProperty( "bhr.suicideAttemptMethod", "X26.Method" )
+                    .addProperty( "bhr.suicideAttemptMethodOther", "X26a.Other" )
+                    .addProperty( "bhr.complainantName", "X27.Complainant" )
+                    .addProperty( "bhr.complainantAddress", "X27a.Address" )
+                    .addProperty( "bhr.complainantConsumerRelationship", "X27b.Relationship" )
+                    .addProperty( "bhr.complainantPhone").value( row -> getPhoneNumber( row.getAs( "X27c.Phone" ) ) ).ok()
+                    .addProperty( "bhr.disposition", "X28.Disposition" )
+                    .addProperty( "bhr.provider", "X28a.Provider" )
+                    .addProperty( "bhr.hospitalTransport" )
+                        .value( row -> stringtoBool( row.getAs( "X28b.Hospital" ) ) ).ok()
+                    .addProperty( "bhr.hospital", "X28c.HospitalName" )
+                    .addProperty( "bhr.deescalationTechniques", "X29.Deescalation" )
+                    .addProperty( "bhr.deescalationTechniquesOther" )
+                        .value( row -> getdeescalationTechniquesOther(row)).ok()
+                    .addProperty( "bhr.specializedResourcesCalled", "X30.Specialized" )
+                    .addProperty( "bhr.incidentNarrative", "X31.Narrative" )
+                    .addProperty( "bhr.officerName", "X32.Officer" )
+                    .addProperty( "bhr.officerSeqID", "X34.SEQ" )
+                    .addProperty( "bhr.officerInjuries", "X35.Injuries" )
+                    .addProperty( "bhr.officerCertification", "X36.Certification" )
+                    .addProperty( "bhr.supervisor", "X37.Supervisor" )
+                    .addProperty( "bhr.supervisorID", "X37a.SEQ" )
+                .endEntity()
+                .addEntity( "people" )
+                //.to("Baltimore_ppl_test")       //test run
+                    .to("baltimore_city_pd_app_people")
+                    .useCurrentSync()
+                    .addProperty( "nc.SubjectIdentification", "ConsumerID" )
+                    //.value( row -> UUID.randomUUID().toString() ).ok()
+                    .addProperty("nc.PersonGivenName", "firstname")
+                    .addProperty("nc.PersonSurName", "lastname")
+                    .addProperty( "nc.PersonSuffix", "suffix" )
+                    .addProperty( "nc.PersonMiddleName" )
+                        .value( row -> getMiddleName( row.getAs( "X13.Name" ))).ok()
+                    .addProperty( "nc.PersonSex")
+                        .value( HistoricalBHR::standardSex ).ok()
+                    .addProperty( "nc.PersonRace")
+                        .value( HistoricalBHR::standardRace ).ok()
+                    .addProperty( "nc.PersonBirthDate" )
+                        .value( row -> bdHelper.parseDate( row.getAs( "X14d.DOB" )) ).ok()
+                .endEntity()
+                .endEntities()
+
+                .createAssociations()
+                .addAssociation( "appearsin" )
+                //.to("baltimore_appearsin_test")     //test run
+                    .to("baltimore_city_pd_app_appearsin")
+                    .useCurrentSync()
+                    .fromEntity( "people" )
+                    .toEntity( "historicalbhr" )
+                    .addProperty( "general.stringid", "X2.CC" )
+                .endAssociation()
                 .endAssociations()
 
                 .done();
@@ -244,6 +366,7 @@ public class HistoricalBHR {
         Shuttle shuttle = new Shuttle( environment, jwtToken );
         Map<Flight, Payload>  flights = new LinkedHashMap<>( 1 );
         flights.put( bhrflight, payload );
+        flights.put( bhrMarchflight, b2payload );
         flights.put( testflight, tpayload );
         flights.put( followupflight, fpayload );
 
@@ -364,6 +487,16 @@ public class HistoricalBHR {
                 return null;
             }
 
+    public static String getSelfDiagnosisOther( Row row ) {
+        String state =  Parsers.getAsString( row.getAs ( "X19.Other" ));
+        String describe = Parsers.getAsString( row.getAs( "X19b.Describe") );
+
+        if ( StringUtils.isNotBlank( state ) && StringUtils.isNotBlank( describe )) {
+            return state + " - " + describe;
+        }
+        return null;
+    }
+
     public static String standardSex( Row row) {
         String sex = row.getAs( "X14a.Gender" );
         //if (StringUtils.isBlank( sex )) return null;
@@ -376,6 +509,22 @@ public class HistoricalBHR {
         }
         return null;
 
+    }
+
+    public static String standardRace( Row row ) {
+        String sr = row.getAs( "race" );
+        if ( sr != null ) {
+            if ( sr.equals( "Asian" ) ) {
+                return "asian";
+            } else if ( sr.equals( "Black" ) ) {
+                return "black";
+            } else if ( sr.equals( "White" ) ) {
+                return "white";
+            } else if ( sr.equals( "Pac. Island" ) ) {
+                return "pacisland";
+            }
+        }
+        return null;
     }
 
     }
