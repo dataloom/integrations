@@ -1,0 +1,69 @@
+plugins {
+    id "application"
+    id "java"
+    id "eclipse"
+    id "idea"
+    id "jacoco"
+}
+
+apply from: "https://raw.githubusercontent.com/openlattice/gradles/master/repos.gradle"
+
+description = "Demo Health Data Integration"
+group = "com.openlattice"
+version = 'v0.0.1'
+
+mainClassName = "com.openlattice.integrations.mockHealth.DemoHealth"
+applicationDefaultJvmArgs = ["-Xmx1G", "-Xms1G", "-server"]
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+run {
+    if (System.getProperty("exec.args")) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main.compileClasspath += configurations.provided
+    test.compileClasspath += configurations.provided
+    test.runtimeClasspath += configurations.provided
+}
+
+jar {
+    doFirst {
+        manifest {
+            attributes "Class-Path": configurations.runtime.files.collect { it.getName() }.join(" ")
+        }
+    }
+}
+
+dependencies {
+    if (project.hasProperty('developmentMode') && project.developmentMode) {
+        logger.quiet(project.name + " using project dependencies.")
+        compile project(":shuttle")
+    } else {
+        logger.quiet(project.name + " using jar dependencies.")
+        compile "com.openlattice:shuttle:0.0.0-SNAPSHOT"
+    }
+
+    compile fileTree(dir: "lib/", include: "*.jar")
+}
+
+
+
+startScripts {
+    classpath = files(jar.archivePath)
+}
+
+eclipse {
+    ext.downloadSources = true
+    ext.downloadJavadoc = true
+    ext.sourceCompatibility = JavaVersion.VERSION_1_8
+    ext.targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+eclipse.classpath.plusConfigurations += [configurations.provided]
