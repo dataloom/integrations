@@ -18,11 +18,11 @@
  *
  */
 
-package com.openlattice.middlesex;
+package com.openlattice.integrations.middlesex;
 
-import com.dataloom.client.RetrofitFactory;
-import com.dataloom.client.RetrofitFactory.Environment;
-import com.dataloom.edm.EdmApi;
+import com.openlattice.client.RetrofitFactory;
+import com.openlattice.client.RetrofitFactory.Environment;
+import com.openlattice.edm.EdmApi;
 import com.dataloom.streams.StreamUtil;
 import com.google.common.collect.ImmutableList;
 import com.openlattice.shuttle.Flight;
@@ -46,13 +46,13 @@ import java.util.stream.Stream;
 
 
 /**
- * @author Matthew Tamayo-Rios &lt;matthew@openlattice.com&gt;
+ * @author Kim Engie &lt;kim@openlattice.com&gt;
  */
 public class MiddlesexBookings1 {
 
     private static final Logger                      logger      = LoggerFactory
             .getLogger( MiddlesexBookings1.class );
-    private static final RetrofitFactory.Environment environment = Environment.PRODUCTION;
+    private static final Environment environment = Environment.PRODUCTION;
     private static final DateTimeHelper              dtHelper    = new DateTimeHelper(  TimeZones.America_NewYork,
             "MM/dd/yy");
     private static final DateTimeHelper              bdHelper    = new DateTimeHelper(  TimeZones.America_NewYork,
