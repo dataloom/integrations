@@ -1,0 +1,92 @@
+/*
+ * Copyright (C) 2017. OpenLattice, Inc
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * You can contact the owner of the copyright at support@openlattice.com
+ */
+
+plugins {
+    id "application"
+    id "java"
+    id "eclipse"
+    id "idea"
+    id "jacoco"
+}
+
+apply from: "https://raw.githubusercontent.com/openlattice/gradles/master/repos.gradle"
+
+description = "Hudson County Integrations"
+group = "com.openlattice"
+version = 'v0.0.1'
+
+mainClassName = "com.openlattice.integrations.HudsonCounty.HMISflight"
+applicationDefaultJvmArgs = ["-Xmx1G", "-Xms1G", "-server"]
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+run {
+    if (System.getProperty("exec.args")) {
+        args System.getProperty("exec.args").split()
+    }
+}
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main.compileClasspath += configurations.provided
+    test.compileClasspath += configurations.provided
+    test.runtimeClasspath += configurations.provided
+}
+
+jar {
+    doFirst {
+        manifest {
+            attributes "Class-Path": configurations.runtime.files.collect { it.getName() }.join(" ")
+        }
+    }
+}
+
+dependencies {
+    compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
+    if (project.hasProperty('developmentMode') && project.developmentMode) {
+        logger.quiet(project.name + " using project dependencies.")
+        compile project(":shuttle")
+    } else {
+        logger.quiet(project.name + " using jar dependencies.")
+        compile "com.openlattice:shuttle:0.0.2-SNAPSHOT"
+    }
+
+    compile fileTree(dir: "lib/", include: "*.jar")
+}
+
+
+
+startScripts {
+    classpath = files(jar.archivePath)
+}
+
+eclipse {
+    ext.downloadSources = true
+    ext.downloadJavadoc = true
+    ext.sourceCompatibility = JavaVersion.VERSION_1_8
+    ext.targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+eclipse.classpath.plusConfigurations += [configurations.provided]
+
+
+
