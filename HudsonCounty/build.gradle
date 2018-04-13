@@ -67,7 +67,7 @@ dependencies {
         compile project(":shuttle")
     } else {
         logger.quiet(project.name + " using jar dependencies.")
-        compile "com.openlattice:shuttle:0.0.0-SNAPSHOT"
+        compile "com.openlattice:shuttle:0.0.2-SNAPSHOT"
     }
 
     compile fileTree(dir: "lib/", include: "*.jar")

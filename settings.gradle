@@ -1,9 +1,10 @@
 rootProject.name='integrations'
 
 include 'template'
-include 'slcstolencars2012'
+//include 'slcstolencars2012'
 include 'arrestscalifornia'
 include 'iowacity'
 include 'niem'
 include 'migration'
 include 'sacramento'
+include 'HudsonCounty'

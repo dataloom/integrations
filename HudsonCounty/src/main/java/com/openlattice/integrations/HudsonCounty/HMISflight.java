@@ -1,36 +1,33 @@
 package com.openlattice.integrations.HudsonCounty;
 
+import com.openlattice.client.RetrofitFactory;
+import com.openlattice.edm.EdmApi;
+import com.openlattice.shuttle.Flight;
+import com.openlattice.shuttle.Shuttle;
+import com.openlattice.shuttle.adapter.Row;
+import com.openlattice.shuttle.dates.DateTimeHelper;
+import com.openlattice.shuttle.dates.TimeZones;
+import com.openlattice.shuttle.payload.Payload;
+import com.openlattice.shuttle.payload.SimplePayload;
+import com.openlattice.shuttle.util.Parsers;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import retrofit2.Retrofit;
 
-
-        import com.openlattice.client.RetrofitFactory;
-        import com.openlattice.edm.EdmApi;
-        import com.openlattice.shuttle.Flight;
-        import com.openlattice.shuttle.MissionControl;
-        import com.openlattice.shuttle.Shuttle;
-        import com.openlattice.shuttle.adapter.Row;
-        import com.openlattice.shuttle.dates.DateTimeHelper;
-        import com.openlattice.shuttle.dates.TimeZones;
-        import com.openlattice.shuttle.util.Parsers;
-        import org.apache.commons.lang3.StringUtils;
-        import org.slf4j.Logger;
-        import org.slf4j.LoggerFactory;
-
-        import java.util.*;
-        import java.util.stream.Collectors;
-
-        import com.openlattice.shuttle.payload.Payload;
-        import com.openlattice.shuttle.payload.SimplePayload;
-        import retrofit2.Retrofit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Kim Engie &lt;kim@openlattice.com&gt;
  */
 
 public class HMISflight {
-    private static final Logger            logger      = LoggerFactory
+    private static final Logger                      logger      = LoggerFactory
             .getLogger( HMISflight.class );
-    private static final RetrofitFactory.Environment environment = RetrofitFactory.Environment.PRODUCTION;
-    private static final DateTimeHelper              dtHelper    = new DateTimeHelper( TimeZones.America_NewYork, "MM/dd/YY" );
+    private static final RetrofitFactory.Environment environment = RetrofitFactory.Environment.LOCAL;
+    private static final DateTimeHelper              dtHelper    = new DateTimeHelper( TimeZones.America_NewYork,
+            "MM/dd/YY" );
 
     public static void main( String[] args ) throws InterruptedException {
 
@@ -44,6 +41,7 @@ public class HMISflight {
         Retrofit retrofit = RetrofitFactory.newClient( environment, () -> jwtToken );
         EdmApi edm = retrofit.create( EdmApi.class );
 
+        //@formatter:off
         Flight hmisflight = Flight.newFlight()
                 .createEntities()
 
@@ -81,7 +79,7 @@ public class HMISflight {
                     .addProperty( "housing.programtype", "Program Type" )
                     .addProperty( "housing.lengthofstay" )
                         .value( row -> Parsers.parseInt( row.getAs( "Length of Program Stay" ) ) ).ok()
-                    .addProperty( "date.release")
+                    .addProperty( "ol.datetime_release")
                         .value( row -> dtHelper.parseDate( row.getAs( "Discharge Date" ))).ok()
                     .addProperty( "housing.dischargereason", "Reason for Discharge" )
                     .addProperty( "housing.timelessthan90days", "Time in Institution less than 90 days" )
@@ -272,6 +270,7 @@ public class HMISflight {
 
                 .endAssociations()
                 .done();
+        //@formatter:on
 
         Shuttle shuttle = new Shuttle( environment, jwtToken );
         Map<Flight, Payload> flights = new HashMap<>( 1 );
@@ -280,9 +279,10 @@ public class HMISflight {
         shuttle.launchPayloadFlight( flights );
     }
 
-    public static String getZip (Row row) {
+    public static String getZip( Row row ) {
         String zipcode = row.getAs( "Zip Code of Last Permanent Address" );
-        if ( StringUtils.isBlank( zipcode ) ) return null;
+        if ( StringUtils.isBlank( zipcode ) )
+            return null;
 
         if ( StringUtils.isNotBlank( zipcode ) ) {
             return StringUtils.leftPad( zipcode, 5, "0" );
@@ -290,49 +290,45 @@ public class HMISflight {
         return null;
     }
 
-    public static String getFulladdress (Row row) {
-        String street =  row.getAs ( "Last Permanent Address: Street Address" );
+    public static String getFulladdress( Row row ) {
+        String street = row.getAs( "Last Permanent Address: Street Address" );
         String city = row.getAs( "Last Permanent Address: City" );
         String state = row.getAs( "Last Permanent Address: State" );
-        String zipcode = HMISflight.getZip(row);
+        String zipcode = HMISflight.getZip( row );
 
-//        StringUtils.defaultString( null ) = "";
-//        StringUtils.defaultString( "" ) = "";
+        //        StringUtils.defaultString( null ) = "";
+        //        StringUtils.defaultString( "" ) = "";
 
-//     if ( StringUtils.isNotBlank( zipcode )) {
-        if (street != null ) {
-         StringBuilder address = new StringBuilder( StringUtils.defaultString( street ) );
-         address.append( ", " ).append( StringUtils.defaultString( city )). append( ", ")
-                 .append( StringUtils.defaultString( state )).append( " " ).append( StringUtils.defaultString( zipcode ));
+        //     if ( StringUtils.isNotBlank( zipcode )) {
+        if ( street != null ) {
+            StringBuilder address = new StringBuilder( StringUtils.defaultString( street ) );
+            address.append( ", " ).append( StringUtils.defaultString( city ) ).append( ", " )
+                    .append( StringUtils.defaultString( state ) ).append( " " )
+                    .append( StringUtils.defaultString( zipcode ) );
 
-         return address.toString();
-        }
-//     else if ( StringUtils.isBlank( zipcode )) {
-
-        else if ( city != null ) {
-            StringBuilder address = new StringBuilder( StringUtils.defaultString( city ));
-            address.append( ", " ).append( StringUtils.defaultString( state )).append( " " )
-                    .append( StringUtils.defaultString( zipcode ));
             return address.toString();
         }
+        //     else if ( StringUtils.isBlank( zipcode )) {
 
-        else if ( state != null ) {
-            StringBuilder address = new StringBuilder( StringUtils.defaultString( state));
-            address.append( " " ).append( StringUtils.defaultString( zipcode ));
+        else if ( city != null ) {
+            StringBuilder address = new StringBuilder( StringUtils.defaultString( city ) );
+            address.append( ", " ).append( StringUtils.defaultString( state ) ).append( " " )
+                    .append( StringUtils.defaultString( zipcode ) );
+            return address.toString();
+        } else if ( state != null ) {
+            StringBuilder address = new StringBuilder( StringUtils.defaultString( state ) );
+            address.append( " " ).append( StringUtils.defaultString( zipcode ) );
             return state;
-        }
-
-        else if (zipcode != null ) {
+        } else if ( zipcode != null ) {
             return StringUtils.defaultString( zipcode );
         }
-    return null;
+        return null;
     }
 
-
     public static List standardRaceList( Row row ) {
-        String sr = row.getAs("Race (HMIS)");
+        String sr = row.getAs( "Race (HMIS)" );
 
-        if  (sr != null) {
+        if ( sr != null ) {
 
             String[] racesArray = StringUtils.split( sr, "," );
             List<String> races = Arrays.asList( racesArray );
@@ -364,39 +360,39 @@ public class HMISflight {
     }
 
     public static String standardEthnicity( Row row ) {
-        String eth = row.getAs("Ethnicity (HMIS)");
+        String eth = row.getAs( "Ethnicity (HMIS)" );
 
         if ( eth != null ) {
-            if ( eth.equals("Hispanic/Latino")) { return "hispanic"; };
-            if ( eth.equals("Non-Hispanic/Non-Latino")) { return "nonhispanic"; };
-            if ( eth.equals( "Client doesn't know" )) { return null; };
-            if ( eth.equals( "Data not collected" )) { return null; };
-            if ( eth.equals( "Client refused" )) { return null; };
-            if ( eth.equals( "" )) { return null; };
+            if ( eth.equals( "Hispanic/Latino" ) ) { return "hispanic"; }
+            if ( eth.equals( "Non-Hispanic/Non-Latino" ) ) { return "nonhispanic"; }
+            if ( eth.equals( "Client doesn't know" ) ) { return null; }
+            if ( eth.equals( "Data not collected" ) ) { return null; }
+            if ( eth.equals( "Client refused" ) ) { return null; }
+            if ( eth.equals( "" ) ) { return null; }
         }
 
         return null;
     }
 
-    public static String standardSex( Row row) {
+    public static String standardSex( Row row ) {
         String sex = row.getAs( "Gender (HMIS)" );
         //if (StringUtils.isBlank( sex )) return null;
 
         if ( sex != null ) {
-            if (sex.equals( "Male" )) {return "M"; };
-            if (sex.equals( "Trans Male (FTM or Female to Male" )) {return "M"; };
-            if (sex.equals( "Female" )) {return "F"; };
-            if (sex.equals( "Trans Female (MTF or Male to Female" )) {return "F"; };
-            if ( sex.equals( "Client doesn't know" )) { return null; };
-            if ( sex.equals( "Data not collected" )) { return null; };
-            if ( sex.equals( "Client refused" )) { return null; };
-            if ( sex.equals( "" )) { return null; };
+            if ( sex.equals( "Male" ) ) {return "M"; }
+            if ( sex.equals( "Trans Male (FTM or Female to Male" ) ) {return "M"; }
+            if ( sex.equals( "Female" ) ) {return "F"; }
+            if ( sex.equals( "Trans Female (MTF or Male to Female" ) ) {return "F"; }
+            if ( sex.equals( "Client doesn't know" ) ) { return null; }
+            if ( sex.equals( "Data not collected" ) ) { return null; }
+            if ( sex.equals( "Client refused" ) ) { return null; }
+            if ( sex.equals( "" ) ) { return null; }
 
-            }
-            return null;
-
-    }
+        }
+        return null;
 
     }
+
+}
 
 
